@@ -81,6 +81,10 @@ complete.
 
 read-only. do not modify files.
 
+Before mapping, check the latest relevant archived threads for prior context,
+decisions, constraints, and unresolved findings. Verify that context against
+the current checkout and label stale or conflicting details.
+
 map only the named subsystem. report:
 
 - current behavior and ownership
