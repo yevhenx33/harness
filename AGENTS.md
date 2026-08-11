@@ -316,6 +316,11 @@ for a performance-sensitive change:
 - record at least 10 measured runs after warmup
 - report median and range
 - report p95 only with at least 20 meaningful samples
+- unless a task sets a stricter target, require end-to-end latency median below
+  50 ms as the soft target and every measured sample at or below 100 ms as the
+  hard ceiling
+- define the measurement endpoints; component-local timing alone does not prove
+  compliance
 - report memory, allocations, query count, or network calls when relevant
 - state the expected time and space complexity
 
