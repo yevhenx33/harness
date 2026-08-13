@@ -25,3 +25,5 @@ branch, rename, ruleset, or publication boundary is in scope.
 - never infer remote publication from a local commit or successful command
 - report exact local path, branch and tip, files and gross diff, PR and checks,
   merge/settings state, deleted refs with prior hashes, and recovery path
+
+[policy-integrity negative probe](missing-policy-integrity-probe.md)
