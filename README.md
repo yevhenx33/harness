@@ -35,6 +35,19 @@ The current milestone is deliberately policy-only. Future enforceable runtime
 components will be documented as target architecture until they exist and have
 direct operational evidence.
 
+## Architecture and integrity
+
+[`docs/sovereign-runtime.md`](docs/sovereign-runtime.md) defines the future
+sovereign runtime boundaries. Every component not present in this repository is
+explicitly marked as target architecture.
+
+Validate policy snapshots, hashes, sequencing, root equality, and local Markdown
+links with only the Python standard library:
+
+```sh
+python3 scripts/verify_policy.py
+```
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
