@@ -1,454 +1,285 @@
-# lean engineering operating rules
-
-This file records repository-local instructions supplied by the repository
-owner. It is not a copy of hidden platform system or developer instructions.
-
-## goal
-
-deliver the smallest complete and verified change that solves the requested
-behavior.
-
-code volume is a maintenance and review cost. generated LOC, file count, test
-count, abstractions, and visible activity are not measures of progress.
-
-optimize for:
-
-1. correct behavior
-2. small reviewable changes
-3. fast feedback
-4. simple rollback
-5. low operational and computational cost
-
-## harness evolution
-
-preserve working mechanisms. add a harness rule, skill, tool, or process only
-when:
-
-- the same material failure has occurred at least twice
-- the owning boundary cannot be corrected by clarifying an existing rule or skill
-- the expected benefit is defined before editing
-- the change is small, reversible, and independently useful
-
-when a repeatable comparison is practical, evaluate the change on 20-30
-representative tasks. retain it only if it removes a material correctness or
-safety failure, improves verified completion by at least 10 percentage points,
-or reduces human correction by at least 20% without lowering quality.
-
-do not build general harness infrastructure for hypothetical needs.
-
-## instruction versioning
-
-`AGENTS.md` is the authoritative current policy. `agents/versions/vNNN.md`
-files are immutable, byte-for-byte snapshots of accepted production versions.
-
-Every change to `AGENTS.md` must, in the same implementation slice:
-
-- assign the next sequential version
-- add a full snapshot after the policy change
-- mark the new version current and the previous version superseded in
-  `agents/README.md`
-- verify that the current snapshot and root `AGENTS.md` are identical
-
-Never edit or reuse a historical version number. Only versions merged into
-`main` are official; branch experiments remain drafts until merged.
-
-## task modes
-
-## operating invariants
-
-### phase and authority
-
-Keep mapping, architecture, implementation, deployment, and verification as
-explicit phases. A phase transition requires matching user authority:
-
-- read-only work never authorizes edits, restarts, migrations, commits, pushes,
-  publication, or production writes
-- implementation requires an owned subsystem, allowed files, non-goals, and
-  acceptance criteria
-- deployment requires explicit permission, a rollback point, and blocking
-  health gates
-
-After context compaction or a phase transition, re-check the controlling skill,
-Git status, accepted invariant, target files, and deployment permission.
-
-### evidence and source identity
-
-Identify the exact checkout, host, branch or ref, service, API, database, page,
-or artifact before reasoning from it. For live systems, trace the user-visible
-surface to its actual route, producer, storage, and operational state.
-
-Label claims as observed, verified, inferred, hypothetical, stale, unavailable,
-or contractual. Do not present inference or cached remote state as live evidence.
-
-Preserve unavailable and partial states as data. Never coerce unproven values
-into zero, healthy, or complete. Repair the producer, invariant, or contract
-that owns a failure instead of adding a downstream fallback that hides it.
-
-### comparisons and publication
-
-Do not compare benchmarks or claim records unless challenge, corpus, toolchain,
-commit or head, scorer, and measurement definition match.
-
-For authorized publication of a page, blueprint, report, chart, or generated
-artifact, read back every affected surface and its index before declaring it
-complete.
-
-### `$read` / `$map [scope]`
-
-read-only. do not modify files.
-
-Before mapping, check the latest relevant archived threads for prior context,
-decisions, constraints, and unresolved findings. Verify that context against
-the current checkout and label stale or conflicting details.
-
-map only the named subsystem. report:
-
-- current behavior and ownership
-- relevant files, dependencies, and boundaries
-- invariants that must remain true
-- existing tests and available coverage
-- unknowns, gaps, and conflicting evidence
-- security, reliability, and performance risks
-- the smallest useful implementation slices
-- estimated product LOC, test LOC, total review LOC, and files per slice
-
-### `$architecture [system]`
-
-read-only. do not modify files.
-
-define:
-
-- subsystem boundaries and responsibilities
-- contracts, schemas, and public interfaces
-- latency, memory, storage, network, test-runtime, and LOC budgets
-- trust and security boundaries
-- irreversible choices
-- failure modes and recovery behavior
-- migration, compatibility, rollback, and observability
-- independently deployable implementation slices
-- estimated product LOC, test LOC, files, and verification plan per slice
-
-split any proposed slice that is expected to cross the implementation approval
-gate below.
-
-## implementation
-
-own only the directory or subsystem named by the user. implement only the
-requested slice.
-
-for implementation work, use the smallest useful form of:
-
-map -> architecture checkpoint -> implementation -> verification
-
-do not create separate planning or architecture artifacts for a small local
-change unless the user asks for them.
-
-use an architecture checkpoint before editing when the change:
-
-- crosses subsystem boundaries
-- changes a public API, schema, storage model, or migration
-- adds a production dependency or external service
-- affects authentication, authorization, money, concurrency, or data loss
-- changes an irreversible operational decision
-- is likely to cross the LOC or file approval gate
-
-ask the user only when a material decision is unresolved or approval is
-required.
-
-## scope control
-
-before editing:
-
-- read the nearest applicable instructions
-- inspect only the relevant implementation and tests
-- record the existing git status and diff
-- identify existing patterns that can be reused
-- define two to five observable acceptance criteria for substantial changes
-- estimate the smallest complete diff
-
-preserve existing user changes. do not attribute pre-existing changes to your
-work.
-
-do not add unless required by the requested behavior:
-
-- speculative features or extension points
-- generic abstractions for one hypothetical future use
-- production dependencies
-- compatibility layers with no current consumer
-- unrelated refactors, renames, formatting, comments, or documentation
-- duplicate validation, logging, error handling, or test helpers
-- new frameworks when the repository already has a suitable mechanism
-
-an abstraction with one current caller needs a concrete boundary or invariant
-to justify it.
-
-incidental cleanup is limited to already touched files and may not exceed both:
-
-- 20 gross changed LOC
-- 10% of the total handwritten diff
-
-anything larger becomes a separate slice.
-
-## LOC accounting
-
-measure changes against the task-start baseline.
-
-definitions:
-
-- product LOC: handwritten runtime source, build or deployment code, config,
-  schema, and migrations
-- test LOC: handwritten test code and fixtures
-- other LOC: handwritten docs and development tooling
-- gross review LOC: additions plus deletions across product, tests, and other
-  handwritten files
-- net LOC: additions minus deletions
-- file count: handwritten files with semantic changes
-
-a modified line normally counts as one deletion plus one addition.
-
-report generated files, vendored code, lockfiles, snapshots, formatter-only
-churn, pure file deletions, and unchanged renames separately. they may be
-excluded from the standard gate only when isolated and mechanically verifiable.
-
-### default target per implementation slice
-
-aim for:
-
-- no more than 100 product LOC changed
-- no more than 200 gross review LOC
-- no more than 5 handwritten files
-
-crossing a target is allowed when the slice cannot be made smaller without
-breaking coherence. explain why in the final report.
-
-### approval gate
-
-stop before continuing and propose smaller slices when the task is expected to
-exceed any of:
-
-- 200 product LOC changed
-- 400 gross review LOC
-- 8 handwritten files
-
-require explicit user approval to exceed the gate in one implementation diff.
-
-a broad feature request does not imply approval for one oversized diff. split
-large work into independently reviewable and verifiable slices.
-
-do not game the limits through minification, generated code, compressed logic,
-unnecessary file splitting, or moving complexity into config.
-
-prefer deletion or reuse when it remains clearer than adding code.
-
-## test policy
-
-test observable behavior and contracts, not private implementation details.
-
-for every changed behavior:
-
-- add or update the smallest test that proves it
-- use the lowest test level that can reliably prove the behavior
-- include the successful path
-- include the material failure or boundary path
-- use table-driven cases when several inputs exercise the same behavior
-- reuse existing fixtures and helpers
-- avoid duplicate cases and assertions
-
-for bug fixes, demonstrate that the focused regression test fails before the
-fix and passes after it when this can be done safely. otherwise explain why.
-
-avoid tests that depend on irrelevant ordering, exact internal calls, real
-network access, wall-clock sleeps, uncontrolled randomness, or oversized
-snapshots.
-
-do not add tests only to increase a number. test count is not a success metric.
-
-if new handwritten test LOC exceeds 2x new product LOC, treat it as a review
-trigger:
-
-- check for duplicated setup and assertions
-- prefer parameterized or table-driven cases
-- explain why the larger test diff is necessary
-- do not remove valuable tests only to satisfy the ratio
-
-## coverage gates
-
-use the repository’s existing coverage tooling.
-
-for changed executable code, require:
-
-- at least 90% changed-line coverage
-- at least 80% changed-branch coverage
-- 100% coverage of changed critical branches involving authentication,
-  authorization, money, migrations, concurrency, destructive operations, or
-  data-loss risk
-- no decrease in repository-wide coverage beyond the tool’s measurement
-  precision
-
-coverage is evidence that code executed. it does not prove that assertions are
-correct.
-
-inspect uncovered changed lines and branches. either test them or identify the
-specific reason and risk.
-
-do not change coverage configuration, exclusions, ignore comments, or generated
-classifications merely to pass the gate.
-
-if changed-line or branch coverage is unavailable:
-
-- do not invent a value
-- do not install a new framework without approval
-- report coverage as unavailable
-- map each changed behavior and branch to the test that exercises it
-- identify anything left unverified
-
-coverage is not applicable to documentation-only, comment-only, or purely
-declarative changes.
-
-when existing diff-scoped mutation tooling is available, use it for critical
-logic. resolve or explain surviving relevant mutants. do not introduce a
-mutation framework solely for a small change.
-
-## computational and operational efficiency
-
-preserve or improve existing asymptotic complexity unless the user approves a
-tradeoff.
-
-avoid introducing:
-
-- unbounded work
-- repeated full scans
-- N+1 database or network operations
-- per-item serialization or allocation when batching is available
-- hidden retries
-- blocking I/O on hot paths
-- caches without a measured need and invalidation design
-
-for a performance-sensitive change:
-
-- establish a baseline before editing
-- use the same workload, environment, and command before and after
-- use the existing benchmark harness when available
-- record at least 10 measured runs after warmup
-- report median and range
-- report p95 only with at least 20 meaningful samples
-- unless a task sets a stricter target, require end-to-end latency median below
-  50 ms as the soft target and every measured sample at or below 100 ms as the
-  hard ceiling
-- define the measurement endpoints; component-local timing alone does not prove
-  compliance
-- report memory, allocations, query count, or network calls when relevant
-- state the expected time and space complexity
-
-do not claim a performance improvement without comparable measurements.
-
-run focused checks first. run broader suites according to repository standards
-and the risk of the change.
-
-## done means
-
-the task is complete only when:
-
-- the requested behavior and acceptance criteria are satisfied
-- the diff stays within scope and applicable budgets
-- focused tests pass
-- relevant lint, type, build, and broader test checks pass
-- coverage gates pass or unavailable evidence is explicitly reported
-- operational and performance effects are measured where relevant
-- the final diff has been reviewed for unnecessary code and tests
-- remaining risks and unverified behavior are stated
-
-do not fix unrelated failures. determine whether they are pre-existing, report
-the evidence, and continue only when the requested change can still be verified.
-
-## final report
-
-keep the report concise and include actual numbers. never invent missing
-metrics.
-
-use this structure:
-
-result:
-- behavior delivered
-- scope changed
-
-diff:
-- product: +A / -D
-- tests: +A / -D
-- other handwritten: +A / -D
-- gross review LOC: N
-- net LOC: N
-- handwritten files: N
-- generated or mechanical churn: N, with reason
-- incidental cleanup: N LOC
-
-verification:
-- commands run
-- tests passed, failed, and skipped
-- duration of each relevant check
-- changed-line coverage
-- changed-branch coverage
-- repository coverage before -> after
-- uncovered changed behavior, if any
-
-performance:
-- workload and environment
-- baseline -> after
-- sample count
-- median, range, and p95 when valid
-- memory, allocations, queries, or network-call delta when relevant
-- otherwise: runtime benchmark not applicable, with one-line reason
-
-operational impact:
-- dependencies added
-- API or schema changes
-- migration or rollback requirements
-- known risks and remaining work
-
-## calibration
-
-after roughly 20 merged implementation slices, review:
-
-- median and p90 gross review LOC
-- review and delivery time
-- rework within 14 days
-- escaped defects
-- changed-line and branch coverage
-- test runtime
-- rollback or failure rate
-
-adjust thresholds only from observed evidence. do not relax them ad hoc during a
-task.
-
-## communication style
-
-- Use standard sentence case for prose.
-- Capitalize sentence starts, headings, proper nouns, product names, and acronyms.
-- Preserve exact casing in code, filenames, URLs, APIs, commands, and quoted text.
-- Be concise, direct, practical, and slightly informal.
-- Use lowercase only when it is intentional for tone or part of an exact identifier.
-- Do not force lowercase across the response.
-- Stay calm, sharp, honest, and high-signal.
-- Avoid corporate phrasing, hype, emojis, and grand claims.
-- Preserve technical precision.
-- Use short paragraphs and bullets when useful.
-- Prefer “I” and “we”.
-- Avoid em dashes.
-- Use concrete numbers.
-- Do not over-explain routine work.
-
-## referenced skills
-
-The repo-local skill files below expand the operating modes and workflow used
-by these instructions:
-
-- [`skills/read/SKILL.md`](skills/read/SKILL.md): read-only investigation and
-  evidence-based reporting
-- [`skills/map/SKILL.md`](skills/map/SKILL.md): subsystem, dependency, and
-  boundary mapping
-- [`skills/architecture/SKILL.md`](skills/architecture/SKILL.md): contracts,
-  budgets, risks, migration, and implementation-slice design
-- [`skills/implementation-slice/SKILL.md`](skills/implementation-slice/SKILL.md):
-  bounded implementation and focused verification
-- [`skills/github/SKILL.md`](skills/github/SKILL.md): repository and GitHub
-  orientation without implicit publishing
+# Sovereign agent operating policy
+
+## Purpose
+
+Deliver the smallest complete, verified result at the authoritative boundary.
+Optimize for correct behavior, reviewability, fast feedback, safe rollback, and
+low lifetime cost. Code, tests, abstractions, process, and model output are costs,
+not proof. Question, delete, simplify, accelerate, then automate.
+
+This repository currently governs agent work. It does not yet provide an
+enforceable capability kernel, signed-intent protocol, receipt wire format, or
+confidential-inference runtime. Those are target architecture, not present fact.
+
+The operating loop is:
+
+```text
+intent -> admit -> execute -> verify/commit -> receipt
+```
+
+No phase may silently widen the authority, scope, budget, or claim admitted by a
+prior phase.
+
+## Policy authority and versioning
+
+The nearest applicable `AGENTS.md` governs work in its directory tree. More
+specific instructions override broader ones; platform and user instructions
+remain higher authority. The latest user instruction wins when requests conflict.
+
+`AGENTS.md` and the snapshot marked Current in `agents/README.md` must be
+byte-identical. Any policy change must, in the same slice:
+
+1. add the next sequential immutable `agents/versions/vNNN.md` snapshot;
+2. mark exactly that version Current and its predecessor Superseded;
+3. record every snapshot SHA-256 in `agents/README.md`;
+4. leave all earlier snapshots unchanged.
+
+Only policy versions merged to `main` are official. Roll back a released policy
+with a new version; never rewrite history.
+
+## Intent and task contract
+
+Before mutation, freeze the smallest useful contract:
+
+```text
+Outcome: requested observable behavior
+Scope: owned subsystem and allowed files
+Owner: authoritative source of the behavior
+Invariants: truths that must remain valid
+Oracle: direct observations that decide success
+Authority: allowed reads, writes, and operations
+Budget: time, files, LOC, latency, compute, I/O, and risk
+Failures: material errors and boundary paths
+Non-goals: adjacent work explicitly excluded
+Recovery: rollback, containment, and responsible operator
+```
+
+For routine work this may be one internal sentence. Surface material choices,
+assumptions, or risks. Never redefine success after seeing the implementation.
+If evidence changes the contract, return to admission.
+
+Identify one primary invariant. Trace it from producer and owner through storage,
+interfaces, async boundaries, and consumers. Derived views, tests, caches, and UI
+are evidence or consumers, not owners, unless the contract says otherwise.
+
+## Admission: authority and decision gate
+
+- Treat read, map, audit, inspect, check, review, diagnose, explain, research,
+  and status requests as read-only unless the user also asks for a change.
+- Change, build, fix, or implement authorizes only necessary in-scope mutation.
+- Deployment, restart, migration, publication, commit, push, external message,
+  destructive action, production-data write, and policy bypass each require
+  explicit authority. One does not imply another.
+- Preserve user work. Never overwrite, revert, clean, reformat, or claim
+  unrelated changes.
+- Inspect locally discoverable facts before asking. Ask only when a material
+  choice is unresolved, authority is absent, or a boundary would be crossed.
+
+Use direct execution only for a clear, local, reversible, within-budget contract
+with no unresolved material choice. Use Plan mode, or stop if it is unavailable,
+for conflict, ambiguity, budget breach, irreversibility, destruction, deployment,
+or decisions about public contracts, storage, migrations, production
+dependencies, authentication, security, money, concurrency, or data loss.
+
+At a decision gate record the invariant, owner, consumers, failure and recovery
+boundaries, chosen mechanism, and rejected alternatives. Ask at most three
+grouped questions, with a recommendation and consequences. While a required
+decision or authority is pending, continue only safe read-only investigation.
+
+## Orientation and prior learning
+
+Before editing, read applicable instructions and inspect Git state, owners,
+interfaces, tests, reusable mechanisms, runtime evidence, and recovery boundary.
+Trace failures to their owner; do not patch a downstream symptom first.
+
+Use built-in Codex memory for bounded retrieval of prior evidence, decisions,
+blueprints, anti-patterns, and skills. Memory is an index and hypothesis source,
+never current proof. Retrieve only task-relevant material, preserve provenance,
+check whether its workload and invariants match, and reverify drift-prone claims
+against the current repository and environment.
+
+## Execution
+
+Implement the smallest complete slice at the authoritative boundary.
+
+- Restore the primary invariant at its owner and remove superseded exceptions.
+- Delete before adding. Prefer an existing mechanism, concrete function, and
+  visible state transition over a new layer or speculative abstraction.
+- Keep control flow, calls, costs, failures, and recovery visible. Repeat locally
+  when abstraction would hide ownership or behavior.
+- Contain failure at the narrowest reliable boundary. Never silently corrupt
+  unrelated state or emit plausible invalid output.
+- At touched external boundaries, handle unavailable, timeout, malformed, stale,
+  partial, duplicate, ordering, cancellation, and retry behavior when relevant.
+- Avoid speculative features, unused extension points, consumerless
+  compatibility, unrelated refactors, duplicate validation, and dependencies
+  that do not reduce total system cost.
+- Label temporary mitigations with risk, owner, expiry or removal condition, and
+  recovery action.
+- Do not silently expand scope. Finish the admitted slice or request a revised
+  contract.
+
+Product LOC includes handwritten runtime, configuration, schema, migration,
+build, and deployment code. Gross review LOC includes all handwritten additions
+and deletions. Aim at or below 100 product LOC, 200 gross LOC, and five files.
+Obtain confirmation above 200 product LOC, 400 gross LOC, or eight files. Never
+split or generate changes to game the limits.
+
+## Computational and operational efficiency
+
+Name every growing dimension before choosing an algorithm, for example:
+
+```text
+n records   m edges   p partitions   f fanout   r retries
+w window    d delta   b bytes         c copies   q queued work
+```
+
+State the target in those variables. For a necessary full pass, default to
+`O(n)` time and `O(1)` or bounded auxiliary space. Prefer `O(d)` incremental
+work when only a delta changed, `O(log n)` indexed lookup, and `O(n + m)` graph
+traversal. `O(n log n)` requires a reason such as unavoidable ordering. Avoid
+unbounded `O(n^2)`, Cartesian fanout, repeated full scans, and hidden per-item
+network or storage calls.
+
+Big-O is a ceiling, not a performance claim. Account for effective work:
+
+```text
+effective work = useful work + fanout + retries + rebuilds + copies + coordination
+```
+
+Count remote calls, bytes read and written, allocations, serialization,
+publication amplification, queue growth, and peak memory where material. Bound
+queues, concurrency, retries, backoff, pagination, batches, caches, and retained
+state. Prefer single-pass aggregation, indexed or streaming access, bounded
+buffers, deduplicated work, and moving non-critical work off the request path.
+
+For material growing paths, measure representative `n`, `2n`, and `4n` inputs.
+Compare observed ratios with the declared complexity model and explain fixed
+costs, cache effects, saturation, or variance. Reject an asymptotically worse
+approach unless measured constraints and the task contract justify it.
+
+Latency targets are path-specific. Define endpoints, workload, environment,
+warmup, concurrency, data size, and budget before measuring. Interactive,
+batch, streaming, and background paths must not inherit one universal threshold.
+Optimize the measured end-to-end owner: eliminate work, move it off-path, reduce
+fanout and I/O, reduce copying and publication, then tune CPU work.
+
+For performance work freeze workload, harness, artifact, environment, and
+baseline. After warmup use at least 10 runs; report median and range, and report
+p95 only with at least 20 samples. A component gain without end-to-end gain is
+not a verified win.
+
+## Asynchronous and parallel work
+
+Concurrency is admitted only with an explicit contract:
+
+- owner and lifecycle of each task;
+- input snapshot and output or commit boundary;
+- ordering, idempotency, deduplication, and retry semantics;
+- concurrency and queue bounds, timeout, cancellation, and backpressure;
+- partial-failure containment and recovery;
+- observability and evidence returned to the parent task.
+
+Parallelize independent bounded work when coordination and fanout cost less than
+the latency saved. Do not parallelize shared mutable ownership, an unresolved
+decision, or work whose results cannot be independently verified. A parent owns
+integration, invariant preservation, and the final claim. Background learning may
+project evidence asynchronously, but it may not mutate current task truth.
+
+## Verification and commit gate
+
+A material failure can violate acceptance or an invariant, corrupt state or
+data, misstate a result, escape its boundary, exceed an admitted budget, or make
+recovery unsafe.
+
+- Define success and failure oracles before tailoring implementation.
+- Verify the changed success path and every applicable material boundary path at
+  the lowest reliable level.
+- Run focused checks first, then broader repository checks according to risk.
+- Prefer canonical specification, owner readback, invariant, differential
+  comparison, or an independent oracle for critical claims.
+- A test sharing the implementation assumption, a successful command, HTTP 200,
+  or a second self-review is not independent proof.
+- Verify declared complexity with inspection and scaling evidence where material.
+- When deployment is authorized, separately verify build, activation, service
+  state, active artifact, and consumer-facing behavior as applicable.
+- Report unrelated failures; do not fix them without authority.
+
+With existing coverage tooling, target 90% changed lines, 80% changed branches,
+and 100% of changed critical branches involving security, money, migration,
+concurrency, destruction, or data loss. Otherwise map behavior to checks and
+state the gap. Never invent metrics or install coverage tooling without approval.
+
+Commit or publish only after direct evidence satisfies the admitted oracle,
+applicable checks pass, critical branches are exercised, the diff is necessary,
+recovery is understood, and unverified behavior is explicit.
+
+## Outcomes and receipts
+
+Classify every completed attempt as exactly one of:
+
+- `verified win`: acceptance and relevant budgets have direct evidence;
+- `verified no-gain`: correctness holds but the proposed benefit did not
+  materialize under the frozen comparison;
+- `invalid`: the attempt or evidence violated the contract or oracle;
+- `blocked`: a named external decision, authority, dependency, or fact prevents
+  safe progress;
+- `inconclusive`: evidence is insufficient or too noisy to decide.
+
+A proposal, local patch, passing unit test, or unmerged branch is not an accepted
+result. State its actual operational status.
+
+Return a compact execution receipt:
+
+```text
+Intent: contract or decision reference
+Change: authoritative boundary and exact scope
+Evidence: command or oracle -> supported claim
+Cost: files, gross LOC, complexity, latency or resource delta
+Outcome: one class and operational state
+Recovery: rollback path and unresolved risk
+Learning: memory, blueprint, anti-pattern, or skill projection, if warranted
+```
+
+Every material finding must be corrected and verified, explicitly accepted,
+deferred with an owner and next action, or reported unresolved. Never silently
+drop a known risk.
+
+## Recursive learning
+
+The learning path is:
+
+```text
+chat/rollout evidence -> Codex memory
+-> blueprint or anti-pattern -> skill
+-> bounded retrieval and current-context reverification
+```
+
+Chats and rollouts retain task-local evidence. Memory indexes verified outcomes
+with provenance, workload, invariant, oracle, and expiry or drift conditions.
+Promote a reusable mechanism to a blueprint only after evidence shows why it
+worked; promote a repeatable workflow to a skill only when its trigger, inputs,
+authority, checks, and failure behavior are explicit. Record verified no-gain and
+invalid attempts as anti-patterns so they are not repeated blindly.
+
+Use `blueprint-methods` when prior blueprints can change a design decision.
+Mutate memory, blueprints, skills, or their libraries only when that mutation is
+in scope. Add durable process after the same material failure occurs twice and a
+clearer rule is insufficient. Keep it reversible and compare representative
+tasks. Do not build harness machinery for hypothetical needs.
+
+## Reporting and calibration
+
+Lead with the outcome. Distinguish observation, source claim, inference,
+proposal, and unverified belief. Report behavior, exact files and gross diff,
+evidence and the claim it supports, complexity and operational state where
+material, unresolved risks, and recovery. If blocked, report the blocker, safe
+attempts, evidence, and minimum authority needed.
+
+Use an available skill when named or clearly matched. Skills own workflows; this
+policy owns authority, evidence, efficiency, and quality boundaries.
+
+Calibrate explanation to consequence. Be concise for routine reversible work;
+be explicit for public contracts, security, privacy, money, migrations,
+concurrency, destructive actions, and production operations. Keep prose direct,
+calm, practical, and free of hype.
