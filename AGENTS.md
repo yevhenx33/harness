@@ -75,6 +75,41 @@ are evidence or consumers, not owners, unless the contract says otherwise.
 - Inspect locally discoverable facts before asking. Ask only when a material
   choice is unresolved, authority is absent, or a boundary would be crossed.
 
+### Zero-tolerance quality gate
+
+For this policy, wasteful work means work that consumes cost without a
+demonstrated causal path to the frozen outcome, or that makes invalid,
+incomplete, stale, or unknown state appear valid. This describes a process
+failure, not a person or model.
+
+Hold admission, return to the contract, or reject the proposed mechanism when:
+
+- the authoritative owner, primary invariant, consumer, or falsifying oracle is
+  unknown;
+- a downstream symptom is being patched before the owning path is traced;
+- a new service, version, retry loop, backfill, abstraction, or parallel path is
+  proposed without evidence that the existing mechanism cannot satisfy the
+  invariant more simply;
+- missing, partial, stale, invalid, or contradictory evidence would be rendered
+  as zero, `Other`, current, healthy, complete, or successful;
+- verification depends on a proxy, a check sharing the implementation's core
+  assumption, or evidence that cannot distinguish success from false success;
+- repeated or full-range work is proposed where a bounded cursor, frontier,
+  delta, or direct owner read can decide the result;
+- a critical finding lacks an explicit disposition; or
+- unrelated dirty work would enter a release, deployment, or recovery boundary.
+
+Apply the reduction order at every material design gate:
+
+```text
+question -> delete -> simplify -> fix the owner -> falsify/verify
+-> disposition findings -> accelerate -> automate
+```
+
+Urgency, prior effort, sophistication, passing superficial checks, or the size
+of a change never waive this gate. A parallel replacement requires an explicit
+cutover, parity oracle, rollback, and removal condition for the superseded path.
+
 Use direct execution only for a clear, local, reversible, within-budget contract
 with no unresolved material choice. Use Plan mode, or stop if it is unavailable,
 for conflict, ambiguity, budget breach, irreversibility, destruction, deployment,
@@ -275,6 +310,30 @@ proposal, and unverified belief. Report behavior, exact files and gross diff,
 evidence and the claim it supports, complexity and operational state where
 material, unresolved risks, and recovery. If blocked, report the blocker, safe
 attempts, evidence, and minimum authority needed.
+
+Default communication to a TL;DR that states the outcome, status, change or
+finding, strongest evidence, unresolved risk, and next action. Keep routine
+updates compact and make detailed reasoning, commands, the full receipt, and
+supporting evidence available when requested or when risk, disagreement, or
+ambiguity makes them necessary. The short form must not omit a material failure,
+uncertainty, recovery boundary, or required decision.
+
+For routine work, use this minimum structure:
+
+```text
+TL;DR
+[one-sentence outcome or current status]
+
+Status: [verified win | verified no-gain | invalid | blocked | inconclusive]
+Change/Finding: [authoritative boundary and exact scope]
+Evidence: [direct observation or oracle]
+Risk: [unresolved risk, or none found]
+Next: [next action, decision, or done]
+```
+
+For high-risk, disputed, or explicitly detailed work, append the full execution
+receipt and relevant reasoning after the TL;DR. A TL;DR is a presentation format,
+not permission to weaken the contract, verification, or outcome classification.
 
 Use an available skill when named or clearly matched. Skills own workflows; this
 policy owns authority, evidence, efficiency, and quality boundaries.
