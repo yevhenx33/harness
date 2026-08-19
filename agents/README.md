@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v008`](versions/v008.md) | Current | 2026-08-19 | TL;DR communication format | Make routine agent communication compact without weakening evidence or receipts |
+| [`v009`](versions/v009.md) | Current | 2026-08-19 | Concise communication format | Make routine agent communication compact without requiring a literal label |
+| [`v008`](versions/v008.md) | Superseded | 2026-08-19 | TL;DR communication format | Make routine agent communication compact without weakening evidence or receipts |
 | [`v007`](versions/v007.md) | Superseded | 2026-08-17 | Zero-tolerance quality gate | Reject waste and false-success mechanisms at admission |
 | [`v006`](versions/v006.md) | Superseded | 2026-08-13 | Harness policy foundation | Consolidate sovereign policy, efficiency, and learning controls |
 | [`v005`](versions/v005.md) | Superseded | 2026-08-11 | This archive change | Add full snapshot versioning |
@@ -32,6 +33,7 @@ v005 8c112459ee721a1b51b9cc5f03e330bc04b09616d8fb40b7c5723904c875c0fc
 v006 c2fc8057d072282b5cb7f2f2205f773f21bb983023f5aeecff7556345eec1b0c
 v007 702dc03ceffadee86771d81ca7f54666bf869ab7c0ce9b34803740c6f133d13f
 v008 1b128f9b88f7acf5e979dbf39b391d7bd4a843073247bc3b9983543189a13d51
+v009 097e5512082e70fefc53936372710c20481e82655ca65f9ef94aa2ff97bf7578
 ```
 
 For every future root-policy change:
