@@ -311,7 +311,7 @@ evidence and the claim it supports, complexity and operational state where
 material, unresolved risks, and recovery. If blocked, report the blocker, safe
 attempts, evidence, and minimum authority needed.
 
-Default communication to a TL;DR that states the outcome, status, change or
+Default communication to a concise summary that states the outcome, status, change or
 finding, strongest evidence, unresolved risk, and next action. Keep routine
 updates compact and make detailed reasoning, commands, the full receipt, and
 supporting evidence available when requested or when risk, disagreement, or
@@ -321,7 +321,6 @@ uncertainty, recovery boundary, or required decision.
 For routine work, use this minimum structure:
 
 ```text
-TL;DR
 [one-sentence outcome or current status]
 
 Status: [verified win | verified no-gain | invalid | blocked | inconclusive]
@@ -332,7 +331,7 @@ Next: [next action, decision, or done]
 ```
 
 For high-risk, disputed, or explicitly detailed work, append the full execution
-receipt and relevant reasoning after the TL;DR. A TL;DR is a presentation format,
+receipt and relevant reasoning after the concise summary. A concise summary is a presentation format,
 not permission to weaken the contract, verification, or outcome classification.
 
 Use an available skill when named or clearly matched. Skills own workflows; this
