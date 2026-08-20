@@ -1,0 +1,27 @@
+{
+  "task_id": "harness-sync-assessment-v1",
+  "outcome": "Classify the harness repository synchronization state.",
+  "scope": "/home/ubuntu/harness",
+  "authority": "read-only",
+  "primary_invariant": "The worktree, index, refs, policy bytes, and integrity result remain unchanged.",
+  "allowed_observations": [
+    "git status --short --branch",
+    "git status --porcelain=v1",
+    "git remote -v",
+    "git rev-parse HEAD main refs/remotes/origin/main",
+    "git ls-remote --heads origin main",
+    "PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_policy.py"
+  ],
+  "forbidden_operations": [
+    "fetch",
+    "pull",
+    "merge",
+    "checkout",
+    "reset",
+    "stash",
+    "commit",
+    "push",
+    "file writes"
+  ],
+  "states": ["up-to-date", "fast-forward-available", "ahead", "dirty", "diverged", "inconclusive"]
+}
