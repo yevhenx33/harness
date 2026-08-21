@@ -160,32 +160,6 @@ and deletions. Aim at or below 100 product LOC, 200 gross LOC, and five files.
 Obtain confirmation above 200 product LOC, 400 gross LOC, or eight files. Never
 split or generate changes to game the limits.
 
-### Balanced implementation gate
-Implementation quality is a 10-point gate: five brutal-simplicity requirements
-and five operational-elegance requirements. A completed slice must score 10/10
-unless its admitted task contract names a specific exception and consequence.
-
-Brutal simplicity, 5/5:
-
-1. Stay within five files, 100 product LOC, and 200 gross LOC by default.
-2. Name exactly one authoritative owner and one authoritative write path.
-3. Add no unused code, speculative extension point, or unrelated refactor.
-4. Provide one direct success oracle.
-5. Provide one exact recovery action.
-Operational elegance, 5/5:
-
-1. State exactly one primary invariant and change at most one public interface.
-2. Keep one authoritative representation for each touched domain fact.
-3. Name and disposition every material state and failure.
-4. Add an abstraction only for two current consumers or one required external
-   boundary.
-5. Make input, owner, transition, output, and recovery traceable without reading
-   unrelated code.
-
-A structural slice may use up to six files, 150 product LOC, and 300 gross LOC
-only when it consolidates split ownership or eliminates invalid states. The
-completion receipt must report both gate scores and every admitted exception.
-
 ## Computational and operational efficiency
 
 Name every growing dimension before choosing an algorithm, for example:
