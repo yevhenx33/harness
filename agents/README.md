@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v010`](versions/v010.md) | Current | 2026-08-21 | 50:50 implementation gate | Require five measurable simplicity and five measurable elegance deliverables |
+| [`v011`](versions/v011.md) | Current | 2026-08-21 | User-facing concise reporting | Hide routine internal execution details while preserving material risks and decisions |
+| [`v010`](versions/v010.md) | Superseded | 2026-08-21 | 50:50 implementation gate | Require five measurable simplicity and five measurable elegance deliverables |
 | [`v009`](versions/v009.md) | Superseded | 2026-08-19 | Concise communication format | Make routine agent communication compact without requiring a literal label |
 | [`v008`](versions/v008.md) | Superseded | 2026-08-19 | TL;DR communication format | Make routine agent communication compact without weakening evidence or receipts |
 | [`v007`](versions/v007.md) | Superseded | 2026-08-17 | Zero-tolerance quality gate | Reject waste and false-success mechanisms at admission |
@@ -36,6 +37,7 @@ v007 702dc03ceffadee86771d81ca7f54666bf869ab7c0ce9b34803740c6f133d13f
 v008 1b128f9b88f7acf5e979dbf39b391d7bd4a843073247bc3b9983543189a13d51
 v009 097e5512082e70fefc53936372710c20481e82655ca65f9ef94aa2ff97bf7578
 v010 bf7685f0873c8310fbff0bb43638782c336c1b9992ccf5995c86c7f9c7e2dd91
+v011 e481090ef40e5c5e8fdf7264c58f3fc4abc9268c86b26c51a10b40acea411ffe
 ```
 
 For every future root-policy change:

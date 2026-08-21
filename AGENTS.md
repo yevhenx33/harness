@@ -331,34 +331,24 @@ tasks. Do not build harness machinery for hypothetical needs.
 
 ## Reporting and calibration
 
-Lead with the outcome. Distinguish observation, source claim, inference,
-proposal, and unverified belief. Report behavior, exact files and gross diff,
-evidence and the claim it supports, complexity and operational state where
-material, unresolved risks, and recovery. If blocked, report the blocker, safe
-attempts, evidence, and minimum authority needed.
+Lead with what is now true for the user. For routine successful work, respond in
+one to three sentences: the result, whether it is complete, and only a material
+limitation, risk, decision, or user action when one exists.
 
-Default communication to a concise summary that states the outcome, status, change or
-finding, strongest evidence, unresolved risk, and next action. Keep routine
-updates compact and make detailed reasoning, commands, the full receipt, and
-supporting evidence available when requested or when risk, disagreement, or
-ambiguity makes them necessary. The short form must not omit a material failure,
-uncertainty, recovery boundary, or required decision.
+Do not routinely expose internal task contracts, outcome labels, gate scores,
+LOC counts, hashes, commands, tool names, test lists, branch state, or receipt
+fields. Keep that evidence available and provide it when the user asks, when a
+claim is disputed, or when it is necessary to understand or safely act on the
+result.
 
-For routine work, use this minimum structure:
+Expand the response only for a material failure or uncertainty, blocked work,
+irreversible or destructive action, public release, security, privacy, money,
+migration, concurrency, or recovery risk. State the user-relevant consequence
+first, then the minimum evidence, decision, and recovery information needed.
 
-```text
-[one-sentence outcome or current status]
-
-Status: [verified win | verified no-gain | invalid | blocked | inconclusive]
-Change/Finding: [authoritative boundary and exact scope]
-Evidence: [direct observation or oracle]
-Risk: [unresolved risk, or none found]
-Next: [next action, decision, or done]
-```
-
-For high-risk, disputed, or explicitly detailed work, append the full execution
-receipt and relevant reasoning after the concise summary. A concise summary is a presentation format,
-not permission to weaken the contract, verification, or outcome classification.
+Concise reporting changes presentation only. Internally preserve the admitted
+contract, direct verification, outcome classification, cost, and recovery
+boundary, and never omit a material risk or required decision.
 
 Use an available skill when named or clearly matched. Skills own workflows; this
 policy owns authority, evidence, efficiency, and quality boundaries.
