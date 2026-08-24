@@ -1,0 +1,6 @@
+interface:
+  display_name: "Fuzzing Review"
+  short_description: "Explore bounded untrusted-input behavior"
+  default_prompt: "Use $security-method-fuzzing to assess the harness, oracle, and bounded fuzzing strategy for this input surface."
+policy:
+  allow_implicit_invocation: false

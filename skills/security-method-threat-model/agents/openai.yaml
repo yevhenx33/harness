@@ -1,0 +1,6 @@
+interface:
+  display_name: "Threat-Model-Driven Review"
+  short_description: "Map assets attackers and trust boundaries"
+  default_prompt: "Use $security-method-threat-model to build a revision-pinned threat model for this component."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Formal-Methods Review"
+  short_description: "Verify bounded security properties and models"
+  default_prompt: "Use $security-method-formal to review this bounded model, proof obligation, and implementation correspondence."
+policy:
+  allow_implicit_invocation: false

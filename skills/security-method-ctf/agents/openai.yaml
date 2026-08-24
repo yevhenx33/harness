@@ -1,0 +1,6 @@
+interface:
+  display_name: "CTF / Exploit-First Review"
+  short_description: "Prove a bounded weakness with a safe exploit"
+  default_prompt: "Use $security-method-ctf to develop the smallest authorized local proof for this bounded target and oracle."
+policy:
+  allow_implicit_invocation: false

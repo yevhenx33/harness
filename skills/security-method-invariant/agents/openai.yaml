@@ -1,0 +1,6 @@
+interface:
+  display_name: "Invariant Review"
+  short_description: "Check security properties across state transitions"
+  default_prompt: "Use $security-method-invariant to test this explicit security property across every relevant state transition."
+policy:
+  allow_implicit_invocation: false

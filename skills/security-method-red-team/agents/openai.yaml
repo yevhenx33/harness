@@ -1,0 +1,6 @@
+interface:
+  display_name: "Red-Team Audit"
+  short_description: "Discover feasible attacker-led abuse chains"
+  default_prompt: "Use $security-method-red-team to perform an authorized, bounded attacker-led review of this target."
+policy:
+  allow_implicit_invocation: false
