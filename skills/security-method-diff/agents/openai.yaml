@@ -1,0 +1,6 @@
+interface:
+  display_name: "Security Diff Review"
+  short_description: "Review exact code changes for security risk"
+  default_prompt: "Use $security-method-diff to review this exact Git change set for security regressions."
+policy:
+  allow_implicit_invocation: false

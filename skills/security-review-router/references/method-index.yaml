@@ -1,0 +1,214 @@
+version: 1
+purpose: "Authoritative graph and routing vocabulary for the security review method skill pack"
+
+scoring:
+  exact_target_match: 4
+  exact_goal_match: 3
+  available_prerequisite_match: 2
+  budget_fit: 1
+  unmet_prerequisite: -4
+  explicit_not_for_match: -5
+  tie_breaker:
+    - narrower_method
+    - lower_cost
+    - one_clarification
+
+edge_types:
+  complements: "Adds different evidence to a named gap; symmetric"
+  precedes: "Usually establishes inputs needed by the destination; directed"
+  validates: "Can directly test a consequential claim from the destination; directed"
+  escalates_to: "Use the destination when stronger evidence becomes necessary; directed"
+  alternative_to: "Competes for the same starting task under different scope or budget; symmetric"
+
+nodes:
+  - id: risk-audit
+    skill: security-method-risk-audit
+    summary: "Prioritize and inspect broad repository or component risk when exposure is not yet localized."
+    target_types: [repository, component, unknown-exposure]
+    goals: [broad-assurance, risk-prioritization, candidate-discovery]
+    prerequisites: [target-and-revision, scope-and-authority]
+    cost: medium
+    strengths: [broad-coverage, risk-ordering, mixed-evidence]
+    not_for: [bounded-diff, exact-exploit-oracle, proof-obligation]
+    links:
+      complements: [threat-model, supply-chain]
+      precedes: [attack-path]
+      validates: []
+      escalates_to: [attack-path]
+      alternative_to: [diff]
+
+  - id: diff
+    skill: security-method-diff
+    summary: "Review a PR, commit, patch, or changed behavior against its base revision."
+    target_types: [pull-request, commit, patch, diff]
+    goals: [changed-risk, regression-review, release-gate]
+    prerequisites: [base-and-head-revisions, complete-diff, scope-and-authority]
+    cost: low
+    strengths: [bounded-scope, fast-feedback, causal-change-review]
+    not_for: [unknown-broad-exposure, no-baseline, design-only]
+    links:
+      complements: [attack-path, variant-analysis, supply-chain]
+      precedes: [attack-path, variant-analysis]
+      validates: []
+      escalates_to: [attack-path]
+      alternative_to: [risk-audit]
+
+  - id: threat-model
+    skill: security-method-threat-model
+    summary: "Clarify assets, attackers, trust boundaries, threats, and security requirements."
+    target_types: [system-concept, feature, service, data-flow]
+    goals: [identify-threats, define-trust-boundaries, security-requirements]
+    prerequisites: [target-boundary, intended-behavior, stakeholders-or-owners]
+    cost: low
+    strengths: [attacker-framing, boundary-clarity, requirement-discovery]
+    not_for: [working-exploit, known-source-to-sink, line-level-diff]
+    links:
+      complements: [risk-audit, architecture, red-team]
+      precedes: [architecture, red-team]
+      validates: []
+      escalates_to: [red-team]
+      alternative_to: []
+
+  - id: architecture
+    skill: security-method-architecture
+    summary: "Review whether boundaries, identities, storage, and recovery preserve security properties."
+    target_types: [architecture, design-document, multi-service-system, trust-boundary]
+    goals: [boundary-assurance, privilege-separation, failure-containment]
+    prerequisites: [design-or-current-topology, component-owners, security-property]
+    cost: medium
+    strengths: [cross-service-reasoning, ownership-analysis, recovery-analysis]
+    not_for: [line-level-diff, exact-exploit-oracle, unknown-assets-and-attackers]
+    links:
+      complements: [threat-model, invariant]
+      precedes: [invariant]
+      validates: []
+      escalates_to: [formal]
+      alternative_to: []
+
+  - id: attack-path
+    skill: security-method-attack-path
+    summary: "Prove or break reachability from attacker-controlled source to consequential sink."
+    target_types: [candidate-finding, entry-point, source-sink-path, threat-scenario]
+    goals: [prove-reachability, calibrate-impact, falsify-finding]
+    prerequisites: [attacker-position, source-or-entry, consequential-sink]
+    cost: medium
+    strengths: [causal-proof, guard-analysis, impact-calibration]
+    not_for: [unknown-unknown-discovery, no-attacker-source-or-sink, broad-design]
+    links:
+      complements: [diff, ctf]
+      precedes: [ctf]
+      validates: [risk-audit]
+      escalates_to: [ctf]
+      alternative_to: []
+
+  - id: red-team
+    skill: security-method-red-team
+    summary: "Discover feasible multi-step abuse chains from an admitted attacker objective."
+    target_types: [bounded-system, product-surface, control-environment, attack-surface]
+    goals: [adversarial-discovery, abuse-chain, control-evasion]
+    prerequisites: [attacker-objective, rules-of-engagement, bounded-target, stop-and-recovery]
+    cost: high
+    strengths: [unknown-weaknesses, compositional-attacks, detection-gaps]
+    not_for: [unauthorized-live-target, single-known-path, exact-flag-oracle]
+    links:
+      complements: [threat-model, ctf]
+      precedes: [attack-path]
+      validates: [threat-model]
+      escalates_to: [ctf]
+      alternative_to: []
+
+  - id: ctf
+    skill: security-method-ctf
+    summary: "Build the smallest safe exploit for a bounded target with a deterministic oracle."
+    target_types: [challenge, sandbox, vulnerable-fixture, bounded-exploit-target]
+    goals: [working-poc, exploit-validation, flag-oracle]
+    prerequisites: [explicit-authorization, isolated-target, deterministic-oracle, reset-mechanism]
+    cost: high
+    strengths: [direct-oracle, execution-proof, reproducibility]
+    not_for: [production-target, broad-assurance, harmful-proof]
+    links:
+      complements: [attack-path, red-team, fuzzing]
+      precedes: []
+      validates: [attack-path, red-team]
+      escalates_to: []
+      alternative_to: []
+
+  - id: variant-analysis
+    skill: security-method-variant-analysis
+    summary: "Find sibling instances of a validated vulnerability root cause."
+    target_types: [known-vulnerability, security-bug, incomplete-fix, vulnerability-pattern]
+    goals: [find-siblings, patch-completeness, structural-search]
+    prerequisites: [validated-seed, root-cause-predicate, search-scope]
+    cost: medium
+    strengths: [repeat-detection, incomplete-fix-detection, reusable-queries]
+    not_for: [unvalidated-seed, keyword-only-search, unknown-unknown-discovery]
+    links:
+      complements: [diff, fuzzing]
+      precedes: [fuzzing]
+      validates: [diff]
+      escalates_to: [fuzzing]
+      alternative_to: []
+
+  - id: invariant
+    skill: security-method-invariant
+    summary: "Test an explicit security property across all relevant state transitions."
+    target_types: [state-machine, authorization-system, accounting-system, protocol]
+    goals: [property-preservation, transition-safety, counterexample-search]
+    prerequisites: [authoritative-state-owner, explicit-invariant, transition-set]
+    cost: medium
+    strengths: [illegal-state-detection, transition-coverage, counterexample-traces]
+    not_for: [undefined-property, unknown-state-owner, broad-unknown-exposure]
+    links:
+      complements: [architecture, fuzzing, formal]
+      precedes: [formal, fuzzing]
+      validates: [architecture]
+      escalates_to: [formal]
+      alternative_to: []
+
+  - id: fuzzing
+    skill: security-method-fuzzing
+    summary: "Systematically explore executable untrusted-input behavior with a harness and oracle."
+    target_types: [parser, decoder, api-input, executable-input-surface]
+    goals: [input-exploration, crash-discovery, property-counterexample]
+    prerequisites: [executable-harness, failure-oracle, isolation-and-reset, resource-budget]
+    cost: high
+    strengths: [large-input-space, concrete-counterexamples, continuous-discovery]
+    not_for: [non-executable-design, no-oracle, unbounded-runtime]
+    links:
+      complements: [ctf, variant-analysis, invariant]
+      precedes: []
+      validates: [variant-analysis, invariant]
+      escalates_to: []
+      alternative_to: []
+
+  - id: formal
+    skill: security-method-formal
+    summary: "Check a bounded mathematical property against an explicit model and correspondence boundary."
+    target_types: [formal-model, bounded-algorithm, protocol-property, proof-artifact]
+    goals: [proof-obligation, exhaustive-bounded-check, model-validation]
+    prerequisites: [explicit-property, model-and-assumptions, correspondence-boundary, pinned-toolchain]
+    cost: high
+    strengths: [bounded-exhaustiveness, precise-assumptions, machine-checkable-artifacts]
+    not_for: [unknown-unknown-discovery, unspecified-design, unmodeled-dominant-risk]
+    links:
+      complements: [invariant]
+      precedes: []
+      validates: [invariant, architecture]
+      escalates_to: []
+      alternative_to: []
+
+  - id: supply-chain
+    skill: security-method-supply-chain
+    summary: "Trace dependencies, CI, builds, provenance, signing, release, and consumer verification."
+    target_types: [dependency-graph, ci-pipeline, build-system, release-artifact]
+    goals: [artifact-integrity, provenance-assurance, release-security]
+    prerequisites: [source-revision, build-and-release-path, artifact-or-consumer]
+    cost: medium
+    strengths: [source-to-artifact-trace, privileged-identity-review, consumer-verification]
+    not_for: [application-code-only, no-build-or-release-impact, working-exploit]
+    links:
+      complements: [risk-audit, diff]
+      precedes: [attack-path]
+      validates: []
+      escalates_to: [attack-path]
+      alternative_to: []

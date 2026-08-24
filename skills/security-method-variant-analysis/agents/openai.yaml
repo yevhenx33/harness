@@ -1,0 +1,6 @@
+interface:
+  display_name: "Variant Analysis"
+  short_description: "Find siblings of a validated security root cause"
+  default_prompt: "Use $security-method-variant-analysis to derive and search for structural variants of this validated finding."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Supply-Chain Review"
+  short_description: "Trace source, builds, provenance, and releases"
+  default_prompt: "Use $security-method-supply-chain to trace this artifact from pinned source through dependency, build, signing, and consumer verification."
+policy:
+  allow_implicit_invocation: false

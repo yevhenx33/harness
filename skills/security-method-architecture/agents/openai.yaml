@@ -1,0 +1,6 @@
+interface:
+  display_name: "Security Architecture Review"
+  short_description: "Test security properties at system boundaries"
+  default_prompt: "Use $security-method-architecture to review this design's trust, ownership, and recovery boundaries."
+policy:
+  allow_implicit_invocation: false

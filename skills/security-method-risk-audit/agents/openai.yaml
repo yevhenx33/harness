@@ -1,0 +1,6 @@
+interface:
+  display_name: "Risk-Based Security Audit"
+  short_description: "Prioritize broad review by plausible risk"
+  default_prompt: "Use $security-method-risk-audit to perform a risk-prioritized read-only review of this repository."
+policy:
+  allow_implicit_invocation: false

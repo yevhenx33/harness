@@ -30,10 +30,17 @@ rules:
 - [`architecture`](skills/architecture/SKILL.md): bounded architecture design
 - [`implementation-slice`](skills/implementation-slice/SKILL.md): focused implementation and verification
 - [`github`](skills/github/SKILL.md): GitHub orientation and publication boundaries
+- [`security-review-router`](skills/security-review-router/SKILL.md): select one of twelve independently invocable security review methods and stop
 
-The current milestone is deliberately policy-only. Future enforceable runtime
-components will be documented as target architecture until they exist and have
-direct operational evidence.
+The security review pack keeps routing, method procedure, operational playbook,
+and historical lineage in separate layers. Its typed method graph is the only
+routing authority. L1 methods disable implicit invocation, so selecting a method
+does not start a review. The evidence corpus used to author the pack remains
+outside this repository and is not loaded during normal routing or review work.
+
+The current milestone is deliberately policy-and-instructions-only. Future
+enforceable runtime components will be documented as target architecture until
+they exist and have direct operational evidence.
 
 ## Architecture and integrity
 
@@ -46,6 +53,14 @@ links with only the Python standard library:
 
 ```sh
 python3 scripts/verify_policy.py
+```
+
+Validate the security skill packages, typed graph, and deterministic routing
+fixtures with the pinned development dependency:
+
+```sh
+python3 -m pip install -r requirements-dev.txt
+python3 scripts/verify_skills.py
 ```
 
 ## License
