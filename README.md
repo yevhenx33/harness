@@ -58,7 +58,6 @@ The root policy must be byte-identical to the single version marked Current.
 | [`architecture`](skills/architecture/SKILL.md) | Bounded design across security, storage, money, concurrency, or public contracts |
 | [`implementation-slice`](skills/implementation-slice/SKILL.md) | One small implementation with direct verification and recovery |
 | [`github`](skills/github/SKILL.md) | Repository identity, branches, pull requests, rules, and publication boundaries |
-| [`effective-writing`](skills/effective-writing/SKILL.md) | Review, revise, or draft prose by testing whether it does its intended job |
 
 ## Security Review Method Pack
 
