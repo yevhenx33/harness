@@ -1,0 +1,4 @@
+interface:
+  display_name: "Credit Notes Protocol"
+  short_description: "Design and analyze RLD credit-note markets"
+  default_prompt: "Use $credit-notes-protocol to evaluate this credit-note market or protocol design."

@@ -60,6 +60,12 @@ The root policy must be byte-identical to the single version marked Current.
 | [`github`](skills/github/SKILL.md) | Repository identity, branches, pull requests, rules, and publication boundaries |
 | [`effective-writing`](skills/effective-writing/SKILL.md) | Review, revise, or draft prose by testing whether it does its intended job |
 
+## Domain skills
+
+| Skill | Use it for |
+|---|---|
+| [`credit-notes-protocol`](skills/credit-notes-protocol/SKILL.md) | RLD Credit Notes, Credit Index, custom-maturity rate hedges, funded protection, and settlement |
+
 ## Security Review Method Pack
 
 The security pack is a library of independent instruction-only skills.
