@@ -59,6 +59,7 @@ The root policy must be byte-identical to the single version marked Current.
 | [`implementation-slice`](skills/implementation-slice/SKILL.md) | One small implementation with direct verification and recovery |
 | [`github`](skills/github/SKILL.md) | Repository identity, branches, pull requests, rules, and publication boundaries |
 | [`effective-writing`](skills/effective-writing/SKILL.md) | Review, revise, or draft prose by testing whether it does its intended job |
+| [`audience-expertise`](skills/audience-expertise/SKILL.md) | Calibrate content to an explicit audience domain-expertise level from E0 to E10 |
 
 ## Domain skills
 
