@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audience Expertise"
+  short_description: "Calibrate communication from E0 through E10"
+  default_prompt: "Use $audience-expertise to adapt this content to a specific audience expertise level without changing its claims."
