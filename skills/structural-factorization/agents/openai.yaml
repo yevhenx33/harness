@@ -1,0 +1,4 @@
+interface:
+  display_name: "Structural Factorization"
+  short_description: "Factor complex systems into explicit structures"
+  default_prompt: "Use $structural-factorization to decompose this problem into its invariant core, independent factors, interactions, owners, and verification boundaries."
