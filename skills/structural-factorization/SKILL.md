@@ -111,6 +111,20 @@ consumers.
 If a parallel replacement is required, define its parity oracle, cutover,
 rollback, and removal condition for the superseded path.
 
+## Preserve material decisions
+
+When the factorization establishes or changes a material architecture,
+ownership, interface, state, ordering, security, recovery, or freeze boundary,
+produce or update the repository's architecture decision record. Read
+[references/architecture-decision-record.md](references/architecture-decision-record.md)
+for the schema and lifecycle.
+
+Treat the ADR as the causal record of why the boundary exists. Keep decision
+status separate from evidence state, name falsifying or revisit triggers, and
+supersede an accepted record instead of rewriting its history. Do not create an
+ADR for routine local choices or use one as a substitute for specifications,
+proof, implementation, or runtime evidence.
+
 ## Falsify the complete result
 
 Verify the coupled objective, not a favorable component metric. Cover the
@@ -141,6 +155,7 @@ Return the smallest useful form of:
 6. target complexity where work grows, otherwise the dominant cost or resource
    model;
 7. falsification, failure, and recovery plan;
-8. smallest independently verifiable next slice.
+8. ADR or ADR update for each material decision, otherwise why none is needed;
+9. smallest independently verifiable next slice.
 
 Use a diagram or table only when it materially clarifies relationships.

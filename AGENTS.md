@@ -121,6 +121,35 @@ boundaries, chosen mechanism, and rejected alternatives. Ask at most three
 grouped questions, with a recommendation and consequences. While a required
 decision or authority is pending, continue only safe read-only investigation.
 
+### Architecture decision records
+
+Create a repository-local architecture decision record (ADR) when a decision
+materially changes an authoritative owner, public interface, persistent state,
+security or authority boundary, concurrency or ordering rule, recovery model,
+or implementation freeze. Also record a rejected alternative when a future
+maintainer could plausibly reintroduce it and violate the governing invariant.
+Do not create ADRs for routine local, temporary, or easily reversible choices.
+
+Follow an existing repository convention. Otherwise store immutable records as
+`docs/decisions/ADR-NNN-short-title.md` and maintain
+`docs/decisions/README.md` as the index. Each ADR must separate:
+
+- decision status: `Proposed`, `Accepted`, `Superseded`, or `Rejected`;
+- evidence state: `Designed`, `Reference-proven`, `Implementation-tested`, or
+  `Production-verified`;
+- context and governing constraint;
+- primary invariant, owner, scope, and affected consumers;
+- chosen mechanism, consequences, and rejected alternatives;
+- dependencies, proof obligations, and falsifying or revisit triggers;
+- supersession links and the recovery or migration consequence of change.
+
+Acceptance records the current design baseline; it does not prove correctness.
+Advance evidence state only from the corresponding direct oracle. Link the ADR
+to the specification, proof, implementation, and operational receipt when they
+exist, but do not treat the ADR as their substitute or as current runtime truth.
+Never rewrite an accepted ADR to change its reasoning. Add a new ADR that
+supersedes it and preserve the prior record and evidence lineage.
+
 ## Orientation and prior learning
 
 Before editing, read applicable instructions and inspect Git state, owners,
