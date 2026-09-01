@@ -62,6 +62,69 @@ Identify one primary invariant. Trace it from producer and owner through storage
 interfaces, async boundaries, and consumers. Derived views, tests, caches, and UI
 are evidence or consumers, not owners, unless the contract says otherwise.
 
+## User-assigned reasoning tiers
+
+Every new problem must include an explicit user assignment in the form
+Tier: T0, Tier: T1, Tier: T2, or Tier: T3. Only the user may assign or change
+the tier. Never infer it from apparent complexity, risk, wording, prior work,
+or model confidence, and never carry it to another problem. If it is absent,
+ask before substantive reasoning; continue only safe orientation needed to
+frame that question.
+
+The conductor may propagate the verbatim tier to descendants of the same
+admitted problem; that is routing, not reassignment. Descendants may neither
+change it nor reuse it for another problem.
+
+The tier selects search topology and target Codex reasoning effort:
+
+| Tier | Effort | Default topology |
+|---|---|---|
+| T0 | low | one direct executor and focused verification |
+| T1 | medium | one primary approach and a fresh challenge when material |
+| T2 | high | structural exploration with a fresh alternative at a material mechanism choice |
+| T3 | xhigh | at least three blind-pass operator candidates, fresh adjudication, and conditional final verification |
+
+Apply effort before the executor reasons, through a launcher or explicit agent
+creation setting. AGENTS.md cannot change an already-running context's effort.
+If the current context lacks confirmed mapped effort, it acts only as conductor
+and requests a fresh executor with explicit effort. Proceed only when the runtime
+reports the setting as applied; otherwise record effective effort as unknown and
+return blocked unless the user explicitly revises the contract. Record the
+requested tier, effective effort, and application boundary.
+
+A tier changes neither assurance nor authority. It cannot widen scope, mutation,
+publication, budget, evidence, safety, or success criteria. If its budget cannot
+safely satisfy the frozen contract, ask the user to revise the budget, scope, or
+contract. Tier reassignment changes topology only; it never authorizes spend or
+waives assurance.
+
+Use [tiered-reasoning](skills/tiered-reasoning/SKILL.md) for the detailed
+workflow. All candidate lanes share the frozen contract, raw evidence,
+performance metrics, atomic-mapping discipline, brutalist reduction order, and
+oracle. They do not share an atomic map or proposed mechanism: each lane must be
+able to challenge ownership, boundaries, and representation.
+
+Before branching, freeze the candidate and implementation cap, metric
+aggregation and tie-breaks, material-improvement threshold, evaluation protocol,
+and oracle identity and hash. A hybrid or repair consumes that admitted budget.
+Each lane must name a different owning mechanism or state transition and a
+falsifier that could reject it while accepting another; cosmetic variants do not
+count as distinct operators.
+
+For competing repository implementations, give every candidate a fresh context
+and a separate Git worktree from the same sealed baseline. In a cooperative
+blind pass, do not expose sibling transcripts, files, results, or writable oracle
+state, and namespace mutable caches, builds, ports, databases, services, and
+measurements. Claim enforced isolation only with an independent permission or
+sandbox receipt; worktrees alone are not a security boundary.
+
+Adjudication begins in another fresh context and, for repository candidates, a
+clean baseline worktree. It may select one candidate, construct a falsifiable
+combination, or reject all candidates. A hybrid is a new candidate, never a merge
+result, and requires fresh evidence. Only if adjudication seals a final artifact
+does a separate verifier receive it with the frozen contract and oracle, without
+generator or adjudicator rationale.
+
 ## Admission: authority and decision gate
 
 - Treat read, map, audit, inspect, check, review, diagnose, explain, research,
