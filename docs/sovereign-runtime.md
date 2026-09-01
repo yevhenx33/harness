@@ -4,9 +4,9 @@
 
 Everything in this document is **target architecture** unless explicitly marked
 as current. The repository currently contains an operating policy, immutable
-policy snapshots, five workflow skills, and policy-integrity automation. It does
-not contain a runtime kernel, wire protocol, signer, capability broker, worker
-node, commit service, receipt journal, or confidential-inference system.
+policy snapshots, modular workflow skills, and policy-integrity automation. It
+does not contain a runtime kernel, wire protocol, signer, capability broker,
+worker node, commit service, receipt journal, or confidential-inference system.
 
 This document defines boundaries for future design. It deliberately does not
 publish an intent schema or receipt schema before implementation and threat-model
