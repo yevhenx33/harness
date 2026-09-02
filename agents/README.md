@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v013`](versions/v013.md) | Current | 2026-09-01 | User-assigned tiered frontier search | Route explicit tiers into effort, blind operators, adjudication, and verification |
+| [`v014`](versions/v014.md) | Current | 2026-09-02 | Explicit-only tiered reasoning | Restore the pre-v013 policy and retain tier routing only as an invocable skill |
+| [`v013`](versions/v013.md) | Superseded | 2026-09-01 | User-assigned tiered frontier search | Route explicit tiers into effort, blind operators, adjudication, and verification |
 | [`v012`](versions/v012.md) | Superseded | 2026-08-30 | Evidence-aware architecture decisions | Preserve material decision lineage, proof state, and revisit triggers |
 | [`v011`](versions/v011.md) | Superseded | 2026-08-21 | User-facing concise reporting | Hide routine internal execution details while preserving material risks and decisions |
 | [`v010`](versions/v010.md) | Superseded | 2026-08-21 | 50:50 implementation gate | Require five measurable simplicity and five measurable elegance deliverables |
@@ -42,6 +43,7 @@ v010 bf7685f0873c8310fbff0bb43638782c336c1b9992ccf5995c86c7f9c7e2dd91
 v011 e481090ef40e5c5e8fdf7264c58f3fc4abc9268c86b26c51a10b40acea411ffe
 v012 dc83714284302740457db4e72cb9e0ac6f14d623098fe8ce17bd85cc5b9caeb5
 v013 ebcc0d2f8c6a4a89b4cfaf5a4f8326bc02b099bf13a1acb5ff3ed558c3bb23e4
+v014 dc83714284302740457db4e72cb9e0ac6f14d623098fe8ce17bd85cc5b9caeb5
 ```
 
 For every future root-policy change:

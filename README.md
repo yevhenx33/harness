@@ -41,7 +41,6 @@ defines:
   destructive operations;
 - the task contract: outcome, scope, owner, invariant, oracle, authority, budget,
   failures, non-goals, and recovery;
-- user-assigned T0-T3 reasoning routes and blind, worktree-separated frontier search;
 - reduction before automation;
 - computational and operational cost controls;
 - independent verification and outcome classification;
@@ -62,7 +61,7 @@ The root policy must be byte-identical to the single version marked Current.
 | [`effective-writing`](skills/effective-writing/SKILL.md) | Review, revise, or draft prose by testing whether it does its intended job |
 | [`audience-expertise`](skills/audience-expertise/SKILL.md) | Calibrate content to an explicit audience domain-expertise level from E0 to E10 |
 | [`structural-factorization`](skills/structural-factorization/SKILL.md) | Decompose complex systems into invariant cores, independent factors, interactions, owners, and verification boundaries |
-| [`tiered-reasoning`](skills/tiered-reasoning/SKILL.md) | Route a user-assigned T0-T3 tier into Codex effort and blind, worktree-separated frontier search |
+| [`tiered-reasoning`](skills/tiered-reasoning/SKILL.md) | Explicitly invoke `$tiered-reasoning` with T0-T3 to route Codex effort and frontier search |
 
 ## Domain skills
 
@@ -207,7 +206,7 @@ Current:
 - instruction policy;
 - immutable policy releases;
 - general and security review skills;
-- user-assigned tier routing and blind, worktree-separated frontier search;
+- explicit-only tiered reasoning skill with blind, worktree-separated frontier search;
 - deterministic integrity checks;
 - bounded read-only policy-sync diagnostic;
 - GitHub rules and CI.

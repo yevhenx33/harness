@@ -1,0 +1,6 @@
+interface:
+  display_name: "Tiered Reasoning"
+  short_description: "Run an explicit T0-T3 reasoning workflow"
+  default_prompt: "Use $tiered-reasoning with T2 for this problem."
+policy:
+  allow_implicit_invocation: false

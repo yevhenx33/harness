@@ -1,13 +1,13 @@
 # ADR-001: User-assigned reasoning tiers and worktree-separated frontier search
 
-- Decision status: Accepted
+- Decision status: Superseded
 - Evidence state: Designed
 - Date: 2026-09-01
 - Owner: user for tier assignment; Harness policy for routing
 - Scope: Codex task admission, frontier candidate separation, synthesis, and
   verification
 - Supersedes: none
-- Superseded by: none
+- Superseded by: [ADR-002](ADR-002-explicit-tiered-reasoning-skill.md)
 
 ## Context and governing constraint
 
