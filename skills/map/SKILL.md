@@ -12,7 +12,8 @@ Start with one primary invariant and its authoritative producer. Trace it throug
 every ownership, storage, interface, asynchronous, and consumer boundary. Treat
 derived views and health summaries as consumers or evidence, not owners.
 
-Build a layered, evidence-backed map:
+Recover relevant prior maps and decisions, rechecking drift-prone edges rather
+than repeating full discovery. Build an evidence-backed map of applicable layers:
 
 1. inputs, events, RPC, and external sources
 2. workers, ingestion, and retry/reconciliation paths
@@ -21,8 +22,8 @@ Build a layered, evidence-backed map:
 5. frontend or downstream consumers
 6. operations, health, monitoring, and recovery
 
-For each layer, identify ownership, contracts, consumers, coupling, invariants,
-security boundaries, failure modes, and ambiguous or missing edges. Include
+For each applicable layer, identify ownership, contracts, consumers, coupling,
+invariants, security boundaries, failure modes, and ambiguous or missing edges. Include
 resource notes where relevant: CPU, memory, disk, bytes, query/RPC fanout,
 retries, rebuilds, copies, queues, concurrency, and failure amplification.
 
@@ -32,6 +33,9 @@ Mark request-path versus background work, bounded versus unbounded queues,
 ordering and idempotency requirements, commit ownership, backpressure, and
 partial-failure containment.
 
-Preserve partial and unavailable states rather than inventing completeness. List
-tests, available coverage, direct oracles, and the smallest independently
-verifiable implementation slices.
+Preserve partial and unavailable states rather than inventing completeness.
+Distinguish observed edges from inference and stop once the requested map and
+material gaps are covered. Identify direct consumer oracles, including initial
+state and subsequent updates where relevant, existing checks, and the smallest
+independently verifiable next slices. Carry the original requirements and
+unresolved gates into any later authorized implementation.
