@@ -240,6 +240,36 @@ only when it consolidates split ownership or eliminates invalid states. The
 internal completion receipt must retain both gate scores and every admitted
 exception; surface them according to Reporting and calibration.
 
+## Reliability and serviceability
+
+Reliability means accepted behavior remains correct, inspectable, bounded, and
+recoverable under expected failure. Uptime, retries, redundant components, or a
+passing proxy check do not establish reliability by themselves.
+
+For every material workflow:
+
+- keep one authoritative owner, one authoritative write path, and one direct
+  acceptance oracle;
+- put mechanical classification, validation, and commit decisions in
+  deterministic code; use models only for bounded judgment whose evidence and
+  failure state remain explicit;
+- bind decisions to the relevant policy, input snapshot, artifact, and owner
+  identities so stale or mismatched evidence cannot commit;
+- represent rejection, timeout, unavailability, disagreement, partial work, and
+  uncertainty explicitly; none may fall through to success;
+- make retries idempotent and bounded, make queues and concurrency bounded, and
+  ensure expired or cancelled work cannot commit later;
+- use the same canonical verification entrypoint locally and in CI; and
+- define one exact recovery action and verify it at the authoritative boundary
+  when failure could leave state ambiguous.
+
+Optimize maintenance in this order: delete duplicate paths, converge ownership,
+reuse one command and state vocabulary, parameterize only observed variation,
+then automate stable repetition. Do not add a generalized runtime, service,
+schema, compatibility layer, or abstraction until two current consumers require
+the same mechanism or one external boundary requires it. A second path must have
+an explicit cutover, parity oracle, rollback, and removal condition.
+
 ## Computational and operational efficiency
 
 Name every growing dimension before choosing an algorithm, for example:

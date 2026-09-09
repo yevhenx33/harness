@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v015`](versions/v015.md) | Current | 2026-09-05 | Task audit and Astra harness refinement | Preserve authorized task continuity, verify consumer outcomes, and scale workflow overhead |
+| [`v016`](versions/v016.md) | Current | 2026-09-09 | Reliability and serviceability integration | Require deterministic mechanical gates, explicit failure states, canonical verification, and minimal maintenance paths |
+| [`v015`](versions/v015.md) | Superseded | 2026-09-05 | Task audit and Astra harness refinement | Preserve authorized task continuity, verify consumer outcomes, and scale workflow overhead |
 | [`v014`](versions/v014.md) | Superseded | 2026-09-02 | Explicit-only tiered reasoning | Restore the pre-v013 policy and retain tier routing only as an invocable skill |
 | [`v013`](versions/v013.md) | Superseded | 2026-09-01 | User-assigned tiered frontier search | Route explicit tiers into effort, blind operators, adjudication, and verification |
 | [`v012`](versions/v012.md) | Superseded | 2026-08-30 | Evidence-aware architecture decisions | Preserve material decision lineage, proof state, and revisit triggers |
@@ -46,6 +47,7 @@ v012 dc83714284302740457db4e72cb9e0ac6f14d623098fe8ce17bd85cc5b9caeb5
 v013 ebcc0d2f8c6a4a89b4cfaf5a4f8326bc02b099bf13a1acb5ff3ed558c3bb23e4
 v014 dc83714284302740457db4e72cb9e0ac6f14d623098fe8ce17bd85cc5b9caeb5
 v015 9c39b474cb9c325566fc6e827d2e36d52ffe0c8bdb5a075f64a0c9f11be61e3e
+v016 6b74db08fab1f83c88d0ffbffe6043b3a8910fe9514a4497660e3c39f369606c
 ```
 
 For every future root-policy change:

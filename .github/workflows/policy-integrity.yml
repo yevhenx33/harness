@@ -12,6 +12,7 @@ jobs:
   policy-integrity:
     name: policy-integrity
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
@@ -21,9 +22,5 @@ jobs:
           python-version: "3.11"
       - name: Install verification dependencies
         run: python3 -m pip install --disable-pip-version-check -r requirements-dev.txt
-      - name: Verify policy integrity
-        run: python3 scripts/verify_policy.py
-      - name: Verify security skill integrity
-        run: python3 scripts/verify_skills.py
-      - name: Test integrity failure paths
-        run: python3 -m unittest discover -s tests -v
+      - name: Verify harness
+        run: python3 scripts/verify_harness.py
