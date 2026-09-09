@@ -27,6 +27,7 @@ runtime kernel remain target architecture.
 | Policy history | [`agents/README.md`](agents/README.md) | Immutable, hashed releases of the operating policy |
 | General workflows | [`skills/`](skills/) | Read, map, architecture, implementation, and GitHub procedures |
 | Security review pack | [`security-review-router`](skills/security-review-router/SKILL.md) | Select one specialized security method without starting a review |
+| Canonical verification | [`verify_harness.py`](scripts/verify_harness.py) | Run every deterministic integrity and failure-path check locally and in CI |
 | Policy integrity | [`verify_policy.py`](scripts/verify_policy.py) | Verify policy versions, hashes, root equality, sequencing, and Markdown links |
 | Skill integrity | [`verify_skills.py`](scripts/verify_skills.py) | Verify the security graph, package structure, routing contracts, and invocation boundaries |
 | Policy-sync experiment | [`run_sync_assessment.py`](scripts/run_sync_assessment.py) | Read-only comparison of local and remote policy state |
@@ -161,10 +162,12 @@ python3 -m pip install -r requirements-dev.txt
 Run all direct checks:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_policy.py
-PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_skills.py
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
+PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_harness.py
 ```
+
+This is the canonical local and CI verification entrypoint. It runs policy
+integrity, skill integrity, and the complete test suite with the same commands
+and reports every failed check.
 
 The checks enforce:
 
