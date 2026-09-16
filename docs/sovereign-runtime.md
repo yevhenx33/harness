@@ -42,6 +42,11 @@ trust root -> admission -> capability boundary -> replaceable worker
 
 ## Sovereign planes
 
+The [commitment and recovery decision](decisions/ADR-004-respect-based-commitments-and-recovery.md)
+organizes the existing planes around one admitted commitment. Respect means
+earned credibility; it is not an authorization token or a transferable score.
+The policy expresses this behavior today. The mechanisms below remain targets.
+
 ### 1. Trust and authority plane - target
 
 The trust root will authenticate principals, policy versions, worker identities,
@@ -49,6 +54,11 @@ and signed intents. Admission will bind an intent to one policy version, owner,
 scope, invariants, oracle, capabilities, budgets, expiry, and recovery boundary.
 Authentication will prove who requested work; it will not by itself authorize
 the work.
+
+Admission must keep authority, contextual confidence, and current readiness
+separate. Evidence may inform worker selection and proportional supervision
+within the admitted scope and budget. It may never widen capabilities, waive
+required verification, or introduce routine reapproval of granted work.
 
 The trust root must be small, auditable, offline-recoverable, and independent of
 any model provider. Key rotation, revocation, clock assumptions, replay defense,
@@ -89,6 +99,12 @@ The gate will reject stale inputs, expired authority, duplicated commits,
 conflicting ownership, incomplete evidence, and budget breaches. Proposal,
 verification, acceptance, and activation will be separate states.
 
+Material result claims must reference the matching commitment, artifact, and
+observation. The system owner remains authoritative for actual state; receipts
+and model agreement cannot substitute for owner evidence. Missing or conflicting
+evidence holds dependent acceptance, while independent authorized work can
+continue. Report correction and recovery writes have distinct authority.
+
 ### 5. Evidence and learning plane - target
 
 An append-oriented receipt journal will record the admitted intent reference,
@@ -100,6 +116,14 @@ Receipts will project asynchronously into searchable memory, blueprints,
 anti-patterns, and skills. Projection failure must not alter the committed task
 outcome. Retrieval will be bounded and provenance-preserving; prior learning will
 be reverified against current inputs before reuse.
+
+The evidence plane will retain breach, cause or unknown cause,
+affected scope, disposition, and restoration evidence without adding a separate
+respect ledger. Task outcome and behavioral credibility remain separate.
+Projections must retain model, policy, tools, environment, task class, and
+oracle identities sufficiently to judge applicability. Changed configurations
+require targeted revalidation; unrelated successes cannot erase a breach.
+Verifier or projector failure may not expand authority or certify recovery.
 
 ## Signed intent boundary - target
 
