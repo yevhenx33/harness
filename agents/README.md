@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v017`](versions/v017.md) | Current | 2026-09-16 | Respect-based commitments and recovery | Preserve existing obligations; separate authority, confidence, and readiness; bind claims to evidence and repair breaches |
+| [`v018`](versions/v018.md) | Current | 2026-09-19 | Simplified policy and decision capture | Keep the always-applicable core; use optional skills for methods and evidence-backed records for durable choices |
+| [`v017`](versions/v017.md) | Superseded | 2026-09-16 | Respect-based commitments and recovery | Preserve existing obligations; separate authority, confidence, and readiness; bind claims to evidence and repair breaches |
 | [`v016`](versions/v016.md) | Superseded | 2026-09-09 | Reliability and serviceability integration | Require deterministic mechanical gates, explicit failure states, canonical verification, and minimal maintenance paths |
 | [`v015`](versions/v015.md) | Superseded | 2026-09-05 | Task audit and Astra harness refinement | Preserve authorized task continuity, verify consumer outcomes, and scale workflow overhead |
 | [`v014`](versions/v014.md) | Superseded | 2026-09-02 | Explicit-only tiered reasoning | Restore the pre-v013 policy and retain tier routing only as an invocable skill |
@@ -50,6 +51,7 @@ v014 dc83714284302740457db4e72cb9e0ac6f14d623098fe8ce17bd85cc5b9caeb5
 v015 9c39b474cb9c325566fc6e827d2e36d52ffe0c8bdb5a075f64a0c9f11be61e3e
 v016 6b74db08fab1f83c88d0ffbffe6043b3a8910fe9514a4497660e3c39f369606c
 v017 425b167d7262844be85b4e014fbbe1eb7e1738bf63872beefcf6cd6aa6f17cd8
+v018 deb118ce33db695e785494e6a2b0d8948b53bfaceccb42896b161239ca1b887b
 ```
 
 For every future root-policy change:

@@ -31,6 +31,22 @@ orientation, authorization, and admitted budget exceptions.
 - hold dependent actions if authority, an oracle, a required budget, recovery,
   or a material interface decision is missing; continue bounded investigation
 
+Put mechanical classification, validation, and commit decisions in
+deterministic code. Bind commits to the relevant input, policy, artifact, and
+owner identities. Make retries idempotent and bounded; expired or cancelled
+work must not commit later. Label temporary mitigations with owner, risk,
+removal condition, and recovery action.
+
+At touched external boundaries, handle relevant unavailable, timeout,
+malformed, stale, partial, duplicate, ordering, cancellation, and retry states.
+With existing coverage tooling, target 90% changed lines, 80% changed branches,
+and all changed critical branches involving security, money, migration,
+concurrency, destruction, or data loss. Otherwise map behavior to checks; do
+not install coverage tooling merely to produce a metric. For performance work,
+freeze the workload, baseline, artifact, and environment; measure at least ten
+post-warmup runs, use p95 only with twenty samples, and inspect `n`, `2n`, and
+`4n` scaling where work grows.
+
 Verify focused behavior first, then required broader checks in proportion to
 risk. Inspect the affected render for visual edits. Repeat checks only after a
 new change, failure, unresolved concern, or for an explicit observation window.

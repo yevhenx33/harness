@@ -25,7 +25,8 @@ runtime kernel remain target architecture.
 |---|---|---|
 | Operating policy | [`AGENTS.md`](AGENTS.md) | Authority, scope, budgets, invariants, verification, recovery, and reporting |
 | Policy history | [`agents/README.md`](agents/README.md) | Immutable, hashed releases of the operating policy |
-| General workflows | [`skills/`](skills/) | Read, map, architecture, implementation, and GitHub procedures |
+| Decision history | [`docs/decisions/README.md`](docs/decisions/README.md) | Rare durable design rationale; release actions remain in Git and PRs |
+| General workflows | [`skills/`](skills/) | Optional read, map, architecture, implementation, and GitHub procedures |
 | Security review pack | [`security-review-router`](skills/security-review-router/SKILL.md) | Select one specialized security method without starting a review |
 | Canonical verification | [`verify_harness.py`](scripts/verify_harness.py) | Run every deterministic integrity and failure-path check locally and in CI |
 | Policy integrity | [`verify_policy.py`](scripts/verify_policy.py) | Verify policy versions, hashes, root equality, sequencing, and Markdown links |
@@ -35,20 +36,23 @@ runtime kernel remain target architecture.
 
 ## Operating policy
 
-`AGENTS.md` is the current policy and governs work inside this repository. It
-defines:
-
-- authority boundaries between reading, changing, publishing, deploying, and
-  destructive operations;
-- the task contract: outcome, scope, owner, invariant, oracle, authority, budget,
-  failures, non-goals, and recovery;
-- reduction before automation;
-- computational and operational cost controls;
-- independent verification and outcome classification;
-- concise, consequence-calibrated reporting.
+`AGENTS.md` is the short, always-applicable policy. It governs authority,
+commitment continuity, truthful evidence, recovery, and policy releases.
+Task-specific methods live in optional skills; a task or PR retains local choices
+and outcomes. The active policy does not require an ADR for a routine change or
+policy release.
 
 Every accepted policy version is stored unchanged under `agents/versions/`.
 The root policy must be byte-identical to the single version marked Current.
+
+## Decision and learning boundaries
+
+Create a project-local decision record only for a hard-to-reverse architecture
+choice whose rationale a future maintainer could not infer from code, tests, or
+change history. Keep the reason and rejected options stable; append later outcome
+evidence. Git and PRs record release actions. Codex memory indexes evidenced
+lessons, and the independently owned blueprint library holds transferable
+mechanisms and anti-patterns. Neither replaces direct verification.
 
 ## General workflow skills
 

@@ -1,7 +1,12 @@
 # Architecture decisions
 
-Accepted records preserve why a material boundary exists. They are immutable;
-later changes create a new record and link supersession in both directions.
+These records preserve historical reasons for Harness policy choices. They are
+not an action log or a requirement to create an ADR for every policy release.
+The policy versions and Git history record releases. Future records are for
+hard-to-reverse architecture choices whose rationale a future maintainer needs.
+Historical records may describe superseded policy; the current `AGENTS.md`
+governs. Append observed outcome evidence without rewriting accepted rationale;
+supersede a record when the choice changes.
 
 | ID | Decision | Status | Evidence | Superseded by |
 |---|---|---|---|---|
