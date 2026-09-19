@@ -1,105 +1,60 @@
-# Architecture Decision Records
+# Decision records for durable architecture
 
-Use an architecture decision record (ADR) to preserve why a material structural
-boundary exists, which alternatives were rejected, what evidence supports it,
-and what would require the decision to be reopened.
+A record exists to prevent a future maintainer from repeating a consequential
+mistake. It preserves the causal reason for a durable choice, not a timeline of
+work performed. Git and the change review already record actions.
 
-## Trigger
+## When to write one
 
-Create or supersede an ADR when a decision materially affects an authoritative
-owner, public interface, persistent representation, security or authority
-boundary, concurrency or ordering rule, recovery model, or implementation
-freeze. A costly or plausible rejected alternative also warrants a record when
-future reintroduction could violate the primary invariant.
+Use the owning repository's convention. Write a record only when both apply:
 
-Do not create an ADR for a routine implementation detail, a temporary local
-choice, or a decision that is both cheap and safe to reverse.
+1. The choice is hard to reverse and establishes or changes a durable owner,
+   public contract, persistent representation, security or authority boundary,
+   ordering rule, recovery model, or implementation freeze.
+2. A future maintainer could plausibly choose wrongly without the governing
+   constraint, rejected alternative, and revisit condition.
 
-## Location and identity
+A rejected option may deserve a record when its later reintroduction would break
+the same invariant. Discussion, a routine local choice, a policy release, or a
+completed task does not by itself meet this test. Record task choices and
+outcomes in the task or change review.
 
-Follow the repository's established convention. If none exists, use:
+## Smallest useful record
 
-```text
-docs/decisions/README.md
-docs/decisions/ADR-NNN-short-title.md
-```
-
-Give every record a stable sequential ID. Keep the index compact: ID, title,
-decision status, evidence state, and supersession link.
-
-## Required record
+Follow an existing project format. Otherwise use
+`docs/decisions/ADR-NNN-short-title.md` and link it from
+`docs/decisions/README.md`:
 
 ```markdown
-# ADR-NNN: Short decision title
+# Decision: Short title
 
-- Decision status: Proposed | Accepted | Superseded | Rejected
-- Evidence state: Designed | Reference-proven | Implementation-tested |
-  Production-verified
-- Date:
-- Owner:
-- Scope:
-- Supersedes:
-- Superseded by:
+- Status: Proposed | Accepted | Superseded | Rejected
+- Evidence: Designed | Reference-proven | Implementation-tested | Production-verified
+- Owner and scope:
+- Primary invariant and affected consumers:
 
-## Context and governing constraint
+## Why this choice was necessary
+What constraint or observed failure forced a decision?
 
-What forced a choice, including the simplest viable baseline and relevant
-budget or failure boundary.
+## Choice and alternatives
+What mechanism was chosen, what plausible option was rejected, and why?
 
-## Primary invariant and consumers
+## Consequence and recovery
+What cost or limitation is accepted? How can the choice be changed safely?
 
-What must remain true, which authority owns it, and which consumers depend on
-the decision.
-
-## Decision
-
-The chosen mechanism and the boundary it establishes.
-
-## Consequences
-
-Accepted costs, limitations, operational effects, and recovery or migration
-consequences if the decision changes.
-
-## Rejected alternatives
-
-Alternatives considered and the specific reason each failed the invariant,
-oracle, cost, authority, or recovery requirement.
-
-## Dependencies and proof obligations
-
-Upstream assumptions, downstream decisions, direct success or failure oracles,
-and the specification, reference model, tests, implementation, or receipts that
-provide evidence.
-
-## Falsifiers and revisit triggers
-
-Observable conditions that invalidate an assumption, breach the budget, reveal
-a better mechanism, or otherwise require a new decision.
+## Evidence and revisit trigger
+What direct evidence supports the current state? What observation would reopen it?
 ```
 
-Use only applicable fields, but never omit the invariant, owner, chosen
-mechanism, consequences, evidence state, and revisit condition.
+Use only fields that clarify the decision. Do not turn a record into a
+specification, test plan, runtime receipt, or proof by assertion. `Accepted`
+means a design baseline; the evidence field states what has actually been
+observed.
 
-## Lifecycle
+## Later outcomes
 
-Decision status and evidence state are independent. `Accepted` means the design
-is the current baseline; it does not mean the design has been proved or
-deployed. Advance evidence only when its named oracle succeeds:
-
-```text
-Designed -> Reference-proven -> Implementation-tested -> Production-verified
-```
-
-Do not imply that every decision must reach every evidence state. A design with
-no production deployment may correctly stop at `Implementation-tested`.
-
-Once accepted, preserve the record. If context or evidence changes the choice,
-create a new ADR, mark the old one `Superseded`, and link both directions. Never
-edit old reasoning into agreement with the replacement.
-
-## Retrieval and reuse
-
-Before changing a recorded boundary, retrieve the governing ADR and its
-dependencies, then reverify drift-prone context and evidence. Keep ADRs
-project-local. Promote a mechanism to a cross-project blueprint or skill only
-after repeated verified use shows that its invariant and workload generalize.
+Append dated outcome evidence and links without rewriting the original reason.
+A good or bad outcome is a claim about observed behavior, not about the number
+of actions completed. If the choice changes, create a superseding record and
+preserve the earlier reasoning. Promote a transferable mechanism or anti-pattern
+to memory or the blueprint library only when evidence supports reuse.
