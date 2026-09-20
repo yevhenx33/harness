@@ -65,6 +65,7 @@ mechanisms and anti-patterns. Neither replaces direct verification.
 | [`github`](skills/github/SKILL.md) | Repository identity, branches, pull requests, rules, and publication boundaries |
 | [`effective-writing`](skills/effective-writing/SKILL.md) | Review, revise, or draft prose by testing whether it does its intended job |
 | [`audience-expertise`](skills/audience-expertise/SKILL.md) | Calibrate content to an explicit audience domain-expertise level from E0 to E10 |
+| [`atomic-inversion-brutalism`](skills/atomic-inversion-brutalism/SKILL.md) | Invert governing mechanisms into minimal directly verifiable structures |
 | [`structural-factorization`](skills/structural-factorization/SKILL.md) | Decompose complex systems into invariant cores, independent factors, interactions, owners, and verification boundaries |
 | [`tiered-reasoning`](skills/tiered-reasoning/SKILL.md) | Explicitly invoke `$tiered-reasoning` with T0-T3 to route Codex effort and frontier search |
 
