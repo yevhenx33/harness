@@ -1,0 +1,4 @@
+interface:
+  display_name: "Atomic Inversion Brutalism"
+  short_description: "Invert causal mechanisms into direct structures"
+  default_prompt: "Use $atomic-inversion-brutalism to map this problem atomically, invert its governing mechanism, and derive the smallest directly verifiable structure."
