@@ -22,6 +22,9 @@ orientation, authorization, and admitted budget exceptions.
 - preserve explicit partial, stale, and unavailable states
 - do not deploy, restart, migrate, or write production data without explicit
   authorization
+- for a repository with a production runtime manifest, keep implementation in a
+  task worktree, publish through a pull request, activate only the merged
+  artifact, and preserve the prior artifact plus durable state for recovery
 - define success at the affected consumer, including later updates and
   unavailable states where relevant; preserve exact requested UI copy and layout
 - use existing checks when sufficient; add regression tests for uncovered
@@ -52,5 +55,7 @@ risk. Inspect the affected render for visual edits. Repeat checks only after a
 new change, failure, unresolved concern, or for an explicit observation window.
 Continue through authorized delivery, retaining remaining gates across follow-up
 messages. For release work, distinguish source, build, activation, and consumer
-evidence. Keep the receipt internally and report the result, completion state,
-and material limitations at the detail requested by the user.
+evidence. Verify that production does not reference the task worktree and that
+the active immutable artifact identifies merged source. Keep the receipt
+internally and report the result, completion state, and material limitations at
+the detail requested by the user.
