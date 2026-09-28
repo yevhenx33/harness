@@ -14,3 +14,4 @@ supersede a record when the choice changes.
 | [ADR-002](ADR-002-explicit-tiered-reasoning-skill.md) | Keep tiered reasoning as an explicit skill | Accepted | Designed | - |
 | [ADR-003](ADR-003-task-continuity-and-proportionate-verification.md) | Preserve task continuity and scale verification to the outcome | Accepted | Designed | - |
 | [ADR-004](ADR-004-respect-based-commitments-and-recovery.md) | Organize work around commitments, evidence, and breach recovery | Accepted | Designed | - |
+| [ADR-005](ADR-005-cooperative-pr-production-admission.md) | Cooperative pull-request admission for production repositories | Accepted | Designed | - |

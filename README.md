@@ -31,6 +31,7 @@ runtime kernel remain target architecture.
 | Canonical verification | [`verify_harness.py`](scripts/verify_harness.py) | Run every deterministic integrity and failure-path check locally and in CI |
 | Policy integrity | [`verify_policy.py`](scripts/verify_policy.py) | Verify policy versions, hashes, root equality, sequencing, and Markdown links |
 | Skill integrity | [`verify_skills.py`](scripts/verify_skills.py) | Verify the security graph, package structure, routing contracts, and invocation boundaries |
+| Production source admission | [`github`](skills/github/SKILL.md) | Require task worktrees and pull requests for manifest-declared production repositories, with explicit break-glass recovery |
 | Policy-sync experiment | [`run_sync_assessment.py`](scripts/run_sync_assessment.py) | Read-only comparison of local and remote policy state |
 | Target runtime design | [`sovereign-runtime.md`](docs/sovereign-runtime.md) | Future architecture, explicitly separated from current capability |
 

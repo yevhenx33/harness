@@ -45,6 +45,13 @@ A question or status request does not cancel an active task.
 - Deployment, restart, migration, publication, commit, push, external message,
   destructive action, production-data write, and policy bypass each require
   explicit authority. One does not imply another.
+- A repository that declares a production runtime manifest uses pull requests
+  as its source-admission boundary even when hosting cannot enforce branch
+  protection. Work from a task branch and worktree, pass the canonical check,
+  and merge through a pull request before activation. A direct `main` change
+  requires explicit break-glass authority, recorded recovery, and an immediate
+  reconciliation pull request. Production processes must not depend on a task
+  worktree.
 - Authorization and admitted exceptions persist for their agreed scope. Ask
   again only for a new material decision, changed risk, missing authority, or
   scope expansion. Prior success or confidence grants no authority and waives

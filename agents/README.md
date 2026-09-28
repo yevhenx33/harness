@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v018`](versions/v018.md) | Current | 2026-09-19 | Simplified policy and decision capture | Keep the always-applicable core; use optional skills for methods and evidence-backed records for durable choices |
+| [`v019`](versions/v019.md) | Current | 2026-09-28 | Production release closeout | Require pull-request source admission and canonical worktrees for manifest-declared production repositories |
+| [`v018`](versions/v018.md) | Superseded | 2026-09-19 | Simplified policy and decision capture | Keep the always-applicable core; use optional skills for methods and evidence-backed records for durable choices |
 | [`v017`](versions/v017.md) | Superseded | 2026-09-16 | Respect-based commitments and recovery | Preserve existing obligations; separate authority, confidence, and readiness; bind claims to evidence and repair breaches |
 | [`v016`](versions/v016.md) | Superseded | 2026-09-09 | Reliability and serviceability integration | Require deterministic mechanical gates, explicit failure states, canonical verification, and minimal maintenance paths |
 | [`v015`](versions/v015.md) | Superseded | 2026-09-05 | Task audit and Astra harness refinement | Preserve authorized task continuity, verify consumer outcomes, and scale workflow overhead |
@@ -52,6 +53,7 @@ v015 9c39b474cb9c325566fc6e827d2e36d52ffe0c8bdb5a075f64a0c9f11be61e3e
 v016 6b74db08fab1f83c88d0ffbffe6043b3a8910fe9514a4497660e3c39f369606c
 v017 425b167d7262844be85b4e014fbbe1eb7e1738bf63872beefcf6cd6aa6f17cd8
 v018 deb118ce33db695e785494e6a2b0d8948b53bfaceccb42896b161239ca1b887b
+v019 93bced8f7bdb6eff76475c2da50e7e09c0c9f3f68544f30c53d6a52fdcf81aa4
 ```
 
 For every future root-policy change:
