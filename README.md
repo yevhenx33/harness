@@ -1,7 +1,7 @@
 # Harness
 
-Harness is a versioned operating policy and modular skill library for disciplined
-Codex work.
+Harness combines a versioned operating policy, modular skills, and a blueprint
+catalog for disciplined Codex work.
 
 It helps turn a request into a bounded workflow:
 
@@ -14,8 +14,8 @@ request
   -> evidence-backed result
 ```
 
-Harness is not an autonomous-agent runtime. It currently ships instructions,
-skills, integrity checks, and one bounded policy-sync experiment. Capability
+It ships instructions, skills, a blueprint catalog, integrity checks, and one
+bounded policy-sync experiment. Capability
 enforcement, signed intents, durable receipts, confidential inference, and a
 runtime kernel remain target architecture.
 
@@ -56,6 +56,46 @@ evidence. Git and PRs record release actions. Codex memory indexes evidenced
 lessons, and the independently owned blueprint library holds transferable
 mechanisms and anti-patterns. Neither replaces direct verification.
 
+## Blueprint library
+
+The [catalog](docs/blueprints/README.md) tracks documents from the independently
+owned [blueprint repository](https://github.com/yevhenx33/blueprints).
+The 2026-10-03 inventory contains 44 blueprints and one reusable pattern,
+including all 11 nested engineering blueprints.
+
+The [manifest](docs/blueprints/catalog.json) records each source path, title,
+SHA-256, and local Git state at the captured source revision. Committed entries
+link to that revision. Modified and untracked entries require the local source
+checkout; their catalog entries do not publish the source documents.
+
+When the `blueprint-methods` skill is installed, use it to retrieve at most three
+relevant documents. Its default source is `/home/ubuntu/blueprints`. Read each
+selected document completely. Transfer its mechanism and failure boundaries to
+the current task, then verify against that task's oracle.
+
+For stalled searches or passing components with an untested composition, select
+**Composition Coverage Before Optimization**, derived from PK9. It separates
+construction coverage, parameter recovery, candidate retention, and final
+verification. Recovery with revealed parameters remains conditional evidence.
+
+Audit the catalog against the current source checkout:
+
+```sh
+python3 scripts/blueprint_catalog.py --source /home/ubuntu/blueprints
+```
+
+After adding, changing, or removing source documents, refresh the catalog:
+
+```sh
+python3 scripts/blueprint_catalog.py --source /home/ubuntu/blueprints --refresh
+```
+
+Replace the source path when using another checkout of the owning repository.
+Review the manifest and rendered catalog before publishing the update through a
+PR. The source audit fails on inventory, content, or Git-state drift and on an
+unavailable source. CI checks catalog integrity without the source checkout;
+current source freshness requires the explicit audit above.
+
 ## General workflow skills
 
 | Skill | Use it for |
@@ -63,13 +103,21 @@ mechanisms and anti-patterns. Neither replaces direct verification.
 | [`read`](skills/read/SKILL.md) | Read-only investigation and audit |
 | [`map`](skills/map/SKILL.md) | Ownership, data-flow, dependency, and runtime mapping |
 | [`architecture`](skills/architecture/SKILL.md) | Bounded design across security, storage, money, concurrency, or public contracts |
-| [`implementation-slice`](skills/implementation-slice/SKILL.md) | One small implementation with direct verification and recovery |
+| [`implementation-slice`](skills/implementation-slice/SKILL.md) | Bounded implementation, continuation handoffs, artifact-bound verification, and recovery |
 | [`github`](skills/github/SKILL.md) | Repository identity, branches, pull requests, rules, and publication boundaries |
-| [`effective-writing`](skills/effective-writing/SKILL.md) | Review, revise, or draft prose by testing whether it does its intended job |
+| [`effective-writing`](skills/effective-writing/SKILL.md) | Clear prose and STE-inspired technical reports, with voice and uncertainty preserved |
 | [`audience-expertise`](skills/audience-expertise/SKILL.md) | Calibrate content to an explicit audience domain-expertise level from E0 to E10 |
 | [`atomic-inversion-brutalism`](skills/atomic-inversion-brutalism/SKILL.md) | Invert governing mechanisms into minimal directly verifiable structures |
 | [`structural-factorization`](skills/structural-factorization/SKILL.md) | Decompose complex systems into invariant cores, independent factors, interactions, owners, and verification boundaries |
 | [`tiered-reasoning`](skills/tiered-reasoning/SKILL.md) | Explicitly invoke `$tiered-reasoning` with T0-T3 to route Codex effort and frontier search |
+
+Technical writing uses stable terms, explicit actors, and one action per
+procedural sentence. Reports distinguish checked, verified, merged, and activated
+states. Diagrams label observed, inferred, proposed, and unchecked relationships.
+Use a richer format only when it helps the reader's task. The
+[STE trial record](docs/evaluations/continuity-ste-trial.md) preserves the probes
+and limits; comprehension, cost, and comparative effectiveness remain unmeasured.
+The writing mode does not claim formal ASD-STE100 compliance.
 
 ## Domain skills
 
@@ -185,7 +233,9 @@ The checks enforce:
 - twelve graph-backed security methods;
 - resolved and reciprocal typed links;
 - disabled implicit invocation for every L1 method;
-- router execution boundaries and routing-score fixtures.
+- router execution boundaries and routing-score fixtures;
+- blueprint manifest validity and rendered-catalog consistency, with regression
+  checks for source drift and unavailable sources.
 
 GitHub runs the same integrity workflow on pull requests and pushes to `main`.
 
@@ -216,6 +266,7 @@ Current:
 - instruction policy;
 - immutable policy releases;
 - general and security review skills;
+- blueprint catalog with source fingerprints, local draft states, and a source audit;
 - explicit-only tiered reasoning skill with blind, worktree-separated frontier search;
 - deterministic integrity checks;
 - bounded read-only policy-sync diagnostic;
