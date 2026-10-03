@@ -16,6 +16,26 @@ or a new draft. Preserve the user's meaning and degree of certainty. In
 regulated, medical, legal, financial, security, or scientific contexts, do not
 remove a hedge unless the stronger claim is supported and permitted.
 
+For technical reports, procedures, and handoffs, or an explicit STE request,
+use STE-inspired writing. This mode does not claim ASD-STE100 compliance.
+Preserve grammar-only scope, supplied voice, and requested format; do not impose
+procedural language on personal or creative prose.
+
+- Name the actor and use active voice where it makes responsibility clear.
+- Put one action in each procedural sentence. State conditions before actions.
+- Aim for at most 20 words per procedural sentence and 25 per explanation.
+  Keep necessary qualifications and exact quotations even when they are longer.
+- Use one term for one meaning. Preserve domain terms, identifiers, units,
+  quantities, dates, and uncertainty; explain unfamiliar terms when needed.
+- Use explicit evidence states instead of vague assurances. `Checked` means a
+  named check ran; `verified` means evidence supports the stated criterion for
+  the checked artifact. `Merged` means source admission; `activated` means the
+  intended runtime uses it. Keep stale and unknown states explicit.
+- Choose the smallest format that supports the reader's task: prose for a
+  result, a diagram for relationships, interactive HTML for exploration, and
+  animation for behavior over time. Preserve evidence references, assumptions,
+  and unresolved checks in every format. Do not create artifacts without need.
+
 Apply these tests in order:
 
 1. **Substance:** Paraphrase each suspect claim plainly. Replace vague importance,
