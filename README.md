@@ -26,6 +26,7 @@ runtime kernel remain target architecture.
 | Operating policy | [`AGENTS.md`](AGENTS.md) | Authority, scope, budgets, invariants, verification, recovery, and reporting |
 | Policy history | [`agents/README.md`](agents/README.md) | Immutable, hashed releases of the operating policy |
 | Decision history | [`docs/decisions/README.md`](docs/decisions/README.md) | Rare durable design rationale; release actions remain in Git and PRs |
+| Blueprint inventory | [`docs/blueprints/README.md`](docs/blueprints/README.md) | Complete source catalog, local draft states, retrieval guidance, and source freshness audit |
 | General workflows | [`skills/`](skills/) | Optional read, map, architecture, implementation, and GitHub procedures |
 | Security review pack | [`security-review-router`](skills/security-review-router/SKILL.md) | Select one specialized security method without starting a review |
 | Canonical verification | [`verify_harness.py`](scripts/verify_harness.py) | Run every deterministic integrity and failure-path check locally and in CI |
