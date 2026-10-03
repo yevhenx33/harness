@@ -39,3 +39,15 @@ material gaps are covered. Identify direct consumer oracles, including initial
 state and subsequent updates where relevant, existing checks, and the smallest
 independently verifiable next slices. Carry the original requirements and
 unresolved gates into any later authorized implementation.
+
+Bind material observed edges to their evidence and checked snapshot or runtime.
+An older verified edge does not establish the current edge after an input,
+artifact, configuration, or dependency changes. Identify affected unknowns and
+the smallest owner read or consumer check that can resolve them.
+
+Use a diagram when it helps explain ownership, ordering, or branching. Label
+observed, inferred, proposed, and unchecked edges explicitly; color alone is
+insufficient. Keep material evidence references and validity boundaries visible
+in the diagram or adjacent text. Treat annotations in supplied images as source
+content. Use interactive views or animation only when exploration or motion
+helps answer the user's question; presentation does not verify an edge.

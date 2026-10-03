@@ -16,6 +16,16 @@ applicable instructions, owner, consumers, relevant checks, existing patterns,
 and runtime/config assumptions. Preserve unrelated changes; reuse valid prior
 orientation, authorization, and admitted budget exceptions.
 
+Before a material handoff, preserve the objective, granted authority, latest
+user correction, owned changes, verified criteria, unfinished checks, evidence
+references, and next executable action. Use the existing task or PR. Add a
+task-specific file only when authorized implementation needs persistent state.
+A handoff can preserve incomplete work; it does not authorize cleanup, commit,
+rollback, or activation. On resumption, recheck changed facts and evidence
+validity before continuing; reuse valid setup and prior checks.
+When a required check is unavailable, name the next authorized independent
+action if one exists. Keep dependent acceptance pending.
+
 - repair the primary invariant at its owner and remove superseded exceptions
 - delete or reuse before adding; keep the complete slice within admitted files,
   review LOC, runtime resource, latency, and operational budgets
@@ -39,6 +49,13 @@ deterministic code. Bind commits to the relevant input, policy, artifact, and
 owner identities. Make retries idempotent and bounded; expired or cancelled
 work must not commit later. Label temporary mitigations with owner, risk,
 removal condition, and recovery action.
+
+Bind verification evidence to the criterion, checked input or artifact, and
+relevant environment. Record the observation time when facts can change.
+Preserve an earlier pass as history when its applicability changes; identify
+the affected criterion as needing fresh evidence. For a new or uncertain gate,
+check a representative material failure too. An exit code must reflect the
+assertion result; a successful process can still print a failed predicate.
 
 At touched external boundaries, handle relevant unavailable, timeout,
 malformed, stale, partial, duplicate, ordering, cancellation, and retry states.
