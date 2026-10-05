@@ -110,6 +110,16 @@ current source freshness requires the explicit audit above.
 | [`atomic-inversion-brutalism`](skills/atomic-inversion-brutalism/SKILL.md) | Invert governing mechanisms into minimal directly verifiable structures |
 | [`structural-factorization`](skills/structural-factorization/SKILL.md) | Decompose complex systems into invariant cores, independent factors, interactions, owners, and verification boundaries |
 | [`tiered-reasoning`](skills/tiered-reasoning/SKILL.md) | Explicitly invoke `$tiered-reasoning` with T0-T3 to route Codex effort and frontier search |
+| [`attention-weighted-narrative`](skills/attention-weighted-narrative/SKILL.md) | Allocate audience attention across decks, pitches, essays, scripts, and presentations |
+| [`blueprint-methods`](skills/blueprint-methods/SKILL.md) | Retrieve and evolve reusable cross-industry mechanisms from the blueprint library |
+| [`budget`](skills/budget/SKILL.md) | Quantify CPU, memory, disk, RPC, database, payload, latency, and concurrency limits |
+| [`contract`](skills/contract/SKILL.md) | Define API, schema, runtime, service, and producer-consumer contracts before implementation |
+| [`current-history-delta`](skills/current-history-delta/SKILL.md) | Design bounded current, selected-history, and live-delta analytics flows |
+| [`experience-backward-product-design`](skills/experience-backward-product-design/SKILL.md) | Define the intended product experience before choosing technology and scope |
+| [`latency-optimization`](skills/latency-optimization/SKILL.md) | Diagnose and verify latency and jitter reductions across request and data paths |
+| [`me`](skills/me/SKILL.md) | Structure monitored experiments, trials, soak checks, and observation windows |
+| [`montecarlo`](skills/montecarlo/SKILL.md) | Model uncertain economics, liquidity, capacity, pricing, and tail outcomes |
+| [`solve-from-first-principles`](skills/solve-from-first-principles/SKILL.md) | Decompose ambiguous or optimization-heavy problems and test competing hypotheses |
 
 Technical writing uses stable terms, explicit actors, and one action per
 procedural sentence. Reports distinguish checked, verified, merged, and activated
@@ -124,6 +134,8 @@ The writing mode does not claim formal ASD-STE100 compliance.
 | Skill | Use it for |
 |---|---|
 | [`credit-notes-protocol`](skills/credit-notes-protocol/SKILL.md) | RLD Credit Notes, Credit Index, custom-maturity rate hedges, funded protection, and settlement |
+| [`anchor-rpc-witness`](skills/anchor-rpc-witness/SKILL.md) | Validate indexed or materialized onchain facts against same-block RPC witnesses |
+| [`vector`](skills/vector/SKILL.md) | Modular lending-indexer architecture, protocol adapters, storage, recovery, serving, and capacity |
 
 ## Security Review Method Pack
 

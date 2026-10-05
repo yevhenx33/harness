@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Slice"
+  short_description: "Implement one bounded code slice."
+  default_prompt: "Use $implementation-slice to implement only the named subsystem or directory with focused tests and no unrelated refactors."
