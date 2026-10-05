@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solve from First Principles"
+  short_description: "Question, test, and optimize difficult problems"
+  default_prompt: "Use $solve-from-first-principles to decompose this problem, find the critical 20%, falsify competing hypotheses, and choose a Pareto-efficient solution."

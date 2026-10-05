@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vector"
+  short_description: "Vector lending indexer architecture"
+  default_prompt: "Use $vector to reason about the modular vector lending indexer architecture."

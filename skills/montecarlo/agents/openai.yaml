@@ -1,0 +1,4 @@
+interface:
+  display_name: "Monte Carlo"
+  short_description: "Simulate uncertainty before decisions."
+  default_prompt: "Use $montecarlo to simulate uncertain load, economics, liquidity, risk, pricing, or capacity assumptions."

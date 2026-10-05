@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blueprint Methods"
+  short_description: "Mine task history and evolve reusable blueprints"
+  default_prompt: "Use $blueprint-methods to mine relevant task evidence, apply the strongest blueprint lenses, and capture verified reusable practices."

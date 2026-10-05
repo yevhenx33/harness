@@ -1,0 +1,4 @@
+interface:
+  display_name: "Latency Optimization"
+  short_description: "Find and verify meaningful latency reductions"
+  default_prompt: "Use $latency-optimization to identify the true hot path and produce a measured, minimal optimization."
