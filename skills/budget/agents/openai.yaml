@@ -1,0 +1,4 @@
+interface:
+  display_name: "Budget"
+  short_description: "Set performance budgets before code."
+  default_prompt: "Use $budget to set CPU, memory, disk, RPC, database, payload, latency, and freshness budgets before implementation."

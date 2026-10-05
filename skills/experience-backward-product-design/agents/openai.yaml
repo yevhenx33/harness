@@ -1,0 +1,4 @@
+interface:
+  display_name: "Experience-Backward Product Design"
+  short_description: "Design products from the desired experience"
+  default_prompt: "Use $experience-backward-product-design to redesign this product from the intended user experience backward."

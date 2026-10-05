@@ -1,0 +1,4 @@
+interface:
+  display_name: "Current History Delta"
+  short_description: "Build bounded WebSocket rollups without chart churn."
+  default_prompt: "Use the Current + Selected History + Delta Stream model to preserve chart identity, bound retained state, and verify WebSocket updates end to end."

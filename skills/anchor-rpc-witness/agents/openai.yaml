@@ -1,0 +1,4 @@
+interface:
+  display_name: "Anchor RPC Witness"
+  short_description: "Validate indexed facts against same-block RPC"
+  default_prompt: "Use $anchor-rpc-witness to validate indexed onchain facts against same-block RPC witnesses."

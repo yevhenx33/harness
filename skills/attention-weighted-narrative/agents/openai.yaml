@@ -1,0 +1,4 @@
+interface:
+  display_name: "Attention-Weighted Narrative"
+  short_description: "Optimize story emphasis as measurable vectors"
+  default_prompt: "Use $attention-weighted-narrative to compare narrative attention curves and recommend a testable story structure."
