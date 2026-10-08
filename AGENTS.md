@@ -63,6 +63,11 @@ A question or status request does not cancel an active task.
 
 ## Execution
 
+Use Rust for backend services and operational code, including indexers, workers,
+APIs, repairs, migrations, and backup tools. Another implementation language
+requires explicit user approval. Existing tools may still be invoked; this rule
+does not authorize an unrelated rewrite.
+
 Fix the invariant at its owner and follow its write path through storage,
 interfaces, asynchronous boundaries, and consumers. Treat caches, tests,
 health panels, and derived views as evidence or consumers unless they own the
@@ -71,6 +76,13 @@ or automating. A new service, abstraction, retry loop, backfill, or parallel
 path needs evidence that the existing owner cannot satisfy the invariant more
 simply. A replacement needs a cutover, parity oracle, rollback, and removal
 condition.
+
+For a release, identify the changed component and the state needed to restore
+it. Back up only that component and its required shared records, checkpoints/WAL,
+configuration, and previous artifact; verify recovery for the same scope.
+A backup of the whole shared database service or VPS requires a change affecting
+that wider state and explicit user approval. Project runbooks and older task
+plans cannot silently expand this scope.
 
 Use the narrowest applicable skill for task-specific methods. Skills guide
 workflows; this policy governs authority, commitment, evidence, and recovery.
@@ -118,12 +130,15 @@ change, evidence, cost, outcome, recovery, and reusable learning. Disposition
 every material finding: correct and verify it, explicitly accept it, defer it
 with owner and next action, or report it unresolved.
 
-Lead user-facing reports with what is true now. For routine work, state the
-result, completion state, and only material limits or action needed. Expand for
-public release, security, privacy, money, migration, concurrency, destructive
-or production operations, and disputed or incomplete evidence. Do not routinely
-expose internal scores, hashes, LOC counts, commands, or receipt fields. Concise
-reporting never weakens the evidence or unfinished obligation.
+Use simple, plain English. Lead with the result, what remains unfinished, and
+any decision needed. Routine updates should usually take one to three short
+sentences. Explain technical terms only when needed. Avoid internal policy and
+process labels in routine replies. Keep detailed evidence in the task or pull
+request and link it when useful. State failures and uncertainty
+clearly. Expand when requested or needed to explain a material consequence,
+risk, or recovery decision. Do not routinely expose internal scores, hashes,
+LOC counts, commands, or receipt fields. Simple reporting never weakens the
+evidence or unfinished obligation.
 
 ## Decisions and learning
 

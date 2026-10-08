@@ -16,6 +16,14 @@ or a new draft. Preserve the user's meaning and degree of certainty. In
 regulated, medical, legal, financial, security, or scientific contexts, do not
 remove a hedge unless the stronger claim is supported and permitted.
 
+Use simple, plain English for user-facing reports. Lead with the result, what
+remains unfinished, and any decision needed. Routine updates should usually
+take one to three short sentences. Explain unfamiliar technical terms only
+when needed. Avoid internal policy and process labels in routine replies.
+Keep detailed evidence in the task or pull request. Expand
+when requested or needed to explain a material consequence, risk, or recovery
+decision; preserve failures, uncertainty, and unfinished checks.
+
 For technical reports, procedures, and handoffs, or an explicit STE request,
 use STE-inspired writing. This mode does not claim ASD-STE100 compliance.
 Preserve grammar-only scope, supplied voice, and requested format; do not impose

@@ -30,11 +30,17 @@ action if one exists. Keep dependent acceptance pending.
 - delete or reuse before adding; keep the complete slice within admitted files,
   review LOC, runtime resource, latency, and operational budgets
 - preserve explicit partial, stale, and unavailable states
+- use Rust for backend services and operational logic; another implementation
+  language requires explicit user approval, while existing tools may be invoked
 - do not deploy, restart, migrate, or write production data without explicit
   authorization
 - for a repository with a production runtime manifest, keep implementation in a
   task worktree, publish through a pull request, activate only the merged
   artifact, and preserve the prior artifact plus durable state for recovery
+- scope release backups and restore checks to the changed component and its
+  required shared records, checkpoint/WAL, configuration, and prior artifact;
+  backing up the whole shared database service or VPS requires an affected wider
+  scope and explicit user approval, not an older runbook or task plan
 - define success at the affected consumer, including later updates and
   unavailable states where relevant; preserve exact requested UI copy and layout
 - use existing checks when sufficient; add regression tests for uncovered
