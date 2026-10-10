@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 from pathlib import Path
 
 
@@ -19,9 +20,22 @@ CHECKS = (
 
 
 def verify() -> list[str]:
+    with TemporaryDirectory(prefix="harness-verification-") as build:
+        guard, tests = str(Path(build) / "guard"), str(Path(build) / "tests")
+        checks = (
+            ("rust-build", ("rustc", "--edition=2021", "scripts/verify_release.rs", "-o", guard)),
+            ("release-boundary", (guard, "release", str(ROOT), os.environ.get("HARNESS_RELEASE_BASE", "main"))),
+            ("activation-source", (guard, "skills", str(ROOT))),
+            ("rust-test-build", ("rustc", "--edition=2021", "--test", "tests/release_activation.rs", "-o", tests)),
+            ("release-activation-tests", (tests,)),
+        ) + CHECKS
+        return run_checks(checks)
+
+
+def run_checks(checks: tuple) -> list[str]:
     environment = os.environ | {"PYTHONDONTWRITEBYTECODE": "1"}
     failures: list[str] = []
-    for name, command in CHECKS:
+    for name, command in checks:
         try:
             result = subprocess.run(
                 command,
@@ -44,7 +58,7 @@ def main() -> int:
     if failures:
         print(f"harness-verification: failed ({', '.join(failures)})", file=sys.stderr)
         return 1
-    print(f"harness-verification: ok ({len(CHECKS)} checks)")
+    print(f"harness-verification: ok ({len(CHECKS) + 5} checks)")
     return 0
 
 

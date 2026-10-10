@@ -104,6 +104,17 @@ or a repository-scoped discovery link makes it available to a consumer. A fresh
 consumer check establishes discovery. Merged source still does not prove that an
 existing session reloaded it or that any downstream behavior improved.
 
+Check the [activation profile](contracts/skill-activation.txt) against an accepted checkout:
+
+```sh
+rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
+/tmp/harness-release-guard activation "$PWD" /home/ubuntu/.codex/skills
+```
+
+This rejects missing, extra, or changed files, including metadata and references;
+it does not install packages or prove discovery. Walks allow 256 entries, 16 path
+levels, and 16 MiB per package; nested symlinks are rejected.
+
 Project code, production data, deployed artifacts, and consumer behavior remain
 owned by their respective repositories and runtimes. Harness governs how an
 agent approaches those boundaries; it does not replace their direct oracles.
@@ -290,6 +301,7 @@ automatically update independently installed user-level copies.
 Requirements:
 
 - Python 3.11
+- Rust 1.75+ and Git history
 - PyYAML for security graph validation
 
 Install the development dependency in an environment you control:
@@ -304,13 +316,15 @@ Run all direct checks:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_harness.py
 ```
 
-This is the canonical local and CI verification entrypoint. It runs policy
-integrity, skill integrity, and the complete test suite with the same commands
-and reports every failed check.
+This builds Rust gates and tests outside the checkout and runs existing checks.
+`HARNESS_RELEASE_BASE` defaults locally to `main`; CI supplies the PR base or
+previous push commit with full history. Unavailable or unrelated baselines fail.
+CI checks the source profile; installed packages need the separate check above.
 
 The checks enforce:
 
 - one current immutable policy version;
+- Current is latest; historical bytes are unchanged; only the next version is added;
 - sequential versions and recorded SHA-256 hashes;
 - byte equality between `AGENTS.md` and the current snapshot;
 - valid local Markdown links;
