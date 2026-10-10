@@ -23,6 +23,8 @@ Use this skill for `$me`, monitored experiments, bounded live runs, soak checks,
    - success criteria
    - failure criteria
    - maximum duration or stop condition
+   - workload, artifact, environment, and full measurement boundary
+   - architecture falsifier, affected stop scope, and condition for resumption
 2. Preflight:
    - git/worktree state if relevant
    - service/container/process state
@@ -35,15 +37,24 @@ Use this skill for `$me`, monitored experiments, bounded live runs, soak checks,
    - use low-overhead monitoring first
    - sample CPU, memory, disk IO, network/RPC, logs, and DB progress
    - avoid tight polling loops; use sensible intervals
+   - stop the bounded run at its agreed limit; preserve evidence and unfinished work
 4. Postflight:
    - record end timestamp
    - compare before/after metrics
    - check errors, retries, failed rows, lag, restarts, memory growth, disk growth
 5. Verdict:
-   - pass/fail/inconclusive
+   - verified win, verified no-gain, invalid, blocked, or inconclusive
    - performance cost
    - correctness signal
    - next narrow action
+
+Compare equivalent inputs and starting state, separating workload classes when
+their costs differ. Report sample count, warmup, and missing measurements; a
+single run cannot establish a median or p95. Measure the complete requested
+operation rather than adding stage quantiles. Verify required correctness
+alongside performance; a faster result that drops required behavior is invalid.
+A target miss remains unfinished, and an agreed architecture blocker holds
+dependent variants until its resume condition is satisfied.
 
 ## Metrics Checklist
 
