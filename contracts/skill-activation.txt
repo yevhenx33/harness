@@ -1,0 +1,13 @@
+# Core workflow and indexer skills required in the user-level installation.
+read
+map
+architecture
+contract
+budget
+implementation-slice
+me
+latency-optimization
+current-history-delta
+github
+structural-factorization
+vector
