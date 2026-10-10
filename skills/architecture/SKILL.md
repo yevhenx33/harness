@@ -27,6 +27,8 @@ Use this skill for `$architecture`, architecture redesign, platform design, prot
    - monitoring/recovery
 2. Requirement framing:
    - correctness invariants
+   - required outcome and user constraints, separate from candidate mechanisms
+   - architectural assumptions, falsifying evidence, and stop/resume conditions
    - latency and freshness targets
    - throughput/scale targets
    - durability and replay needs
@@ -40,7 +42,8 @@ Use this skill for `$architecture`, architecture redesign, platform design, prot
    - startup/recovery time
 4. Target architecture:
    - components and boundaries
-   - contracts between layers
+   - one owner per invariant, public contracts, and allowed dependencies
+   - shared dependency versions and write ownership for independent module work
    - failure modes and recovery
    - observability and health checks
 5. Migration plan:
@@ -56,9 +59,21 @@ Always ask:
 - What state must be memory-first versus persisted?
 - What writes happen per block/event/account?
 - What queries scan history versus current/materialized state?
-- What can be batched, cached, checkpointed, or compacted?
+- Which batching, caching, checkpointing, or compaction mechanisms satisfy the user's constraints?
 - What is the worst-case fanout during price/index/factor changes?
 - What happens under RPC latency, database lag, or process restart?
+
+Before implementation, test the riskiest architectural assumption with the
+smallest bounded probe. Reject mechanisms that violate hard constraints before
+benchmarking. Distinguish a repairable implementation error from a
+structural failure such as required work exceeding the agreed resource limit.
+If the agreed blocker is observed, hold dependent implementation and present
+the measured gap, cause if known, options, tradeoffs, and resume condition.
+Further investigation must remain within the user's stop instruction.
+
+Prefer enforceable module boundaries in the existing process when sufficient.
+A separate service needs evidence for its isolation, lifecycle, or resource
+benefit and must account for communication, consistency, and recovery costs.
 
 ## Output Shape
 

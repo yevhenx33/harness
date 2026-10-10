@@ -14,6 +14,7 @@ Use this skill to turn a mapped idea into an implementation-ready contract. Keep
    - consumer
    - runtime/service boundary
    - directory or protocol owner
+   - public interface, allowed dependency direction, and shared-state writer
 2. Define the payload or state shape:
    - fields, types, units, nullability
    - keys and identity
@@ -35,6 +36,14 @@ Use this skill to turn a mapped idea into an implementation-ready contract. Keep
    - parity checks
    - read-only probes
    - monitored experiment metrics
+   - affected consumer and dependency interactions when a shared contract changes
+
+For each touched module boundary, identify the owning invariant, permitted
+writes, failure state, direct oracle, and recovery action. Independent module
+work must use compatible contract versions and explicit ownership of shared
+changes; internal implementation details must not become implicit dependencies.
+Check affected interactions such as retries with cancellation, cache freshness,
+and publication with delayed updates when they are material to the change.
 
 ## Required Questions
 
@@ -55,4 +64,7 @@ Use this skill to turn a mapped idea into an implementation-ready contract. Keep
 5. Compatibility and migration notes.
 6. Validation gates and next implementation slice.
 
-Do not let implementation begin from a vague contract. If ownership, source of truth, or validation is ambiguous, call that out and stop at the contract artifact.
+Resolve discoverable ambiguity through bounded inspection. If a critical owner,
+source of truth, or oracle remains unresolved, hold dependent implementation and
+state the missing decision; continue independent authorized work. Carry agreed
+architecture stop conditions into the implementation contract.
