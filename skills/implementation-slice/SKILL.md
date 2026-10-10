@@ -26,12 +26,22 @@ validity before continuing; reuse valid setup and prior checks.
 When a required check is unavailable, name the next authorized independent
 action if one exists. Keep dependent acceptance pending.
 
+Carry required behavior, prohibited mechanisms, architecture assumptions,
+stop/resume conditions, and cumulative cost across attempts and handoffs.
+When an agreed architecture blocker is observed, stop dependent implementation
+and report the measured gap, decision options, and remaining obligation. Further
+variants wait for the agreed resume condition. Routine repairable build/test
+failures do not alone establish that blocker. Changing the oracle, dropping a
+consumer, or adding a forbidden cache or parallel path cannot turn the attempt
+into a success.
+
 - repair the primary invariant at its owner and remove superseded exceptions
 - delete or reuse before adding; keep the complete slice within admitted files,
   review LOC, runtime resource, latency, and operational budgets
 - preserve explicit partial, stale, and unavailable states
-- use Rust for backend services and operational logic; another implementation
-  language requires explicit user approval, while existing tools may be invoked
+- use Rust for backend services and operational logic, including one-off repairs,
+  migrations, and backups; another implementation language requires explicit
+  user approval, while existing tools may still be invoked
 - do not deploy, restart, migrate, or write production data without explicit
   authorization
 - for a repository with a production runtime manifest, keep implementation in a
@@ -43,6 +53,8 @@ action if one exists. Keep dependent acceptance pending.
   scope and explicit user approval, not an older runbook or task plan
 - define success at the affected consumer, including later updates and
   unavailable states where relevant; preserve exact requested UI copy and layout
+- stay within module contracts and allowed dependencies; verify affected shared
+  interfaces and consumer interactions before claiming independent completion
 - use existing checks when sufficient; add regression tests for uncovered
   material behavior, not assertions that mirror cosmetic source changes
 - name growing dimensions and verify the chosen time, space, I/O, fanout, retry,
@@ -51,7 +63,9 @@ action if one exists. Keep dependent acceptance pending.
   or a material interface decision is missing; continue bounded investigation
 
 Put mechanical classification, validation, and commit decisions in
-deterministic code. Bind commits to the relevant input, policy, artifact, and
+deterministic code. Use existing preflight checks to catch invalid state,
+forbidden dependencies, and wrong artifacts before costly or irreversible steps.
+Bind commits to the relevant input, policy, artifact, and
 owner identities. Make retries idempotent and bounded; expired or cancelled
 work must not commit later. Label temporary mitigations with owner, risk,
 removal condition, and recovery action.
