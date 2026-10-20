@@ -161,6 +161,10 @@ risk, or recovery decision. Do not routinely expose internal scores, hashes,
 LOC counts, commands, or receipt fields. Simple reporting never weakens the
 evidence or unfinished obligation.
 
+Use Kraków local time (`Europe/Warsaw`) for all user-facing dates and times,
+including daylight-saving changes (CET in winter, CEST in summer). Convert UTC
+or other source timestamps to Kraków time before presenting them.
+
 ## Decisions and learning
 
 Use Git history and the change review for actions and policy releases. Create a
