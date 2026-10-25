@@ -1,0 +1,6 @@
+interface:
+  display_name: "Next Step"
+  short_description: "Suggest one ready-to-send follow-up prompt"
+  default_prompt: "Use $ns to suggest the single most useful follow-up prompt without executing it."
+policy:
+  allow_implicit_invocation: false
