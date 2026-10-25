@@ -184,6 +184,7 @@ current source freshness requires the explicit audit above.
 | Skill | Use it for |
 |---|---|
 | [`read`](skills/read/SKILL.md) | Read-only investigation and audit |
+| [`ns`](skills/ns/SKILL.md) | Explicitly invoke `$ns` or `$ns <focus>` for one ready-to-send follow-up prompt, without executing it |
 | [`map`](skills/map/SKILL.md) | Ownership, data-flow, dependency, and runtime mapping |
 | [`architecture`](skills/architecture/SKILL.md) | Bounded design across security, storage, money, concurrency, or public contracts |
 | [`implementation-slice`](skills/implementation-slice/SKILL.md) | Bounded implementation, continuation handoffs, artifact-bound verification, and recovery |
