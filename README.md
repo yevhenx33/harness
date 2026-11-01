@@ -82,10 +82,9 @@ the requested result.
 | Constitutional control | [`AGENTS.md`](AGENTS.md) | Governs authority, commitments, budgets, verification, recovery, reporting, and learning |
 | Policy release history | [`agents/README.md`](agents/README.md) | Preserves immutable, hashed policy versions; the version marked Current must be byte-identical to the root policy |
 | Method layer | [`skills/`](skills/) | Supplies bounded workflows for investigation, design, implementation, verification, communication, and domain work |
-| Security method selection | [`security-review-router`](skills/security-review-router/SKILL.md) | Selects one explicit security method without silently starting a review |
 | Reusable reasoning | [`docs/blueprints/README.md`](docs/blueprints/README.md) | Catalogs the independently owned blueprint library with source identity and freshness checks; it does not copy ownership into Harness |
 | Decisions and evaluations | [`docs/decisions/README.md`](docs/decisions/README.md), [`docs/evaluations/`](docs/evaluations/) | Preserve hard-to-reverse rationale and bounded comparisons without turning design evidence into operational proof |
-| Package verification | [`verify_harness.py`](scripts/verify_harness.py) | Runs policy integrity, skill integrity, and tests locally and in CI; it verifies this package, not every downstream task outcome |
+| Package verification | [`verify_harness.py`](scripts/verify_harness.py) | Runs policy integrity, release and activation checks, and tests locally and in CI; it verifies this package, not every downstream task outcome |
 | Source admission | Git, pull requests, and [`github`](skills/github/SKILL.md) | Preserve reviewable source history and cooperative production admission; merge remains distinct from activation |
 | Live execution | Codex, models, tools, and project repositories | Executes work outside this repository; workers do not own durable authority or project truth |
 | Outcome evidence and learning | Tasks, Git/PRs, chats/rollouts, Codex memory, and the blueprint repository | Forms a distributed evidence and learning system; no generalized receipt service exists today |
@@ -217,67 +216,8 @@ The writing mode does not claim formal ASD-STE100 compliance.
 
 | Skill | Use it for |
 |---|---|
-
 | [`anchor-rpc-witness`](skills/anchor-rpc-witness/SKILL.md) | Validate indexed or materialized onchain facts against same-block RPC witnesses |
 | [`vector`](skills/vector/SKILL.md) | Modular lending-indexer architecture, protocol adapters, storage, recovery, serving, and capacity |
-
-## Security Review Method Pack
-
-The security pack is a library of independent instruction-only skills.
-
-```text
-L0  security-review-router
-      |
-      +-- authoritative method-index.yaml
-      |
-L1  selected security method
-      |
-L2  tools, practices, protocol, and evidence rules
-      |
-L3  method lineage, strengths, limitations, and primary sources
-```
-
-Methods are connected through typed horizontal links:
-
-- `complements`
-- `precedes`
-- `validates`
-- `escalates_to`
-- `alternative_to`
-
-The graph lives in
-[`method-index.yaml`](skills/security-review-router/references/method-index.yaml).
-All methods use the same
-[`review-contract.md`](skills/security-review-router/references/review-contract.md).
-
-### Available methods
-
-| Method | Best suited for |
-|---|---|
-| [`risk-audit`](skills/security-method-risk-audit/SKILL.md) | Broad repository or component review with unknown exposure |
-| [`diff`](skills/security-method-diff/SKILL.md) | Pull requests, commits, patches, and changed behavior |
-| [`threat-model`](skills/security-method-threat-model/SKILL.md) | Unclear assets, attackers, trust boundaries, and security requirements |
-| [`architecture`](skills/security-method-architecture/SKILL.md) | Cross-component security boundaries, privilege, isolation, and recovery |
-| [`attack-path`](skills/security-method-attack-path/SKILL.md) | Proving reachability and impact from attacker-controlled source to sink |
-| [`red-team`](skills/security-method-red-team/SKILL.md) | Attacker-led discovery of bounded multi-step abuse chains |
-| [`ctf`](skills/security-method-ctf/SKILL.md) | Isolated targets where a working exploit is the strongest oracle |
-| [`variant-analysis`](skills/security-method-variant-analysis/SKILL.md) | Finding siblings of a validated vulnerability root cause |
-| [`invariant`](skills/security-method-invariant/SKILL.md) | Authorization, accounting, protocols, and state-machine properties |
-| [`fuzzing`](skills/security-method-fuzzing/SKILL.md) | Executable parsers, decoders, APIs, and untrusted-input surfaces |
-| [`formal`](skills/security-method-formal/SKILL.md) | Bounded proof obligations and machine-checkable properties |
-| [`supply-chain`](skills/security-method-supply-chain/SKILL.md) | Dependencies, CI, builds, provenance, signing, and releases |
-
-The router recommends one method and stops. L1 methods disable implicit
-invocation and run only after an explicit request.
-
-Example:
-
-```text
-Use $security-review-router to select a method for reviewing commit abc123.
-
-Use $security-method-diff to review commit abc123 against its parent for
-security regressions.
-```
 
 ## Activate the skills in Codex
 
@@ -303,13 +243,6 @@ Requirements:
 
 - Python 3.11
 - Rust 1.75+ and Git history
-- PyYAML for security graph validation
-
-Install the development dependency in an environment you control:
-
-```sh
-python3 -m pip install -r requirements-dev.txt
-```
 
 Run all direct checks:
 
@@ -329,10 +262,6 @@ The checks enforce:
 - sequential versions and recorded SHA-256 hashes;
 - byte equality between `AGENTS.md` and the current snapshot;
 - valid local Markdown links;
-- twelve graph-backed security methods;
-- resolved and reciprocal typed links;
-- disabled implicit invocation for every L1 method;
-- router execution boundaries and routing-score fixtures;
 - blueprint manifest validity and rendered-catalog consistency, with regression
   checks for source drift and unavailable sources.
 
