@@ -120,9 +120,12 @@ Name growing dimensions and bound work, fanout, retries, queues, concurrency,
 retained state, and remote calls. Prefer a bounded delta or owner read over
 repeated full scans. Include build, verification, temporary artifacts, and
 recovery costs; a new attempt does not reset the cumulative allowance.
-Parallelize only independent work with explicit lifecycle,
-input snapshot, commit ownership, cancellation, failure containment, and
-recovery. A parent remains responsible for integration and the final claim.
+Use one executor by default. Delegate when the user requests it or when a
+specific independent perspective, verification, or parallel task is worth its
+cost. Parallelize only independent work with an explicit lifecycle. Before
+delegating, bound the shared budget and define the input snapshot, commit
+ownership, cancellation, failure containment, and recovery. A parent remains
+responsible for integration and the final claim.
 
 ## Evidence and completion
 

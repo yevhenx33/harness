@@ -9,7 +9,8 @@ do not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v022`](versions/v022.md) | Current | 2026-10-20 | User timezone preference | Use Kraków local time for all user-facing dates and times, including daylight-saving changes |
+| [`v023`](versions/v023.md) | Current | 2026-11-01 | User-approved delegation default | Default to one executor and delegate for a specific justified purpose |
+| [`v022`](versions/v022.md) | Superseded | 2026-10-20 | User timezone preference | Use Kraków local time for all user-facing dates and times, including daylight-saving changes |
 | [`v021`](versions/v021.md) | Superseded | 2026-10-10 | Architecture blocker and agent workaround review | Preserve outcomes across attempts, stop at architecture blockers, and require module contracts and cumulative resource budgets |
 | [`v020`](versions/v020.md) | Superseded | 2026-10-08 | Backend, reporting, and release preferences | Require Rust backend logic, plain English reports, and backups limited to the changed component |
 | [`v019`](versions/v019.md) | Superseded | 2026-09-28 | Production release closeout | Require pull-request source admission and canonical worktrees for manifest-declared production repositories |
@@ -60,6 +61,7 @@ v019 93bced8f7bdb6eff76475c2da50e7e09c0c9f3f68544f30c53d6a52fdcf81aa4
 v020 1e87bcf2f92bb4c9000b203b8c28cd0f416d6fd7f41c958236f2da59ff5dda10
 v021 968657af34675cc08ccec70d539eb27920920a1a910a30ba7f7521523a8fd593
 v022 515fe22182cb3a57a81bb393bed6b90464fabdbfbc4b47f8378d69ee2da9d7f4
+v023 b3188011d7b997efcba098255d3c8d560a846ffb734504a9e334d29f046f214d
 ```
 
 For every future root-policy change:
