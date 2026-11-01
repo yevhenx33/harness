@@ -22,8 +22,6 @@ jobs:
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.11"
-      - name: Install verification dependencies
-        run: python3 -m pip install --disable-pip-version-check -r requirements-dev.txt
       - name: Verify harness
         env:
           HARNESS_RELEASE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}

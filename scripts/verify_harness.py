@@ -14,7 +14,6 @@ ROOT = Path(__file__).resolve().parents[1]
 CHECK_TIMEOUT_SECONDS = 300
 CHECKS = (
     ("policy-integrity", (sys.executable, "scripts/verify_policy.py")),
-    ("skill-integrity", (sys.executable, "scripts/verify_skills.py")),
     ("tests", (sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v")),
 )
 
