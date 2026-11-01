@@ -203,6 +203,7 @@ current source freshness requires the explicit audit above.
 | [`me`](skills/me/SKILL.md) | Structure monitored experiments, trials, soak checks, and observation windows |
 | [`montecarlo`](skills/montecarlo/SKILL.md) | Model uncertain economics, liquidity, capacity, pricing, and tail outcomes |
 | [`solve-from-first-principles`](skills/solve-from-first-principles/SKILL.md) | Decompose ambiguous or optimization-heavy problems and test competing hypotheses |
+| [`deep-review`](skills/deep-review/SKILL.md) | Review technical documents through section coverage, parallel critique, and challenged findings |
 
 Technical writing uses stable terms, explicit actors, and one action per
 procedural sentence. Reports distinguish checked, verified, merged, and activated
