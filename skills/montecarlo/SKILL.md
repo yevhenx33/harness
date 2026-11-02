@@ -46,6 +46,9 @@ Use this skill when a decision depends on uncertain distributions rather than on
 
 ## Output Shape
 
+Use only sections needed for the requested deliverable; keep supporting detail in
+the existing task or review. Do not create companion artifacts without need.
+
 1. Decision and action threshold.
 2. Assumptions and distributions.
 3. Simulation method.

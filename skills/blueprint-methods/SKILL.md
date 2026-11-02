@@ -10,12 +10,14 @@ library into this skill.
 
 ## Reference Workflow
 
-1. Inspect `/home/ubuntu/blueprints/README.md`.
-2. Search titles, triggers, problem shapes, principles, and anti-patterns with
-   `rg`. Do not load the whole library.
+1. Search the concise descriptions in the Harness blueprint catalog first;
+   check the owning library index for documents outside that captured inventory.
+2. Select by problem shape, mechanism, and constraints. Do not load the library.
 3. Select at most three relevant blueprints. Prefer intentionally different
    source domains when contrast could expose a non-obvious solution.
-4. Read every selected blueprint completely before applying it.
+4. Read relevant mechanisms, assumptions, failure boundaries, and supporting
+   evidence. Expand for material dependencies or contradictions. Never imply
+   complete review from partial reading.
 5. State in commentary which blueprints are being used and what decision they
    influence.
 6. Transfer the mechanism, invariant, control direction, and failure boundary.
@@ -35,7 +37,7 @@ atomic map
   → separate independent axes
   → identify the owning mechanism and governing constraint
   → invert control, ownership, or representation
-  → express the smallest direct structural form
+  → express a sustainable direct structural solution
   → verify against the complete frozen objective
 ```
 
@@ -75,7 +77,10 @@ promote them as proven practice.
 
 ## Thread Harvest
 
-At the end of each completed non-read-only task:
+Start only when a task produces a materially new evidenced mechanism or failure
+boundary. Reuse existing task evidence. Update a catalog description when its
+represented mechanism or boundary changes; do not refresh the library for an
+unrelated task. When harvesting is warranted:
 
 1. Extract any new mechanism, invariant, failure boundary, or verification
    method from the current task.
@@ -104,7 +109,7 @@ final response.
 - Do not capture task-specific constants, credentials, transient production
   state, or private data.
 - Preserve unrelated blueprint worktree changes and inspect git status first.
-- Apply the repository LOC and approval gates to blueprint updates.
+- Follow the owning repository policy and the granted scope and resource budgets.
 - Do not commit, push, or deploy the library unless explicitly requested.
 
 ## Verification
@@ -114,7 +119,7 @@ After an update:
 - run `git diff --check`
 - verify every README link resolves locally
 - verify new full blueprints contain all 11 canonical sections
-- report exact handwritten LOC and files
+- report the material change, evidence, and unresolved limitations
 - report external-source or runtime verification honestly
 
 Coverage and runtime benchmarks are not applicable to Markdown-only updates.

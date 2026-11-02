@@ -16,8 +16,9 @@ or a new draft. Preserve the user's meaning and degree of certainty. In
 regulated, medical, legal, financial, security, or scientific contexts, do not
 remove a hedge unless the stronger claim is supported and permitted.
 
-Use simple, plain English for user-facing reports. Lead with the result, what
-remains unfinished, and any decision needed. Routine updates should usually
+Use simple, plain English for user-facing reports. Start with the root TLDR and
+concrete before/after/target where meaningful; distinguish measured results from
+estimates and unavailable values. Put detailed evidence after the TLDR. Routine updates should usually
 take one to three short sentences. Explain unfamiliar technical terms only
 when needed. Avoid internal policy and process labels in routine replies.
 Keep detailed evidence in the task or pull request. Expand
@@ -66,13 +67,12 @@ Apply these tests in order:
    because it is considered an AI tell. Use the read-aloud test when rhythm
    matters.
 
-Use models as detectors and editors where useful: ask for the plain paraphrase,
-flag fungible or vague wording, reverse-outline paragraph functions, or compare
-the draft with a user-supplied voice sample. Treat those outputs as prompts for
-judgment, not as truth.
+Use a distinct self-editing pass to paraphrase claims, flag vague wording,
+reverse-outline paragraph functions, or compare with a supplied voice sample.
+Do not delegate editing to additional agents.
 
-For a review, lead with whether the piece is doing its job, then report the few
-highest-impact problems with specific examples and the smallest useful fixes.
+For a review, use the TLDR to state whether the piece is doing its job, then report the few
+highest-impact problems with specific examples and sustainable corrections.
 For a revision, make the narrowest changes that improve function and preserve
 the requested tone and format. For a new draft, choose the structure deliberately
 and keep every sentence causally connected to the intended reader outcome.

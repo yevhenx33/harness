@@ -11,8 +11,10 @@ scope, and organizational boundaries serve that experience.
 ## Load the Blueprint
 
 Read `/home/ubuntu/blueprints/blueprints/apple-experience-backward-product-design.md`
-completely before applying this method. Load at most two related blueprints when
-they materially change a decision.
+for its mechanism, assumptions, and failure boundaries before applying it.
+Load related blueprints only when they materially change a decision. Apply the
+root outcome-first design and service boundaries; product coherence grants no
+access to another service's private state or authority to change it.
 
 ## Workflow
 
@@ -39,7 +41,7 @@ they materially change a decision.
 8. **Critique and iterate.** Fix the largest break in the experience contract,
    then repeat. Polish micro-details only after the journey works coherently.
 
-## Required Gates
+## Acceptance checks
 
 - A new user can state what the product does and complete the core task without
   a manual or live guidance.

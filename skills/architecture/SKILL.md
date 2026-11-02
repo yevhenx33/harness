@@ -5,83 +5,36 @@ metadata:
   short-description: Architecture design with performance constraints
 ---
 
-# Architecture Skill
+# Architecture
 
-Use this skill for `$architecture`, architecture redesign, platform design, protocol-line architecture, scalability, and performance-focused system planning.
+Apply the root outcome-first design pass before a new feature. Map the concrete
+contract, existing owners, execution path, and governing resource constraints
+before selecting mechanisms. Separate required outcomes from implementation
+assumptions and preserve user-selected architecture.
 
-## Principles
+Propose a lean structural design that removes unnecessary work and state. Prefer
+independently deployable microservices with coherent responsibilities, owned
+state, published contracts, resource budgets, and failure isolation. Reuse the
+existing owning service before creating another. Shared deployment infrastructure
+does not grant shared write ownership.
 
-- Start from the running system and existing code before proposing design.
-- Keep read-only until the user asks for implementation.
-- Favor protocol-line isolation, clear ownership boundaries, measurable contracts, and small migration slices.
-- Treat performance as a first-class requirement, not a follow-up.
+Define stable keys, incoming events, affected dependencies, update ownership,
+invalidation, and bounded full recovery. Include acknowledgement, backpressure,
+late events, correction, deletion, ordering, idempotency, and restart where material.
+Do not move a full scan into another service or bypass its private state.
 
-## Architecture Workflow
+Compare the suggested approach with the recommendation: work/state removed,
+producer-to-consumer path, interface changes, latency/freshness/throughput,
+CPU/memory/disk/RPC costs, and migration/recovery consequences. Include index
+maintenance and cross-service communication, serialization, consistency,
+deployment, and failure costs. Label assumptions and estimates.
 
-1. Current-state map:
-   - services/processes/containers
-   - code ownership
-   - databases/storage
-   - data flows
-   - APIs/frontends
-   - monitoring/recovery
-2. Requirement framing:
-   - correctness invariants
-   - required outcome and user constraints, separate from candidate mechanisms
-   - architectural assumptions, falsifying evidence, and stop/resume conditions
-   - latency and freshness targets
-   - throughput/scale targets
-   - durability and replay needs
-   - operational constraints on VPS resources
-3. Performance budget:
-   - CPU budget per protocol/service
-   - memory budget and resident-state model
-   - disk growth, retention, and write amplification
-   - RPC/network fanout
-   - database query and materialization cost
-   - startup/recovery time
-4. Target architecture:
-   - components and boundaries
-   - one owner per invariant, public contracts, and allowed dependencies
-   - shared dependency versions and write ownership for independent module work
-   - failure modes and recovery
-   - observability and health checks
-5. Migration plan:
-   - narrow implementation slices
-   - read-only validation before each slice
-   - monitored experiment after each slice
-   - rollback/stop criteria
+Define the architecture falsifier, affected stop scope, and resume condition.
+Test the riskiest assumption with a bounded probe before dependent implementation.
+Distinguish repairable implementation errors from a defeated architecture.
 
-## Performance Lens
-
-Always ask:
-
-- What state must be memory-first versus persisted?
-- What writes happen per block/event/account?
-- What queries scan history versus current/materialized state?
-- Which batching, caching, checkpointing, or compaction mechanisms satisfy the user's constraints?
-- What is the worst-case fanout during price/index/factor changes?
-- What happens under RPC latency, database lag, or process restart?
-
-Before implementation, test the riskiest architectural assumption with the
-smallest bounded probe. Reject mechanisms that violate hard constraints before
-benchmarking. Distinguish a repairable implementation error from a
-structural failure such as required work exceeding the agreed resource limit.
-If the agreed blocker is observed, hold dependent implementation and present
-the measured gap, cause if known, options, tradeoffs, and resume condition.
-Further investigation must remain within the user's stop instruction.
-
-Prefer enforceable module boundaries in the existing process when sufficient.
-A separate service needs evidence for its isolation, lifecycle, or resource
-benefit and must account for communication, consistency, and recovery costs.
-
-## Output Shape
-
-1. Current architecture.
-2. Target architecture.
-3. Performance/resource budget.
-4. Risks and invariants.
-5. Migration slices.
-6. Monitored experiments to validate each slice.
-
-Prefer diagrams and tables when they clarify boundaries or resource tradeoffs.
+Plan migration with parity, cutover, rollback, and retirement of superseded paths.
+Reuse valid evidence; validate changed assumptions and affected contracts. Run a
+monitored experiment when acceptance requires new runtime evidence, not after
+every patch. Report the design, material tradeoffs, evidence gaps, and next action;
+use diagrams or budget tables only when they clarify a decision.

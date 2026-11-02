@@ -128,7 +128,7 @@ Rules:
 do not treat current risk rows as canonical history
 do not rewrite all account-risk rows on every index-only block
 prefer argMax latest-state views over FINAL in hot queries
-include source hashes and producer versions
+include contract-required source identities and producer versions
 ```
 
 ## WAL
@@ -153,7 +153,8 @@ recovery_replay_begin
 recovery_replay_commit
 ```
 
-WAL records should form a hash chain:
+Use a WAL hash chain when the selected integrity or recovery contract requires
+chained records. For that contract, an example is:
 
 ```text
 wal_record_hash = hash(previous_wal_hash, record_type, block, payload_hash)
@@ -186,7 +187,11 @@ cross_protocol_asset_exposure_snapshot
 
 ## Snapshot Manifest
 
-Every checkpoint group should have a manifest:
+Every checkpoint group needs a dependency manifest. The following schema is an
+example inventory, not a requirement to compute every digest. Select identities
+and digests under the [hashing contract](03_VECTOR_DATA_MODEL.md#hashing); retain
+existing consumer and recovery fields until their contracts are explicitly
+replaced. Canonical block hashes remain chain identities.
 
 ```text
 snapshot_manifest {
@@ -251,7 +256,9 @@ checkpoint window" when using block count.
 
 ## Encoding
 
-For large vectors, use versioned binary encodings rather than JSON:
+Keep typed vectors within compatible runtime stages. Encode only at required
+storage or transport boundaries, reusing unchanged encoded values. Choose the
+encoding from the access, size, compatibility, and recovery contract. Examples:
 
 ```text
 f64_le_v1
@@ -261,7 +268,9 @@ address20_packed_v1
 zstd_vector_bundle_v1
 ```
 
-Each snapshot row should include:
+Snapshot rows need encoding, dimensions, bytes, and producer/schema versions.
+Include `vector_hash` when required by the selected integrity, recovery, identity,
+or consumer contract. Example fields:
 
 ```text
 encoding
@@ -274,18 +283,20 @@ schema_version
 
 ## Recovery Flow
 
-Startup recovery:
+Startup recovery must preserve independent durable-read validation and semantic
+invariants. The hash checks below apply to digests required by the selected
+contract; conditional guidance does not permit skipping an existing check.
 
 ```text
 1. Load latest valid snapshot manifest.
 2. Load slot registry snapshots referenced by manifest.
 3. Load vector snapshots referenced by manifest.
-4. Verify vector hashes.
+4. Validate loaded vectors, including all required vector hashes.
 5. Load WAL checkpoint metadata.
 6. Replay WAL after manifest.to_block if available.
 7. Replay facts/witnesses after manifest.to_block if WAL is unavailable or incomplete.
 8. Recompute risk vectors to latest committed watermark.
-9. Verify protocol vector hash.
+9. Validate recovered protocol state, including its hash when required.
 10. Resume live loop from watermark + 1.
 ```
 
@@ -310,16 +321,17 @@ Full rebuild:
 5. Apply vector mutations.
 6. Recompute risk at required checkpoints.
 7. Write fresh snapshots and manifests.
-8. Compare final vector hashes with previous current state if available.
+8. Check semantic parity and compare required vector hashes with valid prior evidence.
 ```
 
-This path must be slower but correct.
+This path must be correct. Account for its full-replay recovery cost separately
+from steady-state work.
 
 ## Watermark Contract
 
 The watermark is advanced only after the commit gate passes.
 
-Watermark row:
+Example watermark row; include digest fields according to the selected contract:
 
 ```text
 pipeline_watermark {
@@ -359,7 +371,10 @@ ltv_bucket_rollups
 flow_rollups
 ```
 
-Rollups should include source vector hashes so they can be audited.
+Rollups reference the committed source identity required by their consumers.
+Reuse an existing source manifest where sufficient. Preserve existing hashes
+used for selection, versioning, recovery, or validation until those contracts
+are explicitly replaced.
 
 ## Hot Query Rule
 
@@ -381,7 +396,7 @@ Storage and recovery are acceptable when:
 facts and witnesses are append-only
 slot registries are checkpointed
 vector snapshots have manifests
-manifests include dependency hashes
+manifests bind required dependencies and verify every contract-required digest
 watermarks reference valid durable state
 restart can load from checkpoint
 failed checkpoint verification falls back safely

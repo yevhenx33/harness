@@ -64,6 +64,9 @@ recover from snapshots or facts/witnesses
 
 ## Startup Flow
 
+Digest fields and checks follow the [hashing contract](03_VECTOR_DATA_MODEL.md#hashing).
+Preserve existing recovery and consumer checks until their contracts are replaced.
+
 ```text
 1. Load ProtocolSpec.
 2. Open protocol WAL directory.
@@ -74,7 +77,7 @@ recover from snapshots or facts/witnesses
 7. Replay WAL segments after the checkpoint if required.
 8. Replay facts/witnesses after the checkpoint if WAL is insufficient.
 9. Recompute risk vectors and L1 aggregate.
-10. Verify vector hashes.
+10. Validate recovered vectors, including all contract-required hashes.
 11. Load protocol watermark.
 12. Start live loop.
 ```
@@ -135,7 +138,7 @@ risk recompute has completed
 WAL commit record is durable
 required snapshot/rollup writes are acknowledged
 indexer run record is written
-vector hash state is internally consistent
+contract-required vector hashes are internally consistent
 ```
 
 Optional/debug witnesses can fail without blocking if the ProtocolSpec marks

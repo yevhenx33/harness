@@ -5,7 +5,7 @@ description: Build a structural factor model for a coupled system, mechanism, pr
 
 # Structural Factorization
 
-Find the smallest complete structure that preserves the requested outcome while
+Find a sustainable structural solution that preserves the requested outcome while
 making ownership, variation, interaction, cost, and failure explicit.
 
 Factorization here is not limited to mathematics or data processing. It means
@@ -13,6 +13,9 @@ separating what remains invariant from what varies, then defining exactly how
 the factors compose into the whole.
 
 ## Boundary
+
+Apply the root outcome-first design and service isolation rules. Simplification
+does not authorize another service's private state or out-of-scope changes.
 
 - Remain read-only unless the user explicitly authorizes implementation.
 - Preserve the user's requested outcome; do not replace it with a preferred
@@ -101,7 +104,7 @@ An inversion is useful only when it changes causality, for example:
 - blended state to invariant basis plus independently versioned factors;
 - unordered completion to a monotonic committed frontier.
 
-## Express the smallest direct structure
+## Express the sustainable direct structure
 
 Choose one canonical representation and one authoritative transition path for
 each fact. Keep composition and failure visible. Reject a new abstraction unless
@@ -138,7 +141,10 @@ Check that:
 
 Classify the result as verified, no-gain, invalid, blocked, or inconclusive.
 
-## Required output
+## Output guidance
+
+Use only sections needed for the requested deliverable; keep supporting detail in
+the existing task or review. Do not create companion artifacts without need.
 
 Return the smallest useful form of:
 
@@ -152,6 +158,6 @@ Return the smallest useful form of:
    model;
 7. falsification, failure, and recovery plan;
 8. a decision record only when the durability test above is met;
-9. smallest independently verifiable next slice.
+9. next independently verifiable owner-level change.
 
 Use a diagram or table only when it materially clarifies relationships.

@@ -63,7 +63,7 @@ protocol-isolated RPC, WAL, and recovery
 
 ## Source Material
 
-These docs supersede and consolidate the target architecture described in:
+These docs supersede and consolidate earlier architecture descriptions in:
 
 - `../LAYERED_VECTOR_INDEXER_ARCHITECTURE.md`
 - `../AAVE_V3_RUST_INDEXER_REUSABLE_BLUEPRINT.md`
@@ -72,7 +72,8 @@ These docs supersede and consolidate the target architecture described in:
 - `../AAVE_V3_RISK_PROJECTION_MOCK.md`
 
 The older docs remain useful as implementation history and benchmark notes.
-This folder should be treated as the target architecture reference.
+This folder supplies design guidance. Verify current implementation and consumers
+before treating any described mechanism as deployed behavior.
 
 ## Core Decisions
 

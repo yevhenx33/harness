@@ -1,15 +1,16 @@
 # Agent instruction versions
 
 The root [`AGENTS.md`](../AGENTS.md) is the authoritative current policy. Files
-under [`versions/`](versions/) are immutable, full-content snapshots of accepted
-production versions. They are named `vNNN.md`, rather than `AGENTS.md`, so they
-do not act as nested repository instructions.
+under [`versions/`](versions/) are full-content release snapshots, immutable after
+admission to `main`. They are named `vNNN.md`, rather than `AGENTS.md`, so they do
+not act as nested repository instructions.
 
 ## Versions
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v023`](versions/v023.md) | Current | 2026-11-01 | User-approved delegation default | Default to one executor and delegate for a specific justified purpose |
+| [`v024`](versions/v024.md) | Current | 2026-11-02 | User-approved structural hygiene consolidation | Outcome-first design, incremental keyed processing, service isolation, one agent, completion passes and scoped profiling |
+| [`v023`](versions/v023.md) | Superseded | 2026-11-01 | User-approved delegation default | Default to one executor and delegate for a specific justified purpose |
 | [`v022`](versions/v022.md) | Superseded | 2026-10-20 | User timezone preference | Use Kraków local time for all user-facing dates and times, including daylight-saving changes |
 | [`v021`](versions/v021.md) | Superseded | 2026-10-10 | Architecture blocker and agent workaround review | Preserve outcomes across attempts, stop at architecture blockers, and require module contracts and cumulative resource budgets |
 | [`v020`](versions/v020.md) | Superseded | 2026-10-08 | Backend, reporting, and release preferences | Require Rust backend logic, plain English reports, and backups limited to the changed component |
@@ -33,8 +34,11 @@ do not act as nested repository instructions.
 | [`v002`](versions/v002.md) | Superseded | 2026-08-02 | `92d0955` | Generalize the operating principles |
 | [`v001`](versions/v001.md) | Superseded | 2026-07-22 | `435aa1c` | Add initial repository instructions |
 
-Only versions accepted into `main` belong in this index. Branch experiments are
-drafts until merged and do not receive production version numbers.
+Only versions accepted into `main` are official. A release candidate prepares the
+next snapshot and index entry on its branch; it may be revised with the root policy
+before admission. Current identifies this checkout's policy, not activation or an
+official release. Candidate dates are proposed until admission; unrelated branch
+experiments do not receive release entries.
 
 ## Integrity
 
@@ -62,6 +66,7 @@ v020 1e87bcf2f92bb4c9000b203b8c28cd0f416d6fd7f41c958236f2da59ff5dda10
 v021 968657af34675cc08ccec70d539eb27920920a1a910a30ba7f7521523a8fd593
 v022 515fe22182cb3a57a81bb393bed6b90464fabdbfbc4b47f8378d69ee2da9d7f4
 v023 b3188011d7b997efcba098255d3c8d560a846ffb734504a9e334d29f046f214d
+v024 67f140a8f1bed6a06aa8af71b3deb14fd4b76e9d5e8200c19708d8b3926b62f3
 ```
 
 For every future root-policy change:

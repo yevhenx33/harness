@@ -1,4 +1,4 @@
-# Core workflow and indexer skills required in the user-level installation.
+# Intended v024 user-level release packages; other installed packages are preserved.
 read
 map
 architecture
@@ -11,3 +11,11 @@ current-history-delta
 github
 structural-factorization
 vector
+atomic-inversion-brutalism
+blueprint-methods
+deep-review
+effective-writing
+experience-backward-product-design
+montecarlo
+solve-from-first-principles
+tiered-reasoning

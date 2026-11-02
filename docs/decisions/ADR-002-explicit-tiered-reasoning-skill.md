@@ -78,3 +78,9 @@ Revisit if Codex implicitly injects the skill despite its metadata, explicit
 invocation cannot select the requested effort boundary, a single T0-T3 skill
 causes material routing ambiguity, or representative use shows that the retained
 workflow does not improve its declared outcomes.
+
+## v024 source preparation
+
+The v024 candidate retains explicit tier selection but replaces multi-agent
+search with a single-agent method. The original reasoning above is historical;
+current policy and skill source govern execution. No behavioral gain is claimed.

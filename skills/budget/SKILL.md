@@ -27,7 +27,10 @@ Use this skill to make performance and resource limits explicit before code or p
    - request latency
    - process CPU/RSS
    - query scan limits
-   - write rows per block/window
+   - normal deltas and full fallbacks, measured separately
+   - changed inputs, affected keys/dependencies, rows visited and bytes processed
+   - index maintenance, invalidation, persistence, and recovery
+   - peak and retained resources and accumulation across repeated execution
    - RPC calls per block/window/day
    - startup/recovery time
    - build and verification cost, temporary artifacts, backups, and retained state
@@ -68,6 +71,9 @@ Use a table like:
 | RSS | | | | docker stats | |
 
 ## Output Shape
+
+Use only sections needed for the requested deliverable; keep supporting detail in
+the existing task or review. Do not create companion artifacts without need.
 
 1. Slice and assumptions.
 2. Current baseline.
