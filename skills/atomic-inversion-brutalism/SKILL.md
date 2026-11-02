@@ -1,18 +1,21 @@
 ---
 name: atomic-inversion-brutalism
-description: Redesign a coupled system, mechanism, product, workflow, or strategy by freezing the desired outcome, atomically mapping the current structure, inverting its governing causal mechanism, and expressing the smallest direct verifiable form. Use when the user explicitly invokes Atomic Inversion Brutalism or asks to invert control, ownership, incentives, or representation instead of tuning a downstream symptom.
+description: Redesign a coupled system, mechanism, product, workflow, or strategy by freezing the desired outcome, atomically mapping the current structure, inverting its governing causal mechanism, and expressing a sustainable direct verifiable form. Use when the user explicitly invokes Atomic Inversion Brutalism or asks to invert control, ownership, incentives, or representation instead of tuning a downstream symptom.
 ---
 
 # Atomic Inversion Brutalism
 
 Work backward from the required outcome. Map the current mechanism into precise
 atoms, identify the constraint that governs the result, invert that mechanism,
-and retain only the smallest structure that preserves the complete objective.
+and retain a sustainable direct structure that preserves the complete objective.
 
 Brutalism means directness, not carelessness. Keep invariants, validation,
 failure states, recovery, and evidence explicit.
 
 ## Boundary
+
+Apply the root outcome-first design and service isolation rules. Simplification
+does not authorize another service's private state or out-of-scope changes.
 
 - Remain read-only unless the user authorizes a change.
 - Preserve the user's outcome, authority, budget, and non-goals.
@@ -81,7 +84,7 @@ oracle.
 
 ## Express the brutalist form
 
-Choose the smallest candidate that changes causality while preserving every
+Choose a sustainable structural candidate that changes causality while preserving every
 binding constraint. Prefer concrete state, one authoritative write path,
 visible control flow, plain names, explicit costs, and bounded failure over
 ornamental indirection.
@@ -101,7 +104,10 @@ A component improvement is invalid if another binding resource, invariant, or
 consumer outcome regresses. Classify unsupported or noisy evidence as
 inconclusive rather than success.
 
-## Required output
+## Output guidance
+
+Use only sections needed for the requested deliverable; keep supporting detail in
+the existing task or review. Do not create companion artifacts without need.
 
 Return the smallest useful form of:
 
@@ -109,9 +115,9 @@ Return the smallest useful form of:
 2. atomic ownership and flow map;
 3. governing mechanism and supporting or falsifying evidence;
 4. current direction and chosen inversion;
-5. smallest direct structural form and rejected alternatives;
+5. sustainable direct structural solution and rejected alternatives;
 6. material failure states, recovery, and verification result;
-7. smallest independently verifiable next action.
+7. next independently verifiable owner-level action.
 
 Use a diagram or table only when it makes ownership, flows, or alternatives
 materially easier to inspect.

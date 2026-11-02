@@ -28,9 +28,10 @@ branch, rename, ruleset, or publication boundary is in scope.
   activation, and never let production depend on the task worktree
 - use direct `main` only with explicit break-glass authority; record the reason,
   prior artifact, recovery action, and follow immediately with a reconciliation PR
-- before removing a worktree, disposition dirty/untracked state, branch ancestry,
-  runtime references, and recovery evidence; ancestry or a merged branch alone is
-  not proof that removal is safe
+- after verifying an authorized feature merge into main, complete the root
+  implementation-worktree cleanup rule; verify content inclusion, dirty/untracked
+  state, runtime dependencies, and preservation of evidence/recovery assets;
+  archive through the managed operation where available and never force removal
 - never infer remote publication from a local commit or successful command
 - report exact local path, branch and tip, files and gross diff, PR and checks,
   merge/settings state, deleted refs with prior hashes, and recovery path

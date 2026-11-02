@@ -74,6 +74,9 @@ For longer work, create or use an explicit goal only when the user asks for pers
 
 ## Output Shape
 
+Use only sections needed for the requested deliverable; keep supporting detail in
+the existing task or review. Do not create companion artifacts without need.
+
 1. Objective and bounds.
 2. Preflight baseline.
 3. Observed metrics.

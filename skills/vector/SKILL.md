@@ -5,10 +5,10 @@ description: Modular vector lending indexer architecture context for this worksp
 
 # Vector
 
-Use this skill to reason about the finalized modular vector-based lending indexer
+Use this skill to reason about the modular vector-based lending indexer
 architecture for `/home/ubuntu/data-v2`.
 
-The skill packages the target platform design, the reusable protocol-line
+The skill packages platform design guidance, the reusable protocol-line
 blueprint, the vector data model, storage/recovery rules, serving contracts,
 protocol adapter guidance, performance targets, roadmap, and Aave V3 runtime
 alignment.
@@ -108,8 +108,9 @@ When asked to design, review, or implement vector architecture work:
    and hashes.
 7. Prefer memory vectors for live current risk and ClickHouse for historical or
    audit queries.
-8. Check performance claims against the Monte Carlo numbers before asserting a
-   bottleneck.
+8. Prefer current representative measurements. Consult simulations when their
+   assumptions match and they resolve material uncertainty; modeled results are
+   not measured bottleneck or production-performance evidence.
 
 ## Common Interpretations
 

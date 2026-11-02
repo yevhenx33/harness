@@ -1,344 +1,149 @@
 # Harness
 
-Harness is the source-controlled expression of a sovereign operating system for
-agent work. Models and tools are replaceable workers. The durable system is the
-owner-controlled state around them: intent, authority, methods, evidence,
-recovery, and reusable learning.
-
-Today that operating system is instruction-based. This repository packages its
-constitutional policy, workflow skills, blueprint inventory, evaluation
-evidence, and release checks. It does not provide a capability-enforcement
-kernel, signed-intent service, durable receipt journal, scheduler, or
-confidential-inference runtime. Those remain target architecture.
+Harness is the source-controlled operating policy and skill library for agent
+work. [AGENTS.md](AGENTS.md) governs commitments, authority, hygiene, service
+boundaries, verification, delivery, and recovery. Skills provide task-specific
+methods. Project repositories and runtimes own their state and direct oracles.
 
 ## Operating model
 
-The policy uses one compact execution loop:
-
 ```text
-intent -> admit -> execute -> verify/commit -> receipt
+concrete outcome and authority
+  -> outcome-first structural design
+  -> incremental-first execution at the owner
+  -> integration/invariant verification and scoped performance evidence
+  -> two completion passes
+  -> authorized delivery and cleanup
 ```
 
-- **Intent** preserves the requested outcome and later user corrections.
-- **Admit** binds scope, authority, owner, invariant, success and failure
-  oracles, relevant budget, and recovery.
-- **Execute** applies the narrowest adequate method at the authoritative
-  boundary without silently widening the commitment.
-- **Verify/commit** tests the claim at the owner or affected consumer. Source,
-  merge, activation, and runtime behavior remain separate states.
-- **Receipt** records what is true now, the evidence, outcome class, recovery,
-  and any unfinished obligation.
+Prefer sustainable structural solutions over small patches that preserve the
+cause. Use keyed/event-driven updates and bound full fallbacks. Prefer isolated
+microservices without fragmenting coherent responsibilities. Use one agent;
+independent tool calls may run concurrently within the task budget.
 
-The wider operating system connects that loop to reusable learning:
+Reports start with TLDR and concrete measured before/after/target where available.
+Estimates and unavailable values remain explicit. A proposal, passing package
+check, merged source, installed package, and observed runtime outcome are distinct.
 
-```text
-user intent and corrections
-          |
-          v
-AGENTS.md plus nearer project instructions
-(authority, invariant, oracle, budget, recovery)
-          |
-          +------ bounded prior context <------ memory and blueprints
-          |
-          v
-narrowest skill -> replaceable agent/model + tools
-                                  |
-                                  v
-                     project-owned state and consumers
-                                  |
-                                  v
-                     direct success/failure evidence
-                                  |
-                                  v
-                 commit, merge, and activation gates
-                                  |
-                                  v
-                classified outcome and task receipt
-                                  |
-                                  +------> chats/rollouts
-                                               |
-                                               v
-                              memory -> blueprint/anti-pattern -> skill
-                                               |
-                                               +--> retrieve and reverify
-```
+## Source ownership and installation
 
-`AGENTS.md` is the constitutional control layer. Skills supply optional methods;
-they do not grant authority. Project repositories and live systems remain
-authoritative for their own state. Chats and rollouts retain raw provenance,
-memory compresses outcomes and preferences, blueprints generalize transferable
-mechanisms and failure patterns, and skills encode repeatable workflows. Prior
-learning is always rechecked against the current task.
+| Component | Owner and boundary |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Shared operating rules; current snapshot must match byte for byte |
+| [Policy history](agents/README.md) | Immutable sequential releases with recorded digests |
+| [Skills](skills/) | Domain methods and selectively loaded references |
+| [Blueprint catalog](docs/blueprints/README.md) | Concise retrieval descriptions and source provenance; external documents remain independently owned |
+| [Decisions](docs/decisions/README.md) and [evaluations](docs/evaluations/) | Historical rationale and scoped evidence, not release or activation authority |
+| [Canonical verifier](scripts/verify_harness.py) | Policy, release, package, and regression checks; not proof of downstream behavioral improvement |
+| Git and pull requests | Source admission and change review |
+| Tasks and project systems | Outcome evidence, unfinished obligations, runtime and recovery ownership |
 
-Outcomes are classified as `verified win`, `verified no-gain`, `invalid`,
-`blocked`, or `inconclusive`. A blocker preserves the obligation. A passing
-command, merged change, or persuasive model response does not by itself prove
-the requested result.
+The repository is the release source. Editing it does not automatically authorize
+updating user-level skills or activating a policy in another checkout. Before
+editing a checkout referenced by global policy links, inspect those links; prepare
+unreleased changes in an isolated checkout when activation is excluded.
 
-## Current system layers
-
-| Layer | Authoritative owner | Current role and boundary |
-|---|---|---|
-| Constitutional control | [`AGENTS.md`](AGENTS.md) | Governs authority, commitments, budgets, verification, recovery, reporting, and learning |
-| Policy release history | [`agents/README.md`](agents/README.md) | Preserves immutable, hashed policy versions; the version marked Current must be byte-identical to the root policy |
-| Method layer | [`skills/`](skills/) | Supplies bounded workflows for investigation, design, implementation, verification, communication, and domain work |
-| Reusable reasoning | [`docs/blueprints/README.md`](docs/blueprints/README.md) | Catalogs the independently owned blueprint library with source identity and freshness checks; it does not copy ownership into Harness |
-| Decisions and evaluations | [`docs/decisions/README.md`](docs/decisions/README.md), [`docs/evaluations/`](docs/evaluations/) | Preserve hard-to-reverse rationale and bounded comparisons without turning design evidence into operational proof |
-| Package verification | [`verify_harness.py`](scripts/verify_harness.py) | Runs policy integrity, release and activation checks, and tests locally and in CI; it verifies this package, not every downstream task outcome |
-| Source admission | Git, pull requests, and [`github`](skills/github/SKILL.md) | Preserve reviewable source history and cooperative production admission; merge remains distinct from activation |
-| Live execution | Codex, models, tools, and project repositories | Executes work outside this repository; workers do not own durable authority or project truth |
-| Outcome evidence and learning | Tasks, Git/PRs, chats/rollouts, Codex memory, and the blueprint repository | Forms a distributed evidence and learning system; no generalized receipt service exists today |
-| Policy-sync experiment | [`run_sync_assessment.py`](scripts/run_sync_assessment.py) | Performs one bounded read-only comparison of local and remote policy state |
-| Target runtime | [`sovereign-runtime.md`](docs/sovereign-runtime.md) | Describes future trust, capability, execution, verification, commit, receipt, and confidential-inference boundaries |
-
-## Repository, installation, and activation
-
-This repository is the versioned source and release spine, not the whole live
-system. A live installation may combine the root policy, nearer project
-instructions, user-level skills, a separate blueprint checkout, retained task
-history, and Codex memory.
-
-Presence in `skills/` proves only that a package is tracked here. Installation
-or a repository-scoped discovery link makes it available to a consumer. A fresh
-consumer check establishes discovery. Merged source still does not prove that an
-existing session reloaded it or that any downstream behavior improved.
-
-Check the [activation profile](contracts/skill-activation.txt) against an accepted checkout:
+Presence in `skills/` proves tracked source, not installation or discovery. Check
+the [activation profile](contracts/skill-activation.txt) against an accepted checkout:
 
 ```sh
 rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
 /tmp/harness-release-guard activation "$PWD" /home/ubuntu/.codex/skills
 ```
 
-This rejects missing, extra, or changed files, including metadata and references;
-it does not install packages or prove discovery. Walks allow 256 entries, 16 path
-levels, and 16 MiB per package; nested symlinks are rejected.
+The profile covers 20 intended release packages. This compares complete packages,
+including metadata and references. It rejects
+missing/extra/changed files; it does not install packages or prove session reload.
+Walks are bounded to 256 entries, 16 path levels, and 16 MiB per package; nested
+symlinks are rejected. A fresh consumer check establishes discovery. Activation
+and behavioral qualification remain separate from source admission.
 
-Project code, production data, deployed artifacts, and consumer behavior remain
-owned by their respective repositories and runtimes. Harness governs how an
-agent approaches those boundaries; it does not replace their direct oracles.
+For explicitly authorized repository-scoped discovery, expose the library under
+`.agents/skills` using the host's supported skill discovery mechanism. Preserve
+existing links and independently installed skills. An existing session may need
+reload; do not claim that source edits changed its instructions.
 
-## Operating policy
+## Skill selection
 
-`AGENTS.md` is the short, always-applicable policy. It governs authority,
-commitment continuity, truthful evidence, recovery, and policy releases.
-Task-specific methods live in optional skills; a task or PR retains local choices
-and outcomes. The active policy does not require an ADR for a routine change or
-policy release.
+Use the narrowest method that changes the task's decisions. Shared rules live in
+AGENTS.md rather than being copied into every skill. Descriptions select skills;
+references supply conditional detail.
 
-Every accepted policy version is stored unchanged under `agents/versions/`.
-The root policy must be byte-identical to the single version marked Current.
+| Skill | Method |
+|---|---|
+| [read](skills/read/SKILL.md), [map](skills/map/SKILL.md) | Read-only investigation, owners, flows and evidence |
+| [architecture](skills/architecture/SKILL.md), [contract](skills/contract/SKILL.md) | Outcome-first design, service ownership and public interfaces |
+| [implementation-slice](skills/implementation-slice/SKILL.md) | Owner-level implementation, integration/invariant checks and delivery |
+| [budget](skills/budget/SKILL.md), [latency-optimization](skills/latency-optimization/SKILL.md), [me](skills/me/SKILL.md) | Resource budgets, question-driven profiling and authorized bounded observation |
+| [current-history-delta](skills/current-history-delta/SKILL.md) | Incremental current/history/tail transport and retention |
+| [github](skills/github/SKILL.md) | Repository identity, PR admission, release and worktree cleanup |
+| [structural-factorization](skills/structural-factorization/SKILL.md), [atomic-inversion-brutalism](skills/atomic-inversion-brutalism/SKILL.md), [solve-from-first-principles](skills/solve-from-first-principles/SKILL.md) | Structural alternatives, owning mechanisms and falsification |
+| [vector](skills/vector/SKILL.md), [anchor-rpc-witness](skills/anchor-rpc-witness/SKILL.md) | Protocol-local architecture and same-block independent witnesses |
+| [deep-review](skills/deep-review/SKILL.md) | Single-agent document coverage, challenge and global consistency |
+| [effective-writing](skills/effective-writing/SKILL.md), [audience-expertise](skills/audience-expertise/SKILL.md), [attention-weighted-narrative](skills/attention-weighted-narrative/SKILL.md), [experience-backward-product-design](skills/experience-backward-product-design/SKILL.md) | Writing, audience, narrative and product methods |
+| [blueprint-methods](skills/blueprint-methods/SKILL.md), [montecarlo](skills/montecarlo/SKILL.md) | Relevant mechanisms and bounded scenario models |
+| [tiered-reasoning](skills/tiered-reasoning/SKILL.md) | Explicit T0-T3 effort and single-agent hypothesis comparison |
+| [ns](skills/ns/SKILL.md) | Explicitly requested next prompt; never executes it |
 
-## Decision and learning boundaries
+## Blueprint retrieval
 
-Create a project-local decision record only for a hard-to-reverse architecture
-choice whose rationale a future maintainer could not infer from code, tests, or
-change history. Keep the reason and rejected options stable; append later outcome
-evidence. Git and PRs record release actions. Codex memory indexes evidenced
-lessons, and the independently owned blueprint library holds transferable
-mechanisms and anti-patterns. Neither replaces direct verification.
+Search [catalog descriptions](docs/blueprints/README.md) for problem shape,
+mechanism, and constraints before opening relevant source sections. The owning
+library is `/home/ubuntu/blueprints`; Harness does not copy or modify its documents.
+Descriptions and digests are retrieval/provenance evidence, not proof that a
+mechanism is effective in the current task.
 
-## Blueprint library
-
-The [catalog](docs/blueprints/README.md) tracks documents from the independently
-owned [blueprint repository](https://github.com/yevhenx33/blueprints).
-The 2026-10-03 inventory contains 44 blueprints and one reusable pattern,
-including all 11 nested engineering blueprints.
-
-The [manifest](docs/blueprints/catalog.json) records each source path, title,
-SHA-256, and local Git state at the captured source revision. Committed entries
-link to that revision. Modified and untracked entries require the local source
-checkout; their catalog entries do not publish the source documents.
-
-When the `blueprint-methods` skill is installed, use it to retrieve at most three
-relevant documents. Its default source is `/home/ubuntu/blueprints`. Read each
-selected document completely. Transfer its mechanism and failure boundaries to
-the current task, then verify against that task's oracle.
-
-For stalled searches or passing components with an untested composition, select
-**Composition Coverage Before Optimization**, derived from PK9. It separates
-construction coverage, parameter recovery, candidate retention, and final
-verification. Recovery with revealed parameters remains conditional evidence.
-
-Audit the catalog against the current source checkout:
-
-```sh
-python3 scripts/blueprint_catalog.py --source /home/ubuntu/blueprints
-```
-
-After adding, changing, or removing source documents, refresh the catalog:
+Refresh the existing catalog only when maintaining its source inventory or descriptions:
 
 ```sh
 python3 scripts/blueprint_catalog.py --source /home/ubuntu/blueprints --refresh
 ```
 
-Replace the source path when using another checkout of the owning repository.
-Review the manifest and rendered catalog before publishing the update through a
-PR. The source audit fails on inventory, content, or Git-state drift and on an
-unavailable source. CI checks catalog integrity without the source checkout;
-current source freshness requires the explicit audit above.
+Run without `--refresh` to audit current source parity. An unavailable or changed
+source fails explicitly. CI verifies the retained manifest/rendering, not current
+external freshness. Preserve dirty/untracked source status and do not publish
+private source content as an incidental library update.
 
-## General workflow skills
+## Verification and policy release
 
-| Skill | Use it for |
-|---|---|
-| [`read`](skills/read/SKILL.md) | Read-only investigation and audit |
-| [`ns`](skills/ns/SKILL.md) | Explicitly invoke `$ns` or `$ns <focus>` for one ready-to-send follow-up prompt, without executing it |
-| [`map`](skills/map/SKILL.md) | Ownership, data-flow, dependency, and runtime mapping |
-| [`architecture`](skills/architecture/SKILL.md) | Bounded design across security, storage, money, concurrency, or public contracts |
-| [`implementation-slice`](skills/implementation-slice/SKILL.md) | Bounded implementation, continuation handoffs, artifact-bound verification, and recovery |
-| [`github`](skills/github/SKILL.md) | Repository identity, branches, pull requests, rules, and publication boundaries |
-| [`effective-writing`](skills/effective-writing/SKILL.md) | Clear prose and STE-inspired technical reports, with voice and uncertainty preserved |
-| [`audience-expertise`](skills/audience-expertise/SKILL.md) | Calibrate content to an explicit audience domain-expertise level from E0 to E10 |
-| [`atomic-inversion-brutalism`](skills/atomic-inversion-brutalism/SKILL.md) | Invert governing mechanisms into minimal directly verifiable structures |
-| [`structural-factorization`](skills/structural-factorization/SKILL.md) | Decompose complex systems into invariant cores, independent factors, interactions, owners, and verification boundaries |
-| [`tiered-reasoning`](skills/tiered-reasoning/SKILL.md) | Explicitly invoke `$tiered-reasoning` with T0-T3 to route Codex effort and frontier search |
-| [`attention-weighted-narrative`](skills/attention-weighted-narrative/SKILL.md) | Allocate audience attention across decks, pitches, essays, scripts, and presentations |
-| [`blueprint-methods`](skills/blueprint-methods/SKILL.md) | Retrieve and evolve reusable cross-industry mechanisms from the blueprint library |
-| [`budget`](skills/budget/SKILL.md) | Quantify CPU, memory, disk, RPC, database, payload, latency, and concurrency limits |
-| [`contract`](skills/contract/SKILL.md) | Define API, schema, runtime, service, and producer-consumer contracts before implementation |
-| [`current-history-delta`](skills/current-history-delta/SKILL.md) | Design bounded current, selected-history, and live-delta analytics flows |
-| [`experience-backward-product-design`](skills/experience-backward-product-design/SKILL.md) | Define the intended product experience before choosing technology and scope |
-| [`latency-optimization`](skills/latency-optimization/SKILL.md) | Diagnose and verify latency and jitter reductions across request and data paths |
-| [`me`](skills/me/SKILL.md) | Structure monitored experiments, trials, soak checks, and observation windows |
-| [`montecarlo`](skills/montecarlo/SKILL.md) | Model uncertain economics, liquidity, capacity, pricing, and tail outcomes |
-| [`solve-from-first-principles`](skills/solve-from-first-principles/SKILL.md) | Decompose ambiguous or optimization-heavy problems and test competing hypotheses |
-| [`deep-review`](skills/deep-review/SKILL.md) | Review technical documents through section coverage, parallel critique, and challenged findings |
-
-Technical writing uses stable terms, explicit actors, and one action per
-procedural sentence. Reports distinguish checked, verified, merged, and activated
-states. Diagrams label observed, inferred, proposed, and unchecked relationships.
-Use a richer format only when it helps the reader's task. The
-[STE trial record](docs/evaluations/continuity-ste-trial.md) preserves the probes
-and limits; comprehension, cost, and comparative effectiveness remain unmeasured.
-The writing mode does not claim formal ASD-STE100 compliance.
-
-## Domain skills
-
-| Skill | Use it for |
-|---|---|
-| [`anchor-rpc-witness`](skills/anchor-rpc-witness/SKILL.md) | Validate indexed or materialized onchain facts against same-block RPC witnesses |
-| [`vector`](skills/vector/SKILL.md) | Modular lending-indexer architecture, protocol adapters, storage, recovery, serving, and capacity |
-
-## Activate the skills in Codex
-
-This repository stores versioned skill sources under `skills/`. Codex discovers
-repository-scoped skills under `.agents/skills` and supports symlinked skill
-folders. See the [official Codex skill documentation](https://developers.openai.com/codex/skills).
-
-For local use in this checkout, expose the library at that discovery boundary:
-
-```sh
-mkdir -p .agents
-ln -s ../skills .agents/skills
-```
-
-If newly exposed skills do not appear, restart Codex.
-
-Activation is separate from source ownership: editing this repository does not
-automatically update independently installed user-level copies.
-
-## Verify the repository
-
-Requirements:
-
-- Python 3.11
-- Rust 1.75+ and Git history
-
-Run all direct checks:
+Requirements: Python 3.11, Rust 1.75+, and Git history.
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_harness.py
 ```
 
-This builds Rust gates and tests outside the checkout and runs existing checks.
-`HARNESS_RELEASE_BASE` defaults locally to `main`; CI supplies the PR base or
-previous push commit with full history. Unavailable or unrelated baselines fail.
-CI checks the source profile; installed packages need the separate check above.
+The verifier builds Rust gates/tests outside the checkout, verifies policy history,
+checks profiled skill sources, and runs regression checks. `HARNESS_RELEASE_BASE`
+defaults locally to `main`; CI supplies the PR base or previous push commit with
+full history. Unavailable or unrelated baselines fail. Installed-package parity
+uses the separate activation check above.
 
-The checks enforce:
+A policy release updates AGENTS.md, adds the next immutable snapshot, marks it
+Current and its predecessor Superseded, and records all snapshot SHA-256 values
+in the policy index. Historical snapshots are never rewritten. Run the canonical
+checks and both completion passes; publish/merge/activate only within explicit
+authority. After an authorized merge, clean up its implementation worktree under
+the root preservation and recovery rules.
 
-- one current immutable policy version;
-- Current is latest; historical bytes are unchanged; only the next version is added;
-- sequential versions and recorded SHA-256 hashes;
-- byte equality between `AGENTS.md` and the current snapshot;
-- valid local Markdown links;
-- blueprint manifest validity and rendered-catalog consistency, with regression
-  checks for source drift and unavailable sources.
+A passing package check proves package integrity. Comparative behavioral evidence
+requires frozen tasks, matched model/effort/inputs/tools/oracles, and reporting of
+completion, authority/reporting errors, interventions, unnecessary stops, and cost.
+Do not claim improvement from wording changes or decision simulations alone.
 
-GitHub runs the same integrity workflow on pull requests and pushes to `main`.
+The [focused v024 comparison](docs/evaluations/v024-focused-comparison.md) records
+source findings, executable regressions, and a completed six-case decision
+comparison, with its limits. The earlier [comparison plan](docs/evaluations/v024-comparison-plan.md) is an
+unexecuted proposal; its twelve-trial procedure is not itself a release requirement.
 
-## Policy-sync experiment
+## Scoped policy-sync diagnostic
 
-The repository contains a bounded read-only experiment for comparing local
-policy state with live `origin/main`:
-
-- [`sync-assessment.json`](contracts/sync-assessment.json) defines its authority;
-- [`sync-receipt.schema.json`](schemas/sync-receipt.schema.json) defines its
-  narrow output;
-- [`run_sync_assessment.py`](scripts/run_sync_assessment.py) owns the host
-  classification.
-
-This schema is not a general Harness receipt protocol. The diagnostic does not
-fetch, merge, reset, commit, or push.
-
-The [Python](scripts/serve_sync_status.py) and
-[Rust](scripts/serve_sync_status.rs) Unix-socket status servers are experimental
-reference implementations, not supported runtime services. The checked-in sync
-contract is currently local-path-specific and must be parameterized before
-portable use.
-
-## Current capability versus target architecture
-
-Current:
-
-- instruction policy;
-- immutable policy releases;
-- general and security review skills;
-- blueprint catalog with source fingerprints, local draft states, and a source audit;
-- explicit-only tiered reasoning skill with blind, worktree-separated frontier search;
-- deterministic integrity checks;
-- bounded read-only policy-sync diagnostic;
-- cooperative pull-request source-admission guidance and GitHub Actions CI.
-
-Not currently implemented:
-
-- signed-intent protocol;
-- capability broker or enforcement kernel;
-- generalized receipt wire format or journal;
-- worker scheduler or commit service;
-- confidential-inference runtime;
-- enforced tier launcher, database, embeddings, or agent orchestration runtime.
-
-The future boundaries are documented in
-[`docs/sovereign-runtime.md`](docs/sovereign-runtime.md). Nothing in that
-document should be treated as deployed capability unless separately marked and
-verified.
-
-## Changing the policy
-
-A policy change must be one complete release:
-
-1. update `AGENTS.md`;
-2. add the next immutable `agents/versions/vNNN.md`;
-3. mark exactly that version Current;
-4. mark its predecessor Superseded;
-5. record every snapshot SHA-256 in `agents/README.md`;
-6. run the complete verification suite;
-7. publish through a pull request and the required integrity check.
-
-Historical snapshots are never rewritten. A correction creates a new version.
-
-## Repository principles
-
-- Authority is explicit.
-- Unknown state is never rendered as success.
-- Owners and invariants come before mechanisms.
-- The narrowest adequate method wins.
-- Tools produce evidence, not truth.
-- Verification must be able to falsify the claim.
-- Target architecture is never presented as current capability.
-- Learning remains provenance-preserving and reverified before reuse.
+[The sync contract](contracts/sync-assessment.json), [schema](schemas/sync-receipt.schema.json),
+and [assessment tool](scripts/run_sync_assessment.py) support a bounded read-only
+comparison of policy state. They do not fetch, merge, reset, commit, or push.
+The [Python](scripts/serve_sync_status.py) and [Rust](scripts/serve_sync_status.rs)
+status servers are experimental reference tools, not supported production services.
+The checked-in contract is local-path-specific. Use only its admitted scope;
+this diagnostic is not a general task receipt service.
 
 ## License
 

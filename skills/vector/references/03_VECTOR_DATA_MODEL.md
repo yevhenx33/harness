@@ -427,7 +427,10 @@ The kernel must be deterministic for the same vector inputs.
 
 ## Hashing
 
-Hash each layer separately:
+Define each digest from a named integrity, recovery, identity, or consumer
+contract. Specify its meaning, canonical inputs, computation owner, and
+invalidation dependencies. These layer names are available identities, not
+mandatory computations for every layer or update:
 
 ```text
 slot_registry_hash
@@ -440,7 +443,14 @@ protocol_vector_hash
 cross_protocol_vector_hash
 ```
 
-Hash inputs should include:
+Choose canonical inputs required by that contract, including relevant context
+from the following list. Prefer existing canonical identities where sufficient.
+Share unchanged layer digests across stats, receipts, checkpoints, and publication.
+Different hash meanings are not interchangeable. Preserve independent durable-read
+and consumer validation; replace selection/versioning contracts before removing
+their fields or computations.
+
+Relevant input context:
 
 ```text
 protocol_id
@@ -457,7 +467,14 @@ Never hash unordered maps directly.
 
 ## Checkpoint Encoding
 
-Risk vector encoding should be compact and versioned:
+Maintain authoritative state by stable keys. Apply events and deltas to affected
+keys, indexes, aggregates, and dependent projections. Bound dependency fanout and
+preserve ordering, idempotency, acknowledgement, deletion/correction, and recovery.
+
+Keep typed vectors within compatible runtime stages. Encode at required storage
+or transport boundaries. Reuse encoded values while dependencies remain unchanged.
+Choose encoding and compression from size, access, compatibility, and recovery.
+Example encodings:
 
 ```text
 encoding = f64_le_v1:collateral,debt,liq,hf
@@ -479,7 +496,11 @@ slot ids are stable across restart
 dirty planning avoids full recompute for sparse updates
 full recompute stays below block interval for dense stress target
 risk projection is deterministic
-all layer hashes are reproducible
+required digests are reproducible and satisfy declared contracts
+unchanged dependencies avoid unnecessary recomputation
+incremental updates and full recovery produce equivalent accepted state
+steady-state work follows affected inputs and dependencies
+full-dataset fallbacks are justified and bounded
 checkpoint decode recreates the same vectors
 serving indexes can be updated incrementally or rebuilt deterministically
 protocol-specific kernels do not leak storage internals

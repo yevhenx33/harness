@@ -7,7 +7,7 @@ description: Solve ambiguous, difficult, or optimization-heavy problems through 
 
 ## Aim
 
-Find the smallest complete, verifiable, and Pareto-efficient solution to the real problem.
+Find a sustainable structural solution to the concrete outcome, verified at its owner and consumer boundaries.
 
 ```text
 own -> contract -> question -> delete -> simplify -> find critical few
@@ -100,7 +100,7 @@ Do not confuse:
 
 ## 5. Generate Competing Hypotheses
 
-Cover independent mechanism families: deletion; representation; algorithm or semantics; boundary fusion; compute-storage exchange; caching or preprocessing; scheduling, batching, or concurrency; specialization or routing; approximation when permitted; and packaging or external-interface changes.
+Consider relevant mechanism families: deletion; representation; algorithm or semantics; boundary fusion; compute-storage exchange; caching or preprocessing; scheduling, batching, or concurrency; specialization or routing; approximation when permitted; and packaging or external-interface changes.
 
 Give each candidate a hypothesis card:
 
@@ -115,7 +115,12 @@ Give each candidate a hypothesis card:
 | Total cost | Runtime, storage, complexity, risk, and integration |
 | Rollback | Safe reversal path |
 
-Prefer a diverse portfolio over tuning around one local optimum.
+Generate alternatives while material uncertainty remains. Compare useful distinct
+mechanisms rather than every family by default. Stop expanding when evidence
+supports an adequate sustainable solution within the concrete contract.
+
+Apply the root outcome-first design and service boundaries. Boundary fusion does
+not authorize another service's private state or changes outside task scope.
 
 ## 6. Falsify Progressively
 

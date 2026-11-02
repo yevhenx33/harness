@@ -91,7 +91,7 @@ and independently installed skill copies are outside automatic refresh.
 
 Decision simulations support only the observed decisions. No improvement in
 production reliability, speed, or supervision cost is claimed by this release.
-The [runtime design](../sovereign-runtime.md) remains target architecture.
+The `docs/sovereign-runtime.md` design remains target architecture.
 
 ## Falsifiers, revisit triggers, and recovery
 
@@ -105,3 +105,9 @@ Recover with a new immutable policy version restoring v016 behavior, a
 superseding ADR, required verification, and deployment of the merged revision.
 Never rewrite v016, v017, or this accepted reasoning. A confidence projection
 failure must not change task truth or relax an authority boundary.
+
+## v024 source preparation
+
+The active speculative runtime document is removed by the v024 candidate. This
+record retains its historical rationale; it is not current operating guidance.
+Package verification does not establish behavioral improvement or activation.

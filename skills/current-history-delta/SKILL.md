@@ -64,14 +64,11 @@ Default WebSocket messages:
 
 ## Range Contract
 
-Use one resolution for every point in a selected range:
-
-```text
-1w  -> hourly rows
-1m  -> hourly rows
-1y  -> daily rows
-all -> weekly rows
-```
+The owning product contract defines history resolution. Prefer selecting or
+explicitly decimating existing canonical history over adding durable resolutions.
+Declare response transformations. Apply keyed events and deltas to affected
+sections while retaining unchanged identities; do not create a second financial
+truth for presentation.
 
 Do not mix daily and weekly rows inside one returned series. If a page needs a live in-progress point, send it as a separate tail stream or mark it explicitly.
 
