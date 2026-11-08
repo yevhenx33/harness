@@ -1,5 +1,6 @@
-# Intended v024 user-level release packages; other installed packages are preserved.
+# Intended user-level release packages; other installed packages are preserved.
 read
+clean
 map
 architecture
 contract
