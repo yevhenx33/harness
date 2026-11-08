@@ -63,6 +63,48 @@ For explicitly authorized repository-scoped discovery, expose the library under
 existing links and independently installed skills. An existing session may need
 reload; do not claim that source edits changed its instructions.
 
+### Local discovery after a skill release
+
+The optional local monitor observes each new `main` commit, including PRs merged
+without a Codex chat. It checks newly added and changed user-level skills against
+the exact merged GitHub objects and a fresh local Codex skill listing, then writes
+`harness/local-skill-discovery` on the merged commit. A new skill omitted from the
+activation profile fails the check. A failure or unavailable verifier never
+becomes success.
+
+The [systemd templates](tools/skill-discovery/systemd/) and example configuration
+are not installed or enabled by a source change. Activation requires explicit
+authority and a reviewed deployment; see the [runbook](tools/skill-discovery/OPERATIONS.md).
+The timer polls every five minutes while the host is running. It checkpoints the
+last verified status and catches up in first-parent order after outages, with at
+most two new commits and one failed retry per run. Failures remain on GitHub and
+are retried after installation is fixed. A full pending queue, changed history,
+rate limit, unavailable GitHub, or unavailable host is reported or held; no status
+can be published during an outage. Monitor freshness and logs separately.
+
+For a manual read-only check, substitute the exact 40-character merge commit,
+the working directory where the skill should appear, and the installed root:
+
+```sh
+CARGO_TARGET_DIR=/tmp/harness-skill-discovery-build cargo run --locked \
+  --manifest-path tools/skill-discovery/Cargo.toml -- \
+  remote-check yevhenx33/harness MERGED_COMMIT /absolute/intended/cwd "$HOME/.codex/skills"
+```
+
+The tool compares first-parent skill trees and profiles, checks complete installed
+packages against immutable merged GitHub objects, then queries a fresh `codex
+app-server` `skills/list` with `forceReload`. Missing, stale, disabled, duplicate,
+wrong-path, unavailable, or malformed results fail. It does not install or enable
+anything and does not execute code from the monitored repository.
+The Cargo target is a reusable disposable build cache; retire it when no build
+uses it and it is no longer needed. A local pass proves a fresh app-server listing
+for the selected host and cwd, not that an already-open desktop selector refreshed.
+
+This is a post-merge host check, not a pre-merge GitHub-hosted gate. Source merge,
+installation, local discovery, and UI refresh remain separate outcomes. If local
+verification fails, report the missing gate and next action; do not claim the
+skill is usable locally or silently install it.
+
 ## Skill selection
 
 Use the narrowest method that changes the task's decisions. Shared rules live in

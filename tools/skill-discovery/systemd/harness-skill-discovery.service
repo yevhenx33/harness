@@ -1,0 +1,22 @@
+[Unit]
+Description=Check merged Harness skills in local Codex
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/lib/harness-skill-discovery/harness-skill-discovery monitor %h/.config/harness-skill-discovery/config.json
+EnvironmentFile=%h/.config/harness-skill-discovery/environment
+WorkingDirectory=%h
+Nice=10
+IOSchedulingClass=idle
+CPUQuota=100%
+MemoryMax=512M
+TasksMax=64
+LimitFSIZE=536870912
+TimeoutStartSec=600
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/state/harness-skill-discovery
+PrivateTmp=yes

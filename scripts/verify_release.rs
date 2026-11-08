@@ -86,7 +86,7 @@ pub fn release(root: &Path, baseline: &str) -> Result<()> {
     Ok(())
 }
 
-fn package(root: &Path) -> Result<BTreeMap<PathBuf, Vec<u8>>> {
+pub fn package(root: &Path) -> Result<BTreeMap<PathBuf, Vec<u8>>> {
     let mut files = BTreeMap::new();
     let (mut entries, mut bytes) = (0, 0);
     let mut pending = vec![root.to_path_buf()];

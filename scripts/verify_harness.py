@@ -27,6 +27,7 @@ def verify() -> list[str]:
             ("activation-source", (guard, "skills", str(ROOT))),
             ("rust-test-build", ("rustc", "--edition=2021", "--test", "tests/release_activation.rs", "-o", tests)),
             ("release-activation-tests", (tests,)),
+            ("skill-discovery-tests", ("cargo", "test", "--locked", "--manifest-path", "tools/skill-discovery/Cargo.toml", "--target-dir", str(Path(build) / "cargo"))),
         ) + CHECKS
         return run_checks(checks)
 
@@ -57,7 +58,7 @@ def main() -> int:
     if failures:
         print(f"harness-verification: failed ({', '.join(failures)})", file=sys.stderr)
         return 1
-    print(f"harness-verification: ok ({len(CHECKS) + 5} checks)")
+    print(f"harness-verification: ok ({len(CHECKS) + 6} checks)")
     return 0
 
 
