@@ -2,6 +2,7 @@
 read
 clean
 map
+untangle
 architecture
 contract
 budget
