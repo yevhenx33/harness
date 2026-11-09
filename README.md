@@ -51,7 +51,7 @@ rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
 /tmp/harness-release-guard activation "$PWD" /home/ubuntu/.codex/skills
 ```
 
-The profile covers 21 intended release packages. This compares complete packages,
+The profile covers 22 intended release packages. This compares complete packages,
 including metadata and references. It rejects
 missing/extra/changed files; it does not install packages or prove session reload.
 Walks are bounded to 256 entries, 16 path levels, and 16 MiB per package; nested
@@ -114,6 +114,7 @@ references supply conditional detail.
 | Skill | Method |
 |---|---|
 | [read](skills/read/SKILL.md), [map](skills/map/SKILL.md) | Read-only investigation, owners, flows and evidence |
+| [untangle](skills/untangle/SKILL.md) | Read-only investigation of coupling and change propagation |
 | [clean](skills/clean/SKILL.md) | Clutter inventory, protected-state checks, and authorized retirement |
 | [architecture](skills/architecture/SKILL.md), [contract](skills/contract/SKILL.md) | Outcome-first design, service ownership and public interfaces |
 | [implementation-slice](skills/implementation-slice/SKILL.md) | Owner-level implementation, integration/invariant checks and delivery |
