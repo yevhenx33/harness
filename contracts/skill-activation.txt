@@ -16,6 +16,7 @@ vector
 atomic-inversion-brutalism
 blueprint-methods
 deep-review
+scrutiny
 effective-writing
 experience-backward-product-design
 montecarlo

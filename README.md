@@ -51,7 +51,7 @@ rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
 /tmp/harness-release-guard activation "$PWD" /home/ubuntu/.codex/skills
 ```
 
-The profile covers 22 intended release packages. This compares complete packages,
+The profile covers 23 intended release packages. This compares complete packages,
 including metadata and references. It rejects
 missing/extra/changed files; it does not install packages or prove session reload.
 Walks are bounded to 256 entries, 16 path levels, and 16 MiB per package; nested
@@ -124,6 +124,7 @@ references supply conditional detail.
 | [structural-factorization](skills/structural-factorization/SKILL.md), [atomic-inversion-brutalism](skills/atomic-inversion-brutalism/SKILL.md), [solve-from-first-principles](skills/solve-from-first-principles/SKILL.md) | Structural alternatives, owning mechanisms and falsification |
 | [vector](skills/vector/SKILL.md), [anchor-rpc-witness](skills/anchor-rpc-witness/SKILL.md) | Protocol-local architecture and same-block independent witnesses |
 | [deep-review](skills/deep-review/SKILL.md) | Single-agent document coverage, challenge and global consistency |
+| [scrutiny](skills/scrutiny/SKILL.md) | Explicitly invoked audit with a required duration and objective |
 | [effective-writing](skills/effective-writing/SKILL.md), [audience-expertise](skills/audience-expertise/SKILL.md), [attention-weighted-narrative](skills/attention-weighted-narrative/SKILL.md), [experience-backward-product-design](skills/experience-backward-product-design/SKILL.md) | Writing, audience, narrative and product methods |
 | [blueprint-methods](skills/blueprint-methods/SKILL.md), [montecarlo](skills/montecarlo/SKILL.md) | Relevant mechanisms and bounded scenario models |
 | [tiered-reasoning](skills/tiered-reasoning/SKILL.md) | Explicit T0-T3 effort and single-agent hypothesis comparison |
