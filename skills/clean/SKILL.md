@@ -89,8 +89,13 @@ dependent decisions while continuing independent authorized investigation.
 For evidence and backups, distinguish canonical assets from temporary copies.
 Establish archive dependencies and the level of restore verification needed for
 the affected recovery boundary; preserve unresolved evidence and retention
-holds. Do not print or copy suspected credentials into reports. Credential
-remediation, history rewriting, and external messages have separate authority.
+holds. For a Codex archive inventory, the local Harness evidence tool can
+reconcile an explicit snapshot manifest, count observed event types, and trace
+declared fork and backup roots. Treat missing fragments and incomplete references
+as evidence gaps. Use allocated bytes for storage and decoded bytes for record
+composition; physical reclamation requires a separate measurement. Do not print
+or copy suspected credentials into reports. Credential remediation, history
+rewriting, and external messages have separate authority.
 
 ## Authorized cleanup and verification
 

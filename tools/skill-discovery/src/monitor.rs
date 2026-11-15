@@ -586,7 +586,7 @@ mod tests {
     #[test]
     fn github_status_uses_latest_matching_context_and_verifies_actor() {
         let f = fixture();
-        let fake = f.root.join("fake-gh");
+        let fake = f.root.join("fake-gh.sh");
         let entry = |state: &str, actor: &str| json!({"context":CONTEXT,"state":state,"description":"known","creator":{"login":actor},"url":format!("https://api.github.com/repos/owner/repo/statuses/{}",f.c.baseline)});
         let data = json!([entry("success", "fixture"), entry("failure", "fixture")]).to_string();
         fs::write(&fake, format!("#!/bin/sh\nprintf '%s\\n' '{}'\n", data)).unwrap();
@@ -605,7 +605,7 @@ mod tests {
     #[test]
     fn github_command_posts_and_reconciles_an_ambiguous_write() {
         let f = fixture();
-        let fake = f.root.join("fake-gh");
+        let fake = f.root.join("fake-gh.sh");
         let status = f.root.join("status.json");
         let writes = f.root.join("writes");
         fs::write(&status, "[]").unwrap();
@@ -617,7 +617,13 @@ mod tests {
         fs::write(&fake, script).unwrap();
         fs::set_permissions(&fake, fs::Permissions::from_mode(0o700)).unwrap();
         let api = GitHub(&fake);
-        assert!(publish(&f.c, &api, &f.c.baseline, "success", "verified").is_err());
+        let first = publish(&f.c, &api, &f.c.baseline, "success", "verified").unwrap_err();
+        assert_eq!(
+            first.to_string(),
+            "command failed: exit status: 1",
+            "{first:?}"
+        );
+        assert_eq!(fs::read(&writes).unwrap(), b"x");
         publish(&f.c, &api, &f.c.baseline, "success", "verified").unwrap();
         assert_eq!(fs::read(&writes).unwrap(), b"x");
     }

@@ -60,6 +60,17 @@ fn run(root: &Path, binary: &Path, args: &[&str]) -> Result<Vec<u8>> {
 fn run_limit(root: &Path, binary: &Path, args: &[&str], limit: u64) -> Result<Vec<u8>> {
     let deadline = std::time::Instant::now() + TIMEOUT;
     let mut command = Command::new(binary);
+    // Parallel fixture setup can leave a writable script descriptor in a
+    // concurrent fork until it execs. Interpret generated .sh fixtures
+    // through the stable shell executable instead of executing those files.
+    #[cfg(test)]
+    if binary
+        .extension()
+        .is_some_and(|extension| extension == "sh")
+    {
+        command = Command::new("/bin/sh");
+        command.arg(binary);
+    }
     command
         .args(args)
         .env("GIT_OPTIONAL_LOCKS", "0")

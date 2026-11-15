@@ -19,12 +19,26 @@ Use existing preflight checks for forbidden dependencies, invalid state, and wro
 artifacts. Put mechanical validation and commit decisions in deterministic code.
 Bind evidence to its criterion, input/artifact, and environment. An exit code must
 reflect the assertion; a successful process can still print a failed predicate.
-For a new or uncertain gate, check a representative material failure too.
+For a material guarantee, keep a trace in the existing task or review from the
+protected effect to the authoritative component and source file or symbol at the
+candidate revision, the observable outcome, and the required checks. A consumer
+test may verify an effect owned by another component. Make the relation
+inspectable from either the changed code or the case.
+
+When a gate relies on named tests, take the expected case IDs from the owning
+test recipe. Compare them with observed case outcomes bound to the exact
+candidate, package, target, configuration, executable, and run. A missing,
+skipped, or mismatched case leaves the guarantee unverified. An assertion that
+ran against the intended candidate and failed is a behavioral failure. Check a
+valid run and a representative material failure for a new or uncertain gate.
 
 Make retries idempotent and bounded. Expired or cancelled work must not commit
 later. Exercise material unavailable, malformed, stale, partial, duplicate,
 ordering, cancellation, timeout, and retry states across the complete affected
-path, including relevant unchanged stages. Verify progress, not only safe failure.
+path, including relevant unchanged stages. For effects fenced by changing
+ownership, interrupt the old operation before the write, let the replacement
+commit, and resume the old operation. Observe the accepted operation in durable
+state or at the affected consumer. Verify both refusal and legitimate progress.
 
 Prefer integration and invariant checks. Add unit tests only for otherwise
 uncovered local behavior; preserve mandatory repository checks. Use the latency

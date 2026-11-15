@@ -513,12 +513,16 @@ mod tests {
         script.push_str(&format!(
             "  repos/owner/repo/git/blobs/{profile_id}) printf 'old\\n' ;;\n  *) exit 1 ;;\nesac\n"
         ));
-        let gh = dir.join("gh");
+        let gh = dir.join("gh.sh");
         fs::write(&gh, script).unwrap();
         fs::set_permissions(&gh, fs::Permissions::from_mode(0o700)).unwrap();
         let result =
             Client::new(&gh, "owner/repo", &dir).check(commit, &dir, &dir, Path::new("unused"));
-        assert!(result.unwrap_err().downcast_ref::<Unprofiled>().is_some());
+        let error = result.unwrap_err();
+        assert!(
+            error.is::<Unprofiled>(),
+            "unexpected fixture error: {error:?}"
+        );
         fs::remove_dir_all(dir).unwrap();
     }
 }

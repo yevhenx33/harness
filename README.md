@@ -180,6 +180,15 @@ source findings, executable regressions, and a completed six-case decision
 comparison, with its limits. The earlier [comparison plan](docs/evaluations/v024-comparison-plan.md) is an
 unexecuted proposal; its twelve-trial procedure is not itself a release requirement.
 
+## Local evidence diagnostics
+
+The [Harness evidence tool](tools/harness-evidence/README.md) compares expected
+test cases with observed run evidence and scans a supplied archive manifest.
+The Router replay exercises report-only decisions against retained local proof.
+Archive output covers readable inputs, recorded skill events, physical allocation,
+and declared fork and backup dependencies. It is input to the cleanup review.
+The canonical verifier runs both diagnostics' fixture tests.
+
 ## Scoped policy-sync diagnostic
 
 [The sync contract](contracts/sync-assessment.json), [schema](schemas/sync-receipt.schema.json),
