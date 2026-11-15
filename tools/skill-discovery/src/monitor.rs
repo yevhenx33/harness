@@ -1,5 +1,6 @@
 //! A bounded, one-shot poller. Scheduling and activation are external.
 use super::*;
+use sha2::{Digest, Sha256};
 use std::{
     fs::OpenOptions,
     os::unix::{
@@ -9,7 +10,7 @@ use std::{
     path::PathBuf,
 };
 
-const CONTEXT: &str = "harness/local-skill-discovery";
+const VERSION: u64 = 2;
 const MAX_PENDING: usize = 128;
 const MAX_PER_RUN: usize = 2;
 
@@ -42,11 +43,14 @@ impl Drop for Lock {
 
 struct Config {
     repo: String,
+    branch: String,
     actor: String,
     state_dir: PathBuf,
     cwd: PathBuf,
     installed: PathBuf,
     baseline: String,
+    discovery: Discovery,
+    context: String,
 }
 
 fn sha(s: &str) -> bool {
@@ -80,39 +84,79 @@ fn field<'a>(v: &'a Value, key: &str) -> Result<&'a str> {
 impl Config {
     fn load(path: &Path) -> Result<Self> {
         let v = bounded_json(path)?;
-        if v.get("version").and_then(Value::as_u64) != Some(1) {
+        if v.get("version").and_then(Value::as_u64) != Some(VERSION) {
             return Err("unsupported monitor configuration".into());
         }
         let repo = field(&v, "repo")?.to_owned();
         let parts: Vec<_> = repo.split('/').collect();
         let actor = field(&v, "actor")?.to_owned();
         let baseline = field(&v, "baseline")?.to_owned();
+        let target = field(&v, "target")?;
+        let branch = field(&v, "branch")?.to_owned();
+        let profile = field(&v, "profile")?.to_owned();
+        let scope = field(&v, "scope")?.to_owned();
         if parts.len() != 2
             || !parts.iter().all(|s| component(s))
             || !component(&actor)
             || !sha(&baseline)
+            || !component(target)
+            || !valid_branch(&branch)
+            || !skill_profiles::valid_name(&profile)
+            || !valid_scope(&scope)
         {
-            return Err("invalid repository, actor, or baseline".into());
+            return Err("invalid monitor target selector".into());
         }
         let path = |key| -> Result<PathBuf> {
             let p = PathBuf::from(field(&v, key)?);
             if !p.is_absolute() {
                 return Err(format!("{key} must be absolute").into());
             }
+            let p = fs::canonicalize(p)?;
+            if !p.is_dir() || p.to_str().is_none() {
+                return Err(format!("{key} must be a UTF-8 directory").into());
+            }
             Ok(p)
         };
-        let state_dir = fs::canonicalize(path("state_dir")?)?;
+        let state_dir = path("state_dir")?;
         let meta = fs::metadata(&state_dir)?;
-        if !meta.is_dir() || meta.uid() != unsafe { geteuid() } || meta.mode() & 0o077 != 0 {
+        let uid = unsafe { geteuid() };
+        if meta.uid() != uid || meta.mode() & 0o077 != 0 {
             return Err("state directory must be private and user-owned".into());
         }
+        let cwd = path("cwd")?;
+        let installed = path("installed")?;
+        let home = path("codex_home")?;
+        let machine_id = fs::read_to_string("/etc/machine-id")?;
+        let machine_id = machine_id.trim();
+        if machine_id.len() != 32
+            || !machine_id
+                .bytes()
+                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+            || machine_id.bytes().all(|b| b == b'0')
+        {
+            return Err("monitor requires a valid machine identity".into());
+        }
+        let identity = json!({
+            "version": VERSION, "host": "github.com", "machine": machine_id,
+            "uid": uid, "target": target, "repo": repo, "branch": branch, "actor": actor,
+            "cwd": cwd, "installed": installed, "codex_home": home, "profile": profile,
+            "scope": scope, "baseline": baseline,
+        });
+        let digest = Sha256::digest(serde_json::to_vec(&identity)?);
         Ok(Self {
             repo,
+            branch,
             actor,
             baseline,
             state_dir,
-            cwd: path("cwd")?,
-            installed: path("installed")?,
+            cwd,
+            installed,
+            discovery: Discovery {
+                profile,
+                scope,
+                home: Some(home),
+            },
+            context: format!("harness/local-skill-discovery/{digest:x}"),
         })
     }
 }
@@ -122,12 +166,12 @@ struct State {
     last: String,
     pending: Vec<String>,
 }
-fn load_state(dir: &Path, baseline: &str) -> Result<State> {
-    let path = dir.join("state.json");
+fn load_state(c: &Config) -> Result<State> {
+    let path = c.state_dir.join("state.json");
     match fs::symlink_metadata(&path) {
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
             return Ok(State {
-                last: baseline.to_owned(),
+                last: c.baseline.clone(),
                 pending: vec![],
             });
         }
@@ -135,8 +179,11 @@ fn load_state(dir: &Path, baseline: &str) -> Result<State> {
         Ok(_) => (),
     }
     let v = bounded_json(&path)?;
-    if v.get("version").and_then(Value::as_u64) != Some(1) {
+    if v.get("version").and_then(Value::as_u64) != Some(VERSION) {
         return Err("unsupported state version".into());
+    }
+    if field(&v, "context")? != c.context {
+        return Err("monitor state belongs to a different target".into());
     }
     let last = field(&v, "last")?.to_owned();
     let values = v
@@ -156,7 +203,8 @@ fn load_state(dir: &Path, baseline: &str) -> Result<State> {
     }
     Ok(State { last, pending })
 }
-fn save_state(dir: &Path, state: &State) -> Result<()> {
+fn save_state(c: &Config, state: &State) -> Result<()> {
+    let dir = &c.state_dir;
     let tmp = dir.join("state.json.tmp");
     match fs::symlink_metadata(&tmp) {
         Ok(meta) if meta.file_type().is_file() && meta.uid() == unsafe { geteuid() } => {
@@ -173,7 +221,7 @@ fn save_state(dir: &Path, state: &State) -> Result<()> {
         .open(&tmp)?;
     serde_json::to_writer(
         &mut f,
-        &json!({"version":1,"last":state.last,"pending":state.pending}),
+        &json!({"version":VERSION,"context":c.context,"last":state.last,"pending":state.pending}),
     )?;
     f.write_all(b"\n")?;
     f.sync_all()?;
@@ -201,7 +249,7 @@ trait StatusApi {
 struct GitHub<'a>(&'a Path);
 impl StatusApi for GitHub<'_> {
     fn head(&self, c: &Config) -> Result<String> {
-        remote::Client::new(self.0, &c.repo, &c.state_dir).head()
+        remote::Client::new(self.0, &c.repo, &c.state_dir).head(&c.branch)
     }
     fn next(&self, c: &Config, last: &str, head: &str) -> Result<Vec<String>> {
         remote::Client::new(self.0, &c.repo, &c.state_dir).next(last, head)
@@ -212,6 +260,7 @@ impl StatusApi for GitHub<'_> {
             &c.cwd,
             &c.installed,
             codex,
+            &c.discovery,
         )
     }
     fn verify_actor(&self, c: &Config) -> Result<()> {
@@ -227,7 +276,7 @@ impl StatusApi for GitHub<'_> {
     fn post(&self, c: &Config, commit: &str, state: &str, description: &str) -> Result<()> {
         let endpoint = format!("repos/{}/statuses/{commit}", c.repo);
         let state_arg = format!("state={state}");
-        let context_arg = format!("context={CONTEXT}");
+        let context_arg = format!("context={}", c.context);
         let description_arg = format!("description={description}");
         gh(
             &c.state_dir,
@@ -249,6 +298,7 @@ impl StatusApi for GitHub<'_> {
     }
 }
 fn current_status(c: &Config, gh_bin: &Path, commit: &str) -> Result<Option<(String, String)>> {
+    let status_url = format!("https://api.github.com/repos/{}/statuses/{commit}", c.repo);
     for page in 1..=5 {
         let endpoint = format!(
             "repos/{}/commits/{commit}/statuses?per_page=100&page={page}",
@@ -257,13 +307,13 @@ fn current_status(c: &Config, gh_bin: &Path, commit: &str) -> Result<Option<(Str
         let v = gh(&c.state_dir, gh_bin, &["api", &endpoint])?;
         let statuses = v.as_array().ok_or("GitHub status list missing")?;
         for s in statuses {
-            if s.get("context").and_then(Value::as_str) == Some(CONTEXT) {
+            if s.get("context").and_then(Value::as_str) == Some(c.context.as_str()) {
                 if s.pointer("/creator/login").and_then(Value::as_str) != Some(&c.actor)
                     || !s
                         .get("url")
                         .and_then(Value::as_str)
                         .unwrap_or("")
-                        .ends_with(&format!("/statuses/{commit}"))
+                        .eq_ignore_ascii_case(&status_url)
                 {
                     return Err("conflicting status context or author".into());
                 }
@@ -359,6 +409,31 @@ mod tests {
         );
         String::from_utf8(out.stdout).unwrap().trim().to_owned()
     }
+    fn target_config(root: &Path, baseline: &str) -> Value {
+        for dir in ["state", "installed", "codex"] {
+            fs::create_dir(root.join(dir)).unwrap();
+        }
+        fs::set_permissions(root.join("state"), fs::Permissions::from_mode(0o700)).unwrap();
+        json!({
+            "version": VERSION, "target": "fixture", "repo": "owner/repo", "actor": "fixture",
+            "branch": "main", "profile": "core", "scope": "user", "baseline": baseline,
+            "state_dir": root.join("state"), "cwd": root, "installed": root.join("installed"),
+            "codex_home": root.join("codex"),
+        })
+    }
+    fn load_config(path: &Path, config: &Value) -> Config {
+        fs::write(path, config.to_string()).unwrap();
+        fs::set_permissions(path, fs::Permissions::from_mode(0o600)).unwrap();
+        Config::load(path).unwrap()
+    }
+    fn fake_codex(c: &Config, path: &Path) {
+        let listing = json!({"id":2,"result":{"data":[{"cwd":c.cwd,"errors":[],"skills":[{"name":"new","path":c.installed.join("new/SKILL.md"),"enabled":true,"scope":c.discovery.scope}]}]}}).to_string();
+        fs::write(path, format!(
+            "#!/bin/sh\n[ \"$PWD\" = '{}' ] && [ \"$CODEX_HOME\" = '{}' ] || exit 9\nread x\nprintf '%s\\n' '{{\"id\":1,\"result\":{{}}}}'\nread x\nread x\nprintf '%s\\n' '{}'\n",
+            c.cwd.display(), c.discovery.home.as_ref().unwrap().display(), listing,
+        )).unwrap();
+        fs::set_permissions(path, fs::Permissions::from_mode(0o700)).unwrap();
+    }
     fn fixture() -> Fixture {
         let root = env::temp_dir().join(format!(
             "harness-monitor-test-{}-{}",
@@ -397,22 +472,9 @@ mod tests {
                 cache.to_str().unwrap(),
             ],
         );
-        let state_dir = root.join("state");
-        fs::create_dir(&state_dir).unwrap();
-        let installed = root.join("installed");
-        fs::create_dir(&installed).unwrap();
         let codex = root.join("fake-codex");
-        let listing = json!({"id":2,"result":{"data":[{"cwd":root,"errors":[],"skills":[{"name":"new","path":installed.join("new/SKILL.md"),"enabled":true,"scope":"user"}]}]}}).to_string();
-        fs::write(&codex, format!("#!/bin/sh\nread x\nprintf '%s\\n' '{{\"id\":1,\"result\":{{}}}}'\nread x\nread x\nprintf '%s\\n' '{}'\n", listing)).unwrap();
-        fs::set_permissions(&codex, fs::Permissions::from_mode(0o700)).unwrap();
-        let c = Config {
-            repo: "owner/repo".into(),
-            actor: "fixture".into(),
-            state_dir,
-            cwd: root.clone(),
-            installed,
-            baseline,
-        };
+        let c = load_config(&root.join("config.json"), &target_config(&root, &baseline));
+        fake_codex(&c, &codex);
         Fixture {
             root,
             source,
@@ -448,7 +510,8 @@ mod tests {
     }
     struct FakeApi {
         cache: PathBuf,
-        statuses: RefCell<BTreeMap<String, (String, String)>>,
+        statuses: RefCell<BTreeMap<(String, String), (String, String)>>,
+        head_reads: Cell<usize>,
         posts: Cell<usize>,
         ambiguous: Cell<bool>,
         bad_actor: Cell<bool>,
@@ -458,6 +521,7 @@ mod tests {
             Self {
                 cache: f.cache.clone(),
                 statuses: RefCell::new(BTreeMap::new()),
+                head_reads: Cell::new(0),
                 posts: Cell::new(0),
                 ambiguous: Cell::new(false),
                 bad_actor: Cell::new(false),
@@ -465,22 +529,16 @@ mod tests {
         }
     }
     impl StatusApi for FakeApi {
-        fn head(&self, _: &Config) -> Result<String> {
-            git(
-                &self.cache,
-                &[
-                    "fetch",
-                    "--no-tags",
-                    "origin",
-                    "refs/heads/main:refs/remotes/origin/main",
-                ],
-            )?;
-            Ok(String::from_utf8(git(
-                &self.cache,
-                &["rev-parse", "refs/remotes/origin/main"],
-            )?)?
-            .trim()
-            .to_owned())
+        fn head(&self, c: &Config) -> Result<String> {
+            self.head_reads.set(self.head_reads.get() + 1);
+            let tracking = format!("refs/remotes/origin/{}", c.branch);
+            let refspec = format!("refs/heads/{}:{tracking}", c.branch);
+            git(&self.cache, &["fetch", "--no-tags", "origin", &refspec])?;
+            Ok(
+                String::from_utf8(git(&self.cache, &["rev-parse", &tracking])?)?
+                    .trim()
+                    .to_owned(),
+            )
         }
         fn next(&self, _: &Config, last: &str, head: &str) -> Result<Vec<String>> {
             git(&self.cache, &["merge-base", "--is-ancestor", last, head])?;
@@ -501,7 +559,16 @@ mod tests {
             Ok(commits)
         }
         fn check(&self, c: &Config, commit: &str, codex: &Path) -> Result<Vec<String>> {
-            check(&self.cache, commit, &c.cwd, &c.installed, codex, TIMEOUT)
+            check(
+                &self.cache,
+                commit,
+                &c.cwd,
+                &c.installed,
+                codex,
+                TIMEOUT,
+                &format!("refs/remotes/origin/{}", c.branch),
+                &c.discovery,
+            )
         }
         fn verify_actor(&self, _: &Config) -> Result<()> {
             if self.bad_actor.get() {
@@ -510,14 +577,19 @@ mod tests {
                 Ok(())
             }
         }
-        fn current(&self, _: &Config, sha: &str) -> Result<Option<(String, String)>> {
-            Ok(self.statuses.borrow().get(sha).cloned())
+        fn current(&self, c: &Config, sha: &str) -> Result<Option<(String, String)>> {
+            Ok(self
+                .statuses
+                .borrow()
+                .get(&(c.context.clone(), sha.to_owned()))
+                .cloned())
         }
-        fn post(&self, _: &Config, sha: &str, state: &str, description: &str) -> Result<()> {
+        fn post(&self, c: &Config, sha: &str, state: &str, description: &str) -> Result<()> {
             self.posts.set(self.posts.get() + 1);
-            self.statuses
-                .borrow_mut()
-                .insert(sha.to_owned(), (state.to_owned(), description.to_owned()));
+            self.statuses.borrow_mut().insert(
+                (c.context.clone(), sha.to_owned()),
+                (state.to_owned(), description.to_owned()),
+            );
             if self.ambiguous.replace(false) {
                 return Err("ambiguous mutation".into());
             }
@@ -526,24 +598,94 @@ mod tests {
     }
 
     #[test]
+    fn independent_targets_at_same_commit_isolate_status_and_checkpoint() {
+        let f = fixture();
+        let api = FakeApi::new(&f);
+        let commit = add_skill(&f);
+        command(
+            &f.source,
+            &["push", "-q", "origin", "HEAD:refs/heads/release/other"],
+        );
+        install(&f);
+        poll(&f.c, &f.codex, &api).unwrap();
+        assert_eq!(api.current(&f.c, &commit).unwrap().unwrap().0, "success");
+        let checkpoint = fs::read(f.c.state_dir.join("state.json")).unwrap();
+
+        let second = f.root.join("second");
+        fs::create_dir(&second).unwrap();
+        let path = second.join("config.json");
+        let mut config = target_config(&second, &f.c.baseline);
+        config["branch"] = json!("release/other");
+        config["scope"] = json!("repo");
+        let mut c = load_config(&path, &config);
+        let isolated_dir = c.state_dir.clone();
+        assert_ne!(c.context, f.c.context);
+        assert_eq!(c.context, Config::load(&path).unwrap().context);
+        assert!(api.current(&c, &commit).unwrap().is_none());
+        c.state_dir = f.c.state_dir.clone();
+        let codex = second.join("fake-codex");
+        fake_codex(&c, &codex);
+        assert!(poll(&c, &codex, &api)
+            .unwrap_err()
+            .to_string()
+            .contains("different target"));
+        assert_eq!(api.head_reads.get(), 1);
+        assert_eq!(
+            fs::read(c.state_dir.join("state.json")).unwrap(),
+            checkpoint
+        );
+
+        c.state_dir = isolated_dir;
+        let legacy = json!({"version":1,"last":commit,"pending":[]}).to_string();
+        fs::write(c.state_dir.join("state.json"), &legacy).unwrap();
+        fs::set_permissions(
+            c.state_dir.join("state.json"),
+            fs::Permissions::from_mode(0o600),
+        )
+        .unwrap();
+        assert!(poll(&c, &codex, &api)
+            .unwrap_err()
+            .to_string()
+            .contains("unsupported state version"));
+        assert_eq!(api.head_reads.get(), 1);
+        assert_eq!(
+            fs::read_to_string(c.state_dir.join("state.json")).unwrap(),
+            legacy
+        );
+        fs::remove_file(c.state_dir.join("state.json")).unwrap();
+
+        poll(&c, &codex, &api).unwrap();
+        assert_eq!(api.current(&c, &commit).unwrap().unwrap().0, "failure");
+        assert_eq!(api.current(&f.c, &commit).unwrap().unwrap().0, "success");
+        assert_eq!(load_state(&c).unwrap().pending, vec![commit.clone()]);
+        fs::create_dir(c.installed.join("new")).unwrap();
+        fs::copy(
+            f.c.installed.join("new/SKILL.md"),
+            c.installed.join("new/SKILL.md"),
+        )
+        .unwrap();
+        poll(&c, &codex, &api).unwrap();
+        assert_eq!(api.current(&c, &commit).unwrap().unwrap().0, "success");
+        assert!(load_state(&c).unwrap().pending.is_empty());
+        assert_eq!(api.posts.get(), 3);
+    }
+
+    #[test]
     fn missing_install_reports_failure_then_recovers_without_duplicate_posts() {
         let f = fixture();
         let api = FakeApi::new(&f);
         let new = add_skill(&f);
         poll(&f.c, &f.codex, &api).unwrap();
-        assert_eq!(api.statuses.borrow()[&new].0, "failure");
-        let s = load_state(&f.c.state_dir, &f.c.baseline).unwrap();
+        assert_eq!(api.current(&f.c, &new).unwrap().unwrap().0, "failure");
+        let s = load_state(&f.c).unwrap();
         assert_eq!(s.last, new);
         assert_eq!(s.pending, vec![new.clone()]);
         poll(&f.c, &f.codex, &api).unwrap();
         assert_eq!(api.posts.get(), 1);
         install(&f);
         poll(&f.c, &f.codex, &api).unwrap();
-        assert_eq!(api.statuses.borrow()[&new].0, "success");
-        assert!(load_state(&f.c.state_dir, &f.c.baseline)
-            .unwrap()
-            .pending
-            .is_empty());
+        assert_eq!(api.current(&f.c, &new).unwrap().unwrap().0, "success");
+        assert!(load_state(&f.c).unwrap().pending.is_empty());
         assert_eq!(api.posts.get(), 2);
     }
     #[test]
@@ -562,13 +704,10 @@ mod tests {
         let old = command(&f.source, &["rev-parse", "HEAD"]);
         poll(&f.c, &f.codex, &api).unwrap();
         assert_eq!(
-            api.statuses.borrow()[&old].1,
+            api.current(&f.c, &old).unwrap().unwrap().1,
             "New skill missing from activation profile"
         );
-        assert!(load_state(&f.c.state_dir, &f.c.baseline)
-            .unwrap()
-            .pending
-            .is_empty());
+        assert!(load_state(&f.c).unwrap().pending.is_empty());
         fs::write(
             f.source.join("contracts/skill-activation.txt"),
             "old\nnew\n",
@@ -580,15 +719,22 @@ mod tests {
         let fixed = command(&f.source, &["rev-parse", "HEAD"]);
         install(&f);
         poll(&f.c, &f.codex, &api).unwrap();
-        assert_eq!(api.statuses.borrow()[&fixed].0, "success");
-        assert_eq!(api.statuses.borrow()[&old].0, "failure");
+        assert_eq!(api.current(&f.c, &fixed).unwrap().unwrap().0, "success");
+        assert_eq!(api.current(&f.c, &old).unwrap().unwrap().0, "failure");
     }
     #[test]
     fn github_status_uses_latest_matching_context_and_verifies_actor() {
         let f = fixture();
         let fake = f.root.join("fake-gh.sh");
-        let entry = |state: &str, actor: &str| json!({"context":CONTEXT,"state":state,"description":"known","creator":{"login":actor},"url":format!("https://api.github.com/repos/owner/repo/statuses/{}",f.c.baseline)});
-        let data = json!([entry("success", "fixture"), entry("failure", "fixture")]).to_string();
+        let entry = |state: &str, actor: &str| json!({"context":f.c.context,"state":state,"description":"known","creator":{"login":actor},"url":format!("https://api.github.com/repos/owner/repo/statuses/{}",f.c.baseline)});
+        let mut another_context = entry("failure", "fixture");
+        another_context["context"] = json!("harness/local-skill-discovery/another-target");
+        let data = json!([
+            another_context,
+            entry("success", "fixture"),
+            entry("failure", "fixture")
+        ])
+        .to_string();
         fs::write(&fake, format!("#!/bin/sh\nprintf '%s\\n' '{}'\n", data)).unwrap();
         fs::set_permissions(&fake, fs::Permissions::from_mode(0o700)).unwrap();
         assert_eq!(
@@ -609,10 +755,10 @@ mod tests {
         let status = f.root.join("status.json");
         let writes = f.root.join("writes");
         fs::write(&status, "[]").unwrap();
-        let entry = json!([{"context":CONTEXT,"state":"success","description":"verified","creator":{"login":"fixture"},"url":format!("https://api.github.com/repos/owner/repo/statuses/{}",f.c.baseline)}]);
+        let entry = json!([{"context":f.c.context,"state":"success","description":"verified","creator":{"login":"fixture"},"url":format!("https://api.github.com/repos/owner/repo/statuses/{}",f.c.baseline)}]);
         let script = format!(
             "#!/bin/sh\nif [ \"$2\" = --method ]; then\n  [ \"$3\" = POST ] || exit 2\n  [ \"$4\" = repos/owner/repo/statuses/{} ] || exit 3\n  [ \"$6\" = state=success ] || exit 4\n  [ \"$8\" = context={} ] || exit 5\n  [ \"${{10}}\" = description=verified ] || exit 6\n  printf '%s\\n' '{}' > '{}'\n  printf x >> '{}'\n  exit 1\nfi\ncat '{}'\n",
-            f.c.baseline, CONTEXT, entry, status.display(), writes.display(), status.display()
+            f.c.baseline, f.c.context, entry, status.display(), writes.display(), status.display()
         );
         fs::write(&fake, script).unwrap();
         fs::set_permissions(&fake, fs::Permissions::from_mode(0o700)).unwrap();
@@ -635,14 +781,11 @@ mod tests {
         install(&f);
         api.ambiguous.set(true);
         assert!(poll(&f.c, &f.codex, &api).is_err());
-        assert_eq!(
-            load_state(&f.c.state_dir, &f.c.baseline).unwrap().last,
-            f.c.baseline
-        );
+        assert_eq!(load_state(&f.c).unwrap().last, f.c.baseline);
         assert_eq!(api.posts.get(), 1);
         poll(&f.c, &f.codex, &api).unwrap();
         assert_eq!(api.posts.get(), 1);
-        assert_eq!(load_state(&f.c.state_dir, &f.c.baseline).unwrap().last, new);
+        assert_eq!(load_state(&f.c).unwrap().last, new);
     }
     #[test]
     fn backlog_progress_is_ordered_and_bounded() {
@@ -659,17 +802,11 @@ mod tests {
         let head = command(&f.source, &["rev-parse", "HEAD"]);
         poll(&f.c, &f.codex, &api).unwrap();
         assert_eq!(api.statuses.borrow().len(), 2);
-        assert_eq!(api.statuses.borrow()[&first].0, "success");
-        assert_ne!(
-            load_state(&f.c.state_dir, &f.c.baseline).unwrap().last,
-            head
-        );
+        assert_eq!(api.current(&f.c, &first).unwrap().unwrap().0, "success");
+        assert_ne!(load_state(&f.c).unwrap().last, head);
         poll(&f.c, &f.codex, &api).unwrap();
         assert_eq!(api.statuses.borrow().len(), 4);
-        assert_eq!(
-            load_state(&f.c.state_dir, &f.c.baseline).unwrap().last,
-            head
-        );
+        assert_eq!(load_state(&f.c).unwrap().last, head);
     }
     #[test]
     fn unavailable_actor_and_corrupt_state_never_advance() {
@@ -707,25 +844,22 @@ mod tests {
             &["push", "-q", "--force", "origin", "HEAD:refs/heads/main"],
         );
         assert!(poll(&f.c, &f.codex, &api).is_err());
-        assert_eq!(
-            load_state(&f.c.state_dir, &f.c.baseline).unwrap().last,
-            first
-        );
+        assert_eq!(load_state(&f.c).unwrap().last, first);
     }
 }
 
 fn poll(c: &Config, codex: &Path, api: &impl StatusApi) -> Result<()> {
-    let mut state = load_state(&c.state_dir, &c.baseline)?;
+    let mut state = load_state(c)?;
     let head = api.head(c)?;
     if !sha(&head) {
-        return Err("invalid remote main identity".into());
+        return Err("invalid remote branch identity".into());
     }
     let commits = api.next(c, &state.last, &head)?;
     if commits.len() > MAX_PER_RUN || commits.iter().any(|s| !sha(s)) {
         return Err("backlog exceeds limit or is malformed".into());
     }
     if commits.is_empty() && head != state.last {
-        return Err("main history gap".into());
+        return Err("release branch history gap".into());
     }
     if !commits.is_empty() || !state.pending.is_empty() {
         api.verify_actor(c)?;
@@ -744,7 +878,7 @@ fn poll(c: &Config, codex: &Path, api: &impl StatusApi) -> Result<()> {
         if retry {
             state.pending.push(commit);
         }
-        save_state(&c.state_dir, &state)?;
+        save_state(c, &state)?;
     }
     for commit in commits.iter().take(MAX_PER_RUN) {
         if state.pending.len() >= MAX_PENDING {
@@ -762,10 +896,10 @@ fn poll(c: &Config, codex: &Path, api: &impl StatusApi) -> Result<()> {
             state.pending.push(commit.to_owned());
         }
         state.last = commit.to_owned();
-        save_state(&c.state_dir, &state)?;
+        save_state(c, &state)?;
     }
     if !c.state_dir.join("state.json").exists() {
-        save_state(&c.state_dir, &state)?;
+        save_state(c, &state)?;
     }
     if state.last != head {
         eprintln!("additional commits remain for later polling");

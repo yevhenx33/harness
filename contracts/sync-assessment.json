@@ -1,27 +1,13 @@
 {
-  "task_id": "harness-sync-assessment-v1",
-  "outcome": "Classify the harness repository synchronization state.",
-  "scope": "/home/ubuntu/harness",
+  "task_id": "harness-sync-assessment-v2",
+  "outcome": "Classify synchronization for the supplied checkout, remote, and branch.",
   "authority": "read-only",
-  "primary_invariant": "The worktree, index, refs, policy bytes, and integrity result remain unchanged.",
+  "primary_invariant": "The worktree, index, refs, and policy remain unchanged.",
   "allowed_observations": [
-    "git status --short --branch",
-    "git status --porcelain=v1",
-    "git remote -v",
-    "git rev-parse HEAD main refs/remotes/origin/main",
-    "git ls-remote --heads origin main",
-    "PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_policy.py"
+    "Use the supplied target.root as the exact Git checkout root.",
+    "Inspect HEAD and worktree status, the supplied local and tracking refs, and the branch on target.remote.",
+    "Use local commit ancestry to classify the comparison. If evidence is unavailable, report inconclusive."
   ],
-  "forbidden_operations": [
-    "fetch",
-    "pull",
-    "merge",
-    "checkout",
-    "reset",
-    "stash",
-    "commit",
-    "push",
-    "file writes"
-  ],
+  "forbidden_operations": ["fetch", "pull", "merge", "checkout", "reset", "stash", "commit", "push", "file writes"],
   "states": ["up-to-date", "fast-forward-available", "ahead", "dirty", "diverged", "inconclusive"]
 }

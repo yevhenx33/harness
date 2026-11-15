@@ -9,6 +9,9 @@ use std::{
     process::Command,
 };
 
+#[path = "skill_profiles.rs"]
+pub mod skill_profiles;
+
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
 fn git(root: &Path, args: &[&str]) -> Result<Vec<u8>> {
@@ -124,28 +127,23 @@ pub fn package(root: &Path) -> Result<BTreeMap<PathBuf, Vec<u8>>> {
 }
 
 pub fn skills(root: &Path, installed: Option<&Path>) -> Result<()> {
-    let profile = fs::read_to_string(root.join("contracts/skill-activation.txt"))?;
-    let mut names = std::collections::BTreeSet::new();
-    for name in profile.lines() {
-        if name.is_empty() || name.starts_with('#') {
-            continue;
-        }
-        if !name
-            .bytes()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
-            || !names.insert(name)
-        {
-            return Err(format!("invalid or duplicate skill name: {name}").into());
-        }
-        let source = package(&root.join("skills").join(name))?;
+    verify_packages(root, installed, skill_profiles::CORE)
+}
+
+pub fn verify_packages(root: &Path, installed: Option<&Path>, profile: &str) -> Result<()> {
+    let profiles = skill_profiles::parse(&fs::read(root.join(skill_profiles::PATH))?)?;
+    let names = if installed.is_some() {
+        skill_profiles::select(&profiles, profile)?
+    } else {
+        profiles.into_values().flatten().collect()
+    };
+    for name in names {
+        let source = package(&root.join("skills").join(&name))?;
         if let Some(installed) = installed {
-            if source != package(&installed.join(name))? {
+            if source != package(&installed.join(&name))? {
                 return Err(format!("installed skill differs: {name}").into());
             }
         }
-    }
-    if names.is_empty() {
-        return Err("activation profile is empty".into());
     }
     Ok(())
 }
@@ -156,7 +154,8 @@ fn main() {
         [_, mode, root, baseline] if mode == "release" => release(Path::new(root), baseline),
         [_, mode, root] if mode == "skills" => skills(Path::new(root), None),
         [_, mode, root, installed] if mode == "activation" => skills(Path::new(root), Some(Path::new(installed))),
-        _ => Err("usage: verify_release release ROOT TRUSTED_BASE | skills ROOT | activation ROOT INSTALLED_ROOT".into()),
+        [_, mode, root, installed, profile] if mode == "activation" => verify_packages(Path::new(root), Some(Path::new(installed)), profile),
+        _ => Err("usage: verify_release release ROOT TRUSTED_BASE | skills ROOT | activation ROOT INSTALLED_ROOT [PROFILE]".into()),
     };
     match result {
         Ok(()) => println!("{}: ok", args[1]),

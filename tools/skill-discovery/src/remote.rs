@@ -61,14 +61,20 @@ impl<'a> Client<'a> {
     fn json(&self, path: &str) -> Result<Value> {
         Ok(serde_json::from_slice(&self.bytes(path, false)?)?)
     }
-    pub fn head(&self) -> Result<String> {
-        let v = self.json("/git/ref/heads/main")?;
+    pub fn head(&self, branch: &str) -> Result<String> {
+        if !valid_branch(branch) {
+            return Err("invalid release branch".into());
+        }
+        let v = self.json(&format!("/git/ref/heads/{branch}"))?;
         let head = v
             .pointer("/object/sha")
             .and_then(Value::as_str)
-            .ok_or("missing remote main")?;
-        if !valid_sha(head) || v.pointer("/object/type").and_then(Value::as_str) != Some("commit") {
-            return Err("invalid remote main".into());
+            .ok_or("missing remote branch")?;
+        if !valid_sha(head)
+            || v.pointer("/object/type").and_then(Value::as_str) != Some("commit")
+            || v.get("ref").and_then(Value::as_str) != Some(&format!("refs/heads/{branch}"))
+        {
+            return Err("invalid remote branch response".into());
         }
         Ok(head.to_owned())
     }
@@ -114,7 +120,7 @@ impl<'a> Client<'a> {
         if profile_bytes.len() as u64 != profile_size {
             return Err("profile blob size mismatch".into());
         }
-        let names = profile(&profile_bytes)?;
+        let profiles = skill_profiles::parse(&profile_bytes)?;
         let skills_tree = self.tree(&skills_id, false)?;
         if skills_tree.get("sha").and_then(Value::as_str) != Some(&skills_id) {
             return Err("skills tree identity mismatch".into());
@@ -144,7 +150,7 @@ impl<'a> Client<'a> {
                 return Err("invalid or duplicate skill tree".into());
             }
         }
-        Ok(Snapshot { names, skills })
+        Ok(Snapshot { profiles, skills })
     }
     fn package(&self, tree_id: &str) -> Result<BTreeMap<std::path::PathBuf, Vec<u8>>> {
         let tree = self.tree(tree_id, true)?;
@@ -214,6 +220,7 @@ impl<'a> Client<'a> {
         cwd: &Path,
         installed: &Path,
         codex: &Path,
+        options: &Discovery,
     ) -> Result<Vec<String>> {
         if !valid_sha(commit) {
             return Err("invalid commit".into());
@@ -238,19 +245,21 @@ impl<'a> Client<'a> {
         let new_root = self.tree(commit, false)?;
         // Most merges do not touch either input. Git tree identities let us
         // skip profile, package and consumer reads for those merges.
-        if child(&old_root, "skills", "tree")? == child(&new_root, "skills", "tree")?
+        if options.profile == skill_profiles::CORE
+            && child(&old_root, "skills", "tree")? == child(&new_root, "skills", "tree")?
             && child(&old_root, "contracts", "tree")? == child(&new_root, "contracts", "tree")?
         {
             return Ok(vec![]);
         }
         let old = self.snapshot(&old_root)?;
         let new = self.snapshot(&new_root)?;
-        let mut selected: BTreeSet<String> = new.names.difference(&old.names).cloned().collect();
+        let (new_names, mut selected) =
+            skill_profiles::transition(&old.profiles, &new.profiles, &options.profile)?;
         for (name, id) in &new.skills {
             if old.skills.get(name) != Some(id) {
-                if new.names.contains(name) {
+                if new_names.contains(name) {
                     selected.insert(name.clone());
-                } else {
+                } else if !new.profiles.values().any(|names| names.contains(name)) {
                     let t = self.tree(id, false)?;
                     let has_skill = entries(&t)?
                         .iter()
@@ -292,7 +301,7 @@ impl<'a> Client<'a> {
             }
             packages.insert(name.clone(), source);
         }
-        discover(&cwd, &installed, &names, codex, TIMEOUT)?;
+        discover(&cwd, &installed, &names, codex, TIMEOUT, options)?;
         for name in &names {
             if packages.get(name) != Some(&release::package(&installed.join(name))?) {
                 return Err(format!("installed skill changed during discovery: {name}").into());
@@ -302,7 +311,7 @@ impl<'a> Client<'a> {
     }
 }
 struct Snapshot {
-    names: BTreeSet<String>,
+    profiles: BTreeMap<String, BTreeSet<String>>,
     skills: BTreeMap<String, String>,
 }
 fn valid_sha(s: &str) -> bool {
@@ -516,8 +525,13 @@ mod tests {
         let gh = dir.join("gh.sh");
         fs::write(&gh, script).unwrap();
         fs::set_permissions(&gh, fs::Permissions::from_mode(0o700)).unwrap();
-        let result =
-            Client::new(&gh, "owner/repo", &dir).check(commit, &dir, &dir, Path::new("unused"));
+        let result = Client::new(&gh, "owner/repo", &dir).check(
+            commit,
+            &dir,
+            &dir,
+            Path::new("unused"),
+            &Discovery::default(),
+        );
         let error = result.unwrap_err();
         assert!(
             error.is::<Unprofiled>(),

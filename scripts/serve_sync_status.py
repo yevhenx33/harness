@@ -16,7 +16,8 @@ else:
 
 
 class StatusState:
-    def __init__(self) -> None:
+    def __init__(self, target: assessment.Target) -> None:
+        self.target = target
         self.result = None
         self.error = None
         self.refreshed_at = 0.0
@@ -40,7 +41,10 @@ class StatusState:
             return
         self.refreshing = True
         try:
-            self.result = await asyncio.to_thread(assessment.assess, timeout)
+            result = await asyncio.to_thread(assessment.assess, timeout, target=self.target)
+            if result["status"] == "inconclusive":
+                raise RuntimeError("sync assessment inconclusive")
+            self.result = result
             self.error = None
             self.refreshed_at = time.time()
             self.sequence += 1
@@ -63,10 +67,10 @@ async def refresh_loop(state: StatusState, interval: float, timeout: int) -> Non
         await asyncio.sleep(interval)
 
 
-async def serve(socket_path: Path, interval: float, timeout: int) -> None:
+async def serve(socket_path: Path, interval: float, timeout: int, target: assessment.Target) -> None:
     if socket_path.exists():
         raise RuntimeError(f"socket already exists: {socket_path}")
-    state = StatusState()
+    state = StatusState(target)
     server = await asyncio.start_unix_server(lambda r, w: respond(state, r, w), path=socket_path)
     os.chmod(socket_path, 0o600)
     refresher = asyncio.create_task(refresh_loop(state, interval, timeout))
@@ -85,10 +89,15 @@ def main() -> int:
     parser.add_argument("--socket", type=Path, default=Path(f"/tmp/harness-sync-status-{os.getuid()}.sock"))
     parser.add_argument("--interval", type=float, default=5.0)
     parser.add_argument("--timeout", type=int, default=120)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--remote", default="origin")
+    parser.add_argument("--branch", default="main")
+    parser.add_argument("--verify-policy", action="store_true")
     arguments = parser.parse_args()
     try:
-        asyncio.run(serve(arguments.socket, arguments.interval, arguments.timeout))
-    except (KeyboardInterrupt, RuntimeError) as error:
+        target = assessment.Target(arguments.root, arguments.remote, arguments.branch, arguments.verify_policy)
+        asyncio.run(serve(arguments.socket, arguments.interval, arguments.timeout, target))
+    except (KeyboardInterrupt, RuntimeError, OSError, ValueError) as error:
         if not isinstance(error, KeyboardInterrupt):
             print(json.dumps({"status": "blocked", "error": str(error)}))
             return 1

@@ -7,12 +7,13 @@ mod release;
 #[cfg(unix)]
 mod remote;
 
+use release::skill_profiles;
 use serde_json::{json, Value};
 use std::{
     collections::{BTreeMap, BTreeSet},
     env, fs,
     io::{BufRead, BufReader, Read, Write},
-    path::Path,
+    path::{Path, PathBuf},
     process::{Child, Command, Stdio},
     sync::mpsc,
     time::Duration,
@@ -57,6 +58,29 @@ fn run(root: &Path, binary: &Path, args: &[&str]) -> Result<Vec<u8>> {
     run_limit(root, binary, args, MAX_PACKAGE)
 }
 
+fn scrub_git_environment(command: &mut Command) {
+    for name in [
+        "GIT_DIR",
+        "GIT_WORK_TREE",
+        "GIT_COMMON_DIR",
+        "GIT_INDEX_FILE",
+        "GIT_NAMESPACE",
+        "GIT_OBJECT_DIRECTORY",
+        "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+        "GIT_GRAFT_FILE",
+        "GIT_SHALLOW_FILE",
+        "GIT_CONFIG",
+        "GIT_CONFIG_COUNT",
+        "GIT_CONFIG_PARAMETERS",
+        "GIT_PREFIX",
+        "GIT_IMPLICIT_WORK_TREE",
+        "GIT_NO_REPLACE_OBJECTS",
+        "GIT_REPLACE_REF_BASE",
+    ] {
+        command.env_remove(name);
+    }
+}
+
 fn run_limit(root: &Path, binary: &Path, args: &[&str], limit: u64) -> Result<Vec<u8>> {
     let deadline = std::time::Instant::now() + TIMEOUT;
     let mut command = Command::new(binary);
@@ -76,10 +100,14 @@ fn run_limit(root: &Path, binary: &Path, args: &[&str], limit: u64) -> Result<Ve
         .env("GIT_OPTIONAL_LOCKS", "0")
         .env("GIT_TERMINAL_PROMPT", "0")
         .env("GH_PROMPT_DISABLED", "1")
+        .env("GH_HOST", "github.com")
         .current_dir(root)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::null());
+    if binary == Path::new("git") {
+        scrub_git_environment(&mut command);
+    }
     isolate(&mut command);
     let mut child = command.spawn()?;
     let stdout = child.stdout.take().ok_or("missing git stdout")?;
@@ -124,27 +152,72 @@ fn git(root: &Path, args: &[&str]) -> Result<Vec<u8>> {
     run(root, Path::new("git"), &full)
 }
 
-fn profile(bytes: &[u8]) -> Result<BTreeSet<String>> {
-    let mut names = BTreeSet::new();
-    for line in std::str::from_utf8(bytes)?.lines() {
-        if line.is_empty() || line.starts_with('#') {
-            continue;
-        }
-        if !line
-            .bytes()
-            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
-            || !names.insert(line.to_owned())
-        {
-            return Err("invalid or duplicate activation profile entry".into());
-        }
-    }
-    if names.is_empty() {
-        return Err("empty activation profile".into());
-    }
-    Ok(names)
+struct Discovery {
+    profile: String,
+    scope: String,
+    home: Option<PathBuf>,
 }
 
-fn released(root: &Path, commit: &str) -> Result<Vec<String>> {
+impl Default for Discovery {
+    fn default() -> Self {
+        Self {
+            profile: skill_profiles::CORE.into(),
+            scope: "user".into(),
+            home: None,
+        }
+    }
+}
+
+fn valid_branch(branch: &str) -> bool {
+    !branch.is_empty()
+        && branch.len() <= 200
+        && branch.split('/').all(|part| {
+            !part.is_empty()
+                && !part.starts_with(['.', '-'])
+                && !part.ends_with('.')
+                && !part.ends_with(".lock")
+                && !part.contains("..")
+                && part
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))
+        })
+}
+
+fn valid_scope(scope: &str) -> bool {
+    !scope.is_empty()
+        && scope.len() <= 32
+        && scope.bytes().all(|b| b.is_ascii_lowercase() || b == b'-')
+}
+
+fn selection_args(args: &[std::ffi::OsString]) -> Result<(String, Discovery)> {
+    let get = |index: usize, default: &str| -> Result<String> {
+        match args.get(index) {
+            Some(value) => Ok(value.to_str().ok_or("non-UTF-8 discovery selector")?.into()),
+            None => Ok(default.into()),
+        }
+    };
+    let branch = get(0, "main")?;
+    let profile = get(1, skill_profiles::CORE)?;
+    let scope = get(2, "user")?;
+    if !valid_branch(&branch) || !skill_profiles::valid_name(&profile) || !valid_scope(&scope) {
+        return Err("invalid release branch, profile, or discovery scope".into());
+    }
+    Ok((
+        branch,
+        Discovery {
+            profile,
+            scope,
+            home: None,
+        },
+    ))
+}
+
+fn released(
+    root: &Path,
+    commit: &str,
+    tracking_ref: &str,
+    selected_profile: &str,
+) -> Result<Vec<String>> {
     if commit.len() != 40 || !commit.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err("provide the exact 40-character merged commit".into());
     }
@@ -155,25 +228,27 @@ fn released(root: &Path, commit: &str) -> Result<Vec<String>> {
     if std::str::from_utf8(&resolved)?.trim() != commit {
         return Err("merged commit identity mismatch".into());
     }
+    let tip = git(root, &["show-ref", "--verify", "--hash", tracking_ref])?;
     git(
         root,
         &[
             "merge-base",
             "--is-ancestor",
             commit,
-            "refs/remotes/origin/main",
+            std::str::from_utf8(&tip)?.trim(),
         ],
     )?;
     let parent = format!("{commit}^1");
-    let old = profile(&git(
+    let old_profiles = skill_profiles::parse(&git(
         root,
-        &["show", &format!("{parent}:contracts/skill-activation.txt")],
+        &["show", &format!("{parent}:{}", skill_profiles::PATH)],
     )?)?;
-    let new = profile(&git(
+    let new_profiles = skill_profiles::parse(&git(
         root,
-        &["show", &format!("{commit}:contracts/skill-activation.txt")],
+        &["show", &format!("{commit}:{}", skill_profiles::PATH)],
     )?)?;
-    let mut selected: BTreeSet<String> = new.difference(&old).cloned().collect();
+    let (new, mut selected) =
+        skill_profiles::transition(&old_profiles, &new_profiles, selected_profile)?;
     let mut unprofiled = BTreeSet::new();
     let diff = git(
         root,
@@ -195,7 +270,7 @@ fn released(root: &Path, commit: &str) -> Result<Vec<String>> {
             if let Some(name) = parts.next() {
                 if new.contains(name) {
                     selected.insert(name.to_owned());
-                } else {
+                } else if !new_profiles.values().any(|names| names.contains(name)) {
                     unprofiled.insert(name.to_owned());
                 }
             }
@@ -278,9 +353,14 @@ struct Server {
 }
 
 impl Server {
-    fn start(binary: &Path, timeout: Duration) -> Result<Self> {
+    fn start(binary: &Path, cwd: &Path, home: Option<&Path>, timeout: Duration) -> Result<Self> {
         let mut command = Command::new(binary);
+        scrub_git_environment(&mut command);
+        if let Some(home) = home {
+            command.env("CODEX_HOME", home);
+        }
         command
+            .current_dir(cwd)
             .args(["app-server", "--listen", "stdio://"])
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -361,7 +441,13 @@ impl Drop for Server {
     }
 }
 
-fn validate_listing(listing: &Value, cwd: &Path, installed: &Path, names: &[String]) -> Result<()> {
+fn validate_listing(
+    listing: &Value,
+    cwd: &Path,
+    installed: &Path,
+    names: &[String],
+    scope: &str,
+) -> Result<()> {
     let rows = listing
         .get("data")
         .and_then(Value::as_array)
@@ -397,9 +483,9 @@ fn validate_listing(listing: &Value, cwd: &Path, installed: &Path, names: &[Stri
         }
         let entry = entries[0];
         if entry.get("enabled").and_then(Value::as_bool) != Some(true)
-            || entry.get("scope").and_then(Value::as_str) != Some("user")
+            || entry.get("scope").and_then(Value::as_str) != Some(scope)
         {
-            return Err(format!("skill not enabled in user scope: {name}").into());
+            return Err(format!("skill not enabled in requested scope {scope}: {name}").into());
         }
         let path = entry
             .get("path")
@@ -420,8 +506,10 @@ fn check(
     installed: &Path,
     binary: &Path,
     timeout: Duration,
+    tracking_ref: &str,
+    options: &Discovery,
 ) -> Result<Vec<String>> {
-    let names = released(root, commit)?;
+    let names = released(root, commit, tracking_ref, &options.profile)?;
     if names.is_empty() {
         return Ok(names);
     }
@@ -430,7 +518,7 @@ fn check(
     for name in &names {
         package_matches_commit(root, commit, &installed, name)?;
     }
-    discover(&cwd, &installed, &names, binary, timeout)?;
+    discover(&cwd, &installed, &names, binary, timeout, options)?;
     for name in &names {
         package_matches_commit(root, commit, &installed, name)?;
     }
@@ -443,15 +531,16 @@ fn discover(
     names: &[String],
     binary: &Path,
     timeout: Duration,
+    options: &Discovery,
 ) -> Result<()> {
-    let mut server = Server::start(binary, timeout)?;
+    let mut server = Server::start(binary, cwd, options.home.as_deref(), timeout)?;
     server.send(json!({"id": 1, "method": "initialize", "params": {"clientInfo": {"name": "harness-skill-check", "version": "1"}}}))?;
     server.response(1)?;
     server.send(json!({"method": "initialized", "params": {}}))?;
     server.send(
         json!({"id": 2, "method": "skills/list", "params": {"cwds": [cwd], "forceReload": true}}),
     )?;
-    validate_listing(&server.response(2)?, cwd, installed, names)
+    validate_listing(&server.response(2)?, cwd, installed, names, &options.scope)
 }
 
 fn main() {
@@ -465,7 +554,7 @@ fn main() {
         return;
     }
     #[cfg(unix)]
-    if args.len() == 6 && args[1] == "remote-check" {
+    if (6..=9).contains(&args.len()) && args[1] == "remote-check" {
         let repo = args[2].to_string_lossy();
         let commit = args[3].to_string_lossy();
         let result = (|| -> Result<Vec<String>> {
@@ -474,17 +563,21 @@ fn main() {
             }
             let host_cwd = env::current_dir()?;
             let api = remote::Client::new(Path::new("gh"), &repo, &host_cwd);
-            let head = api.head()?;
+            let (branch, options) = selection_args(&args[6..])?;
+            let head = api.head(&branch)?;
             api.next(&commit, &head)?;
             api.check(
                 &commit,
                 Path::new(&args[4]),
                 Path::new(&args[5]),
                 Path::new("codex"),
+                &options,
             )
         })();
         match result {
-            Ok(names) if names.is_empty() => println!("no changed user-level skill packages"),
+            Ok(names) if names.is_empty() => {
+                println!("no changed skill packages in the selected profile")
+            }
             Ok(names) => println!("local discovery verified: {}", names.join(", ")),
             Err(e) => {
                 eprintln!("local discovery not verified: {e}");
@@ -493,20 +586,33 @@ fn main() {
         }
         return;
     }
-    if args.len() != 5 {
-        eprintln!("usage: harness-skill-discovery REPO MERGED_COMMIT CWD INSTALLED_SKILLS_ROOT");
+    if !(5..=9).contains(&args.len()) || args[1] == "remote-check" {
+        eprintln!("usage: harness-skill-discovery [remote-check] REPO MERGED_COMMIT CWD INSTALLED_SKILLS_ROOT [BRANCH [PROFILE [SCOPE [TRACKING_REMOTE]]]]");
         std::process::exit(2);
     }
     let commit = args[2].to_string_lossy();
-    match check(
-        Path::new(&args[1]),
-        &commit,
-        Path::new(&args[3]),
-        Path::new(&args[4]),
-        Path::new("codex"),
-        TIMEOUT,
-    ) {
-        Ok(names) if names.is_empty() => println!("no changed user-level skill packages"),
+    match selection_args(&args[5..args.len().min(8)]).and_then(|(branch, options)| {
+        let remote = match args.get(8) {
+            Some(value) => value.to_str().ok_or("non-UTF-8 tracking remote")?,
+            None => "origin",
+        };
+        if !valid_branch(remote) {
+            return Err("invalid tracking remote".into());
+        }
+        check(
+            Path::new(&args[1]),
+            &commit,
+            Path::new(&args[3]),
+            Path::new(&args[4]),
+            Path::new("codex"),
+            TIMEOUT,
+            &format!("refs/remotes/{remote}/{branch}"),
+            &options,
+        )
+    }) {
+        Ok(names) if names.is_empty() => {
+            println!("no changed skill packages in the selected profile")
+        }
         Ok(names) => println!("local discovery verified: {}", names.join(", ")),
         Err(e) => {
             eprintln!("local discovery not verified: {e}");
@@ -621,6 +727,8 @@ mod tests {
             &f.installed,
             &f.binary,
             Duration::from_millis(500),
+            "refs/remotes/origin/main",
+            &Discovery::default(),
         )
     }
 
@@ -681,7 +789,9 @@ mod tests {
             &f.root,
             &f.installed,
             &f.binary,
-            Duration::from_millis(500)
+            Duration::from_millis(500),
+            "refs/remotes/origin/main",
+            &Discovery::default(),
         )
         .is_err());
         let parent = run_git(&f.root, &["rev-parse", "HEAD^1"]);
@@ -709,9 +819,36 @@ mod tests {
             &f.root,
             &f.root.join("missing-skills"),
             &f.binary,
-            Duration::from_millis(500)
+            Duration::from_millis(500),
+            "refs/remotes/origin/main",
+            &Discovery::default(),
         )
         .unwrap()
         .is_empty());
+    }
+
+    #[test]
+    fn project_changes_are_visible_only_to_opted_in_discovery() {
+        let f = fixture();
+        fs::write(
+            f.root.join(skill_profiles::PATH),
+            "old\nnew\n[project]\nbound\n",
+        )
+        .unwrap();
+        fs::create_dir(f.root.join("skills/bound")).unwrap();
+        fs::write(f.root.join("skills/bound/SKILL.md"), "bound skill").unwrap();
+        run_git(&f.root, &["add", "."]);
+        run_git(&f.root, &["commit", "-qm", "project skill"]);
+        let commit = run_git(&f.root, &["rev-parse", "HEAD"]);
+        let tracking = "refs/remotes/other/release/next";
+        run_git(&f.root, &["update-ref", tracking, &commit]);
+        assert!(released(&f.root, &commit, tracking, "core")
+            .unwrap()
+            .is_empty());
+        assert_eq!(
+            released(&f.root, &commit, tracking, "project").unwrap(),
+            ["bound"]
+        );
+        assert!(released(&f.root, &commit, "refs/remotes/origin/main", "project").is_err());
     }
 }
