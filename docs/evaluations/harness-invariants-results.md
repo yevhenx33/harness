@@ -7,34 +7,23 @@ reporting tool, fixtures, and the canonical verification suite.
 
 ## Test ownership and execution
 
-The supplied Router plan connects two server authorization guarantees to
-src/auth.rs at the retained candidate and to their named cases in stage 021's
-recipe. The adapter independently reads the observed group from the stage log,
-reconciles the stage and development receipts, and hashes the role-selected
-executables.
+The test recipe owns the expected execution identity and named cases. The
+runner supplies a separate observation. The report-only CLI compares the
+two using the same JSON contract for every release unit.
 
-| Retained run or injected observation | Result |
+| Observation | Result |
 | --- | --- |
-| Server executable, matching scoped run, both required cases passed | Verified |
-| SDK executable with the same passing case names | Unverified, target and executable mismatch |
-| Matching cases and executable with an older attempt | Unverified, run mismatch |
-| Matching execution and other passing results with one required case omitted | Unverified for the missing case, verified for the other guarantee |
+| Exact candidate and run, both required cases passed | Verified |
+| Same case names from a different executable or target | Unverified, with the differing fields |
+| Matching cases and executable from an older attempt | Unverified, run mismatch |
+| One required case omitted from a matching run | Unverified for the affected guarantee, verified for the other guarantee |
+| A required case ran and failed in a matching execution | Failed |
+| A required case was skipped or incomplete | Unverified, with the specific case disposition |
 
-The CLI tests cover all six identity fields, skipped and incomplete cases,
-an observed assertion failure, and contradictory or duplicate results.
-Execution mismatches leave the guarantee unverified without reporting that its
-case was absent from a matching execution. A synthetic stage 021 fixture runs
-all four replay controls and verifies that a changed recipe invalidates the
-execution. Its recipe and output are independently specified. The private
-candidate and executable identifiers stay with the retained local plan.
-
-A portable fixture observes the durable record after takeover and rejects both
-the stale-writer control and a control that refuses all writes. The retained
-lifecycle oracle was also executed in scratch state. The valid writer
-passed all six checks. The stale-writer control failed all three late-write
-checks for commit, replay, and retry while its restart and publication checks
-still passed. The recorded Router run was replayed from local evidence. Only
-the synthetic lifecycle binaries were executed for this track.
+The CLI tests exercise all six identity fields and reject contradictory and
+duplicate results. The portable lifecycle fixture observes the durable result
+after takeover. It accepts the fenced writer and rejects both the stale-writer
+control and the control that refuses all writes.
 
 ## Trade-off decisions
 
@@ -80,11 +69,12 @@ recovery decisions.
 ## Release review
 
 The canonical suite passed nine checks, including seven release-activation,
-17 skill-discovery, eight evidence CLI, and 27 Python tests. The release boundary
+17 skill-discovery, seven evidence CLI, and 27 Python tests. The release boundary
 used the exact upstream base. A parallel preflight reproduced a Linux executable
 busy error in a generated skill-discovery fixture. The fixtures now use the
 stable shell interpreter and retain the outcome assertions, including the
 ambiguous-write control. The executable change is test-only.
 
-The work was locally scoped and report-only at the Router and archive boundaries. Package verification, historical replay,
-synthetic execution, and local skill discovery are different observations.
+The evidence commands are report-only. The canonical suite verifies their
+behavior with portable fixtures and checks the skill packages at the source
+boundary.

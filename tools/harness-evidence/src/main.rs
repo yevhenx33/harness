@@ -1,5 +1,4 @@
 mod archive;
-mod router;
 mod run;
 
 use serde::de::DeserializeOwned;
@@ -44,16 +43,15 @@ fn output(value: impl serde::Serialize) -> Result<()> {
 fn execute() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     match args.as_slice() {
-        [command, plan, observed] if command == "check-run" => {
-            output(run::check(&json(Path::new(plan))?, &json(Path::new(observed))?)?)
-        }
-        [command, plan, evidence] if command == "router-replay" => {
-            output(router::replay(&json(Path::new(plan))?, Path::new(evidence))?)
-        }
-        [command, manifest] if command == "archive" => {
-            output(archive::scan(json(Path::new(manifest))?, Path::new(manifest))?)
-        }
-        _ => Err("usage: harness-evidence check-run PLAN OBSERVED | router-replay PLAN RETAINED_GATE_DIR | archive MANIFEST".into()),
+        [command, plan, observed] if command == "check-run" => output(run::check(
+            &json(Path::new(plan))?,
+            &json(Path::new(observed))?,
+        )?),
+        [command, manifest] if command == "archive" => output(archive::scan(
+            json(Path::new(manifest))?,
+            Path::new(manifest),
+        )?),
+        _ => Err("usage: harness-evidence check-run PLAN OBSERVED | archive MANIFEST".into()),
     }
 }
 

@@ -1,5 +1,4 @@
 use serde_json::{json, Value};
-use sha2::{Digest, Sha256};
 use std::fs::{self, File};
 use std::io::Cursor;
 use std::os::unix::fs::MetadataExt;
@@ -63,7 +62,9 @@ fn independent_named_expectations_decide_the_exact_execution() {
         "expected": identity,
         "guarantees": [
             {"id":"published", "owner":"publication", "source":"src/publication.rs::commit",
-             "outcome":"the new writer commits", "cases":["stale_refused","replacement_commits"]}
+             "outcome":"the new writer commits", "cases":["stale_refused","replacement_commits"]},
+            {"id":"fencing", "owner":"publication", "source":"src/publication.rs::fence",
+             "outcome":"old writers are refused", "cases":["stale_refused"]}
         ]
     }));
     let observed = json!({
@@ -100,6 +101,7 @@ fn independent_named_expectations_decide_the_exact_execution() {
         report["guarantees"][0]["missing"],
         json!(["replacement_commits"])
     );
+    assert_eq!(report["guarantees"][1]["status"], "verified");
 
     let mut skipped = observed.clone();
     skipped["cases"][1]["outcome"] = json!("skipped");
@@ -379,111 +381,6 @@ fn refuses_symlinked_evidence_file() {
         scratch.run(&["archive", "link.json"]).status.code(),
         Some(2)
     );
-}
-
-#[test]
-fn router_replay_matches_the_recipe_and_run_artifacts() {
-    let scratch = Scratch::new();
-    let gate = scratch.0.join("gate-fixture");
-    for subdir in [
-        "router-ci-context/bundle/deps",
-        "router-ci",
-        "router-results/router-receipt-routing",
-    ] {
-        fs::create_dir_all(gate.join(subdir)).unwrap();
-    }
-    let fingerprint = "1".repeat(64);
-    let bundle = "2".repeat(64);
-    let recipe = "\
-for group in auth::tests::; do
-  latency-fixture router-ci test --bin rpc-router
-  grep -Fqx 'test auth::tests::first ... ok' auth.log
-  grep -Fqx 'test auth::tests::second ... ok' auth.log
-done
-";
-    let log = "\
-running 2 tests
-test auth::tests::first ... ok
-test auth::tests::second ... ok
-
-test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;
-";
-    let write = |path: &str, contents: &str| fs::write(gate.join(path), contents).unwrap();
-    write(
-        "inputs.tsv",
-        &format!("source\tfixture-source\nfingerprint\t{fingerprint}\n"),
-    );
-    write("router-ci/candidate.sha256", &format!("{bundle}\n"));
-    write(
-        "router-results/router-receipt-routing/routing.receipt",
-        &format!("fixture-source|{bundle}|routing\n"),
-    );
-    write("PASS.receipt", &format!("router-local-v1\nsource\tfixture-source\nfingerprint\t{fingerprint}\nbundle\t{bundle}\nmode\tdevelopment\n"));
-    write(
-        "steps.tsv",
-        "021\tVerify authenticated public acquisition and packaged administration\t0\t1\n",
-    );
-    write("021.bash", recipe);
-    write("021.log", log);
-    write(
-        "router-ci-context/bundle/tests.tsv",
-        "rpc-router\tdeps/router\nrouter-sdk\tdeps/sdk\n",
-    );
-    write(
-        "router-ci-context/bundle/deps/router",
-        "synthetic router test executable identity",
-    );
-    write(
-        "router-ci-context/bundle/deps/sdk",
-        "synthetic sdk test executable identity",
-    );
-
-    let recipe_digest = format!("{:x}", Sha256::digest(recipe));
-    let router_digest = format!(
-        "{:x}",
-        Sha256::digest("synthetic router test executable identity")
-    );
-    scratch.json("plan.json", &json!({
-        "schema":1,
-        "expected":{
-            "candidate":format!("fixture-source:{bundle}"),
-            "package":"rpc-router","target":"bin:rpc-router","run":"gate-fixture:021:auth",
-            "configuration":format!("latency-fixture:auth::tests::{fingerprint}:{recipe_digest}"),
-            "executable_sha256":router_digest
-        },
-        "guarantees":[
-            {"id":"first","owner":"publication","source":"src/publication.rs","outcome":"first effect","cases":["auth::tests::first"]},
-            {"id":"second","owner":"publication","source":"src/publication.rs","outcome":"second effect","cases":["auth::tests::second"]}
-        ]
-    }));
-    let args = ["router-replay", "plan.json", "gate-fixture"];
-    let result = scratch.report(&args);
-    let decisions: Vec<_> = result
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|row| {
-            (
-                row["name"].as_str().unwrap(),
-                row["result"]["status"].as_str().unwrap(),
-            )
-        })
-        .collect();
-    assert_eq!(
-        decisions,
-        [
-            ("retained_server_run", "verified"),
-            ("wrong_binary_same_case", "unverified"),
-            ("stale_execution", "unverified"),
-            ("missing_case_other_cases_green", "unverified"),
-        ]
-    );
-    assert_eq!(result[3]["result"]["guarantees"][1]["status"], "verified");
-
-    // Changing the build recipe while leaving candidate evidence intact
-    // invalidates the expected execution configuration.
-    write("021.bash", &format!("{recipe}# different environment\n"));
-    assert_eq!(scratch.run(&args).status.code(), Some(2));
 }
 
 #[test]

@@ -184,7 +184,7 @@ unexecuted proposal; its twelve-trial procedure is not itself a release requirem
 
 The [Harness evidence tool](tools/harness-evidence/README.md) compares expected
 test cases with observed run evidence and scans a supplied archive manifest.
-The Router replay exercises report-only decisions against retained local proof.
+The same report-only check accepts structured evidence from any test runner.
 Archive output covers readable inputs, recorded skill events, physical allocation,
 and declared fork and backup dependencies. It is input to the cleanup review.
 The canonical verifier runs both diagnostics' fixture tests.

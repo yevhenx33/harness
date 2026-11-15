@@ -1,27 +1,24 @@
 # Harness invariants qualification inputs
 
-These are local qualification cases. The evidence base is the retained Router
-stage and the measured CI and Morpho fixtures. The archive cases use synthetic
-transcripts with manually specified expected events and dependencies.
+The verification cases use synthetic plans and runner observations. The
+trade-off cases use retained measurements. The archive cases use synthetic
+transcripts with independently specified events and dependencies.
 
-## Router
+## Test ownership and execution
 
-The retained stage 021 of Router V5 gate-r5 observed 18 passes and one ignored
-case in its first, server-auth libtest group. The retained recipe independently
-names two required cases for this group. The local replay plan records those
-cases, the Router owner, and the expected local candidate and test executable.
-The checked-in CLI fixture uses synthetic candidate and executable identities.
-Other stage 021 groups and release admission are outside this replay's scope.
+Use a plan for a fixture release unit with two named guarantees. Independently
+provide the observed record for the exact candidate, package, target,
+configuration, executable digest, and run attempt. Vary each execution field
+individually. Identical case names from a different execution leave the planned
+guarantees unverified. Skipped, missing, incomplete, and failed cases each have
+a distinct interpretation. Omit one required case from an otherwise successful
+matching execution. The affected guarantee stays unverified and the guarantee
+supported by the remaining case is verified.
 
-The verdicts must be verified for the retained server observation, and unverified
-for an SDK binary with the same case names, a stale run, and one missing required
-case with other cases still green. A correctly scoped failed assertion must
-remain a failure. An ignored required case must stay unverified.
-
-The retained synthetic ownership fixture is qualified through durable state and
-a loopback consumer. After ownership changes, the replacement must commit,
-and stale commit, replay, or retry must leave the accepted operation intact.
-The positive control and stale-writer negative control use separate scratch state.
+Test a writer handoff by pausing the old writer, letting the replacement publish,
+and resuming the old writer. Observe durable state independently. The valid
+replacement must make progress and the old writer must leave the accepted
+operation intact. Both stale-write acceptance and refusing all writes fail.
 
 ## Hosted Rust CI
 

@@ -2,63 +2,63 @@ use crate::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
-#[derive(Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct Execution {
-    pub(crate) candidate: String,
-    pub(crate) package: String,
-    pub(crate) target: String,
-    pub(crate) configuration: String,
-    pub(crate) executable_sha256: String,
-    pub(crate) run: String,
+struct Execution {
+    candidate: String,
+    package: String,
+    target: String,
+    configuration: String,
+    executable_sha256: String,
+    run: String,
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Plan {
-    pub(crate) schema: u32,
-    pub(crate) expected: Execution,
-    pub(crate) guarantees: Vec<Guarantee>,
+    schema: u32,
+    expected: Execution,
+    guarantees: Vec<Guarantee>,
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct Guarantee {
-    pub(crate) id: String,
+struct Guarantee {
+    id: String,
     owner: String,
     source: String,
     outcome: String,
-    pub(crate) cases: Vec<String>,
+    cases: Vec<String>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Observed {
-    pub(crate) schema: u32,
-    pub(crate) execution: Execution,
-    pub(crate) outcome: Outcome,
-    pub(crate) cases: Vec<Case>,
+    schema: u32,
+    execution: Execution,
+    outcome: Outcome,
+    cases: Vec<Case>,
 }
 
 #[derive(Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
-pub(crate) enum Outcome {
+enum Outcome {
     Passed,
     Failed,
     Skipped,
     Incomplete,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct Case {
-    pub(crate) id: String,
-    pub(crate) outcome: Outcome,
+struct Case {
+    id: String,
+    outcome: Outcome,
 }
 
 #[derive(Serialize)]
 pub(crate) struct Report {
-    pub(crate) status: &'static str,
+    status: &'static str,
     observed_run_outcome: Outcome,
     mismatched_fields: Vec<&'static str>,
     guarantees: Vec<GuaranteeResult>,
@@ -81,7 +81,7 @@ fn present(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 512 && !value.chars().any(char::is_control)
 }
 
-pub(crate) fn digest(value: &str) -> bool {
+fn digest(value: &str) -> bool {
     value.len() == 64
         && value
             .bytes()

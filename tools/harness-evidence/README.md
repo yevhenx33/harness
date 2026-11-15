@@ -6,8 +6,6 @@ evidence and do not change a gate, install skills, or retire transcripts.
 
 ~~~sh
 cargo run --locked --manifest-path tools/harness-evidence/Cargo.toml -- check-run PLAN.json OBSERVED.json
-cargo run --locked --manifest-path tools/harness-evidence/Cargo.toml -- router-replay \
-  LOCAL_ROUTER_PLAN.json RETAINED_GATE_DIR
 cargo run --locked --manifest-path tools/harness-evidence/Cargo.toml -- archive MANIFEST.json
 ~~~
 
@@ -65,14 +63,13 @@ producer. It neither authenticates that producer nor substitutes for the
 behavioral assertion. Validate producer and artifact provenance at any trust
 boundary.
 
-The Router adapter is a report-only replay for the retained V5 gate-r5 stage
-021. It reads the stage recipe, ledger, first server auth test group, candidate
-receipt, and exact-role executable inventory. It hashes the retained test
-binaries. The other three verdicts use modified observations of that run.
-The replay does not execute Router, start services, or produce a live release
-receipt. Use the locally retained plan and artifacts for that replay. The
-repository verifies the adapter on an independently specified synthetic
-recipe and evidence set. [Qualification cases](../../docs/evaluations/harness-invariants-cases.md)
+The command consumes JSON observations from any runner that can supply this
+contract. Treat the package as the owning release unit and the target as the
+runner's selected executable or suite. Compare each independently executed
+target against its own plan. The repository's test recipe owns the expected
+cases and identity. A runner or its adapter owns the measured result and
+execution identity, including the digest of the executable that actually ran.
+Adapter-specific formats live with their producers.
 
 ## Archive manifest
 
