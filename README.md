@@ -44,15 +44,19 @@ editing a checkout referenced by global policy links, inspect those links; prepa
 unreleased changes in an isolated checkout when activation is excluded.
 
 Presence in `skills/` proves tracked source, not installation or discovery. Check
-the [activation profile](contracts/skill-activation.txt) against an accepted checkout:
+an existing skill directory against an accepted checkout and the
+[activation profiles](contracts/skill-activation.txt).
 
 ```sh
 rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
-/tmp/harness-release-guard activation "$PWD" /home/ubuntu/.codex/skills
+/tmp/harness-release-guard activation "$PWD" "$INSTALLED_SKILLS_ROOT"
+/tmp/harness-release-guard activation "$PWD" "$INSTALLED_SKILLS_ROOT" project
 ```
 
-The profile covers 23 intended release packages. This compares complete packages,
-including metadata and references. It rejects
+The default `core` profile covers 20 portable packages. Select `project` explicitly
+to include the three packages bound to external project code or libraries. The
+verifier checks source integrity for both profiles and compares complete packages
+for the selected installation, including metadata and references. It rejects
 missing/extra/changed files; it does not install packages or prove session reload.
 Walks are bounded to 256 entries, 16 path levels, and 16 MiB per package; nested
 symlinks are rejected. A fresh consumer check establishes discovery. Activation
@@ -65,12 +69,12 @@ reload; do not claim that source edits changed its instructions.
 
 ### Local discovery after a skill release
 
-The optional local monitor observes each new `main` commit, including PRs merged
-without a Codex chat. It checks newly added and changed user-level skills against
-the exact merged GitHub objects and a fresh local Codex skill listing, then writes
-`harness/local-skill-discovery` on the merged commit. A new skill omitted from the
-activation profile fails the check. A failure or unavailable verifier never
-becomes success.
+The optional GitHub and Codex monitor observes each new commit on its configured
+branch. It checks changes to the selected profile against merged GitHub objects
+and a fresh listing for the configured working directory, Codex home, and scope.
+The GitHub status context and private checkpoint share the target identity, so
+two targets can report independently on the same commit. A new skill omitted
+from every activation profile fails the check.
 
 The [systemd templates](tools/skill-discovery/systemd/) and example configuration
 are not installed or enabled by a source change. Activation requires explicit
@@ -88,8 +92,12 @@ the working directory where the skill should appear, and the installed root:
 ```sh
 CARGO_TARGET_DIR=/tmp/harness-skill-discovery-build cargo run --locked \
   --manifest-path tools/skill-discovery/Cargo.toml -- \
-  remote-check yevhenx33/harness MERGED_COMMIT /absolute/intended/cwd "$HOME/.codex/skills"
+  remote-check OWNER/REPOSITORY MERGED_COMMIT "$DISCOVERY_CWD" "$INSTALLED_SKILLS_ROOT" RELEASE_BRANCH core user
 ```
+
+Manual discovery defaults to `main`, `core`, and `user`. Run it with the selected
+`CODEX_HOME`. For a local Git source, replace `remote-check OWNER/REPOSITORY` with
+the checkout path and optionally append its tracking remote after the scope.
 
 The tool compares first-parent skill trees and profiles, checks complete installed
 packages against immutable merged GitHub objects, then queries a fresh `codex
@@ -180,15 +188,37 @@ source findings, executable regressions, and a completed six-case decision
 comparison, with its limits. The earlier [comparison plan](docs/evaluations/v024-comparison-plan.md) is an
 unexecuted proposal; its twelve-trial procedure is not itself a release requirement.
 
-## Scoped policy-sync diagnostic
+## Local evidence diagnostics
+
+The [Harness evidence tool](tools/harness-evidence/README.md) compares expected
+test cases with observed run evidence and scans a supplied archive manifest.
+The same report-only check accepts structured evidence from any test runner.
+Archive output covers readable inputs, recorded skill events, physical allocation,
+and declared fork and backup dependencies. It is input to the cleanup review.
+The canonical verifier runs both diagnostics' fixture tests.
+
+## Scoped Git sync diagnostic
 
 [The sync contract](contracts/sync-assessment.json), [schema](schemas/sync-receipt.schema.json),
 and [assessment tool](scripts/run_sync_assessment.py) support a bounded read-only
-comparison of policy state. They do not fetch, merge, reset, commit, or push.
+comparison of a checkout with its remote branch.
+
+```sh
+python3 scripts/run_sync_assessment.py --root "$CHECKOUT" --remote upstream --branch release/next
+```
+
+The checkout must be on the selected branch. If the live remote moved and its
+commit is unavailable through the matching tracking ref, the ancestry comparison
+is inconclusive. `--verify-policy` opts into Harness-specific policy verification.
+`--codex /path/to/codex` opts into a second read-only assessment when the branches
+have diverged. Both assessments use the same checkout, remote and branch. The
+host checks the returned target and both commits before accepting the receipt.
+
 The [Python](scripts/serve_sync_status.py) and [Rust](scripts/serve_sync_status.rs)
-status servers are experimental reference tools, not supported production services.
-The checked-in contract is local-path-specific. Use only its admitted scope;
-this diagnostic is not a general task receipt service.
+status servers are experimental reference tools. Each requires an explicit
+`--root` and holds results for that checkout, remote and branch in its own
+process. The Rust server accepts `--assessment-script` when launched outside the
+Harness source directory. Give each server process its own socket.
 
 ## License
 

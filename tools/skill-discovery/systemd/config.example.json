@@ -1,9 +1,14 @@
 {
-  "version": 1,
-  "repo": "yevhenx33/harness",
-  "actor": "yevhenx33",
-  "state_dir": "/home/ubuntu/.local/state/harness-skill-discovery",
-  "cwd": "/home/ubuntu/harness",
-  "installed": "/home/ubuntu/.codex/skills",
-  "baseline": "08b41db0339fe275a89de8898a580e38e286dc84"
+  "version": 2,
+  "target": "example-installation",
+  "repo": "owner/repository",
+  "branch": "main",
+  "profile": "core",
+  "scope": "user",
+  "actor": "status-writer",
+  "state_dir": "/absolute/private/harness-skill-discovery",
+  "cwd": "/absolute/target/checkout",
+  "installed": "/absolute/target/skill-root",
+  "codex_home": "/absolute/target/codex-home",
+  "baseline": "REPLACE_WITH_TRUSTED_FIRST_PARENT_COMMIT"
 }

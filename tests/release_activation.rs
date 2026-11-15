@@ -153,6 +153,23 @@ fn package_resource_limits_fail_closed() {
     assert!(error.to_string().contains("limit"), "{error}");
 }
 #[test]
+fn portable_default_and_project_opt_in_verify_different_installations() {
+    let f = Fixture::new();
+    f.skill();
+    f.write(
+        "contracts/skill-activation.txt",
+        "sample\n[project]\nbound\n",
+    );
+    f.write("skills/bound/SKILL.md", "bound skill");
+    guard::skills(&f.0, None).unwrap();
+    guard::skills(&f.0, Some(&f.installed())).unwrap();
+    assert!(guard::verify_packages(&f.0, Some(&f.installed()), "project").is_err());
+    f.write("installed/bound/SKILL.md", "bound skill");
+    guard::verify_packages(&f.0, Some(&f.installed()), "project").unwrap();
+    assert!(guard::verify_packages(&f.0, Some(&f.installed()), "unknown").is_err());
+}
+
+#[test]
 fn invalid_profiles_and_nested_symlinks_fail() {
     let f = Fixture::new();
     f.skill();

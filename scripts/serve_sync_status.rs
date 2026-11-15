@@ -83,25 +83,40 @@ fn json_escape(value: &str) -> String {
         .replace('\t', "\\t")
 }
 
-fn assessment() -> Result<String, String> {
-    let output = Command::new("python3")
-        .arg("scripts/run_sync_assessment.py")
-        .env("PYTHONDONTWRITEBYTECODE", "1")
-        .env("GIT_OPTIONAL_LOCKS", "0")
-        .output()
-        .map_err(|error| error.to_string())?;
-    if output.status.success() {
-        String::from_utf8(output.stdout)
-            .map(|value| value.trim_end().to_owned())
-            .map_err(|error| error.to_string())
-    } else {
-        Err(String::from_utf8_lossy(&output.stderr).trim().to_string())
+struct Assessment {
+    script: PathBuf,
+    root: PathBuf,
+    remote: String,
+    branch: String,
+    verify_policy: bool,
+}
+
+impl Assessment {
+    fn run(&self) -> Result<String, String> {
+        let mut command = Command::new("python3");
+        command
+            .arg(&self.script)
+            .arg("--root")
+            .arg(&self.root)
+            .args(["--remote", &self.remote, "--branch", &self.branch])
+            .env("PYTHONDONTWRITEBYTECODE", "1");
+        if self.verify_policy {
+            command.arg("--verify-policy");
+        }
+        let output = command.output().map_err(|error| error.to_string())?;
+        if output.status.success() {
+            String::from_utf8(output.stdout)
+                .map(|value| value.trim_end().to_owned())
+                .map_err(|error| error.to_string())
+        } else {
+            Err(format!("sync assessment failed ({})", output.status))
+        }
     }
 }
 
-fn refresh(state: &RwLock<Snapshot>) {
+fn refresh(state: &RwLock<Snapshot>, assessment: &Assessment) {
     state.write().unwrap().refreshing = true;
-    let result = assessment();
+    let result = assessment.run();
     let mut snapshot = state.write().unwrap();
     match result {
         Ok(value) => {
@@ -115,14 +130,16 @@ fn refresh(state: &RwLock<Snapshot>) {
     snapshot.refreshing = false;
 }
 
-fn argument(name: &str, default: &str) -> String {
+fn argument(name: &str, default: &str) -> Result<String, String> {
     let values: Vec<String> = env::args().collect();
+    let Some(index) = values.iter().position(|value| value == name) else {
+        return Ok(default.to_owned());
+    };
     values
-        .iter()
-        .position(|value| value == name)
-        .and_then(|index| values.get(index + 1))
+        .get(index + 1)
+        .filter(|value| !value.is_empty() && !value.starts_with("--"))
         .cloned()
-        .unwrap_or_else(|| default.to_string())
+        .ok_or_else(|| format!("{name} requires a value"))
 }
 
 fn benchmark_local_reads(state: &RwLock<Snapshot>, reads: u64) {
@@ -146,15 +163,29 @@ impl Drop for SocketGuard {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let socket = PathBuf::from(argument("--socket", "/tmp/harness-sync-status-rust.sock"));
-    let interval = argument("--interval", "5").parse::<f64>()?;
-    let max_requests = argument("--max-requests", "0").parse::<u64>()?;
-    let benchmark_reads = argument("--benchmark-local", "0").parse::<u64>()?;
+    let socket = PathBuf::from(argument("--socket", "/tmp/harness-sync-status-rust.sock")?);
+    let interval = argument("--interval", "5")?.parse::<f64>()?;
+    let max_requests = argument("--max-requests", "0")?.parse::<u64>()?;
+    let benchmark_reads = argument("--benchmark-local", "0")?.parse::<u64>()?;
+    let root = argument("--root", "")?;
+    if root.is_empty() {
+        return Err("--root requires an exact checkout root".into());
+    }
+    let assessment = Assessment {
+        script: fs::canonicalize(argument(
+            "--assessment-script",
+            "scripts/run_sync_assessment.py",
+        )?)?,
+        root: fs::canonicalize(root)?,
+        remote: argument("--remote", "origin")?,
+        branch: argument("--branch", "main")?,
+        verify_policy: env::args().any(|value| value == "--verify-policy"),
+    };
     if socket.exists() {
         return Err(format!("socket already exists: {}", socket.display()).into());
     }
     let state = Arc::new(RwLock::new(Snapshot::new()));
-    refresh(&state);
+    refresh(&state, &assessment);
     if benchmark_reads > 0 {
         benchmark_local_reads(&state, benchmark_reads);
         return Ok(());
@@ -169,7 +200,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         while !refresh_stop.load(Ordering::Relaxed) {
             thread::sleep(Duration::from_secs_f64(interval));
             if !refresh_stop.load(Ordering::Relaxed) {
-                refresh(&refresh_state);
+                refresh(&refresh_state, &assessment);
             }
         }
     });

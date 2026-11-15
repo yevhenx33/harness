@@ -20,16 +20,17 @@ class HarnessVerificationTest(unittest.TestCase):
         self.assertEqual([name for name, _ in CHECKS], ["policy-integrity", "tests"])
 
     def test_runs_every_check_and_reports_each_failure(self) -> None:
-        results = [subprocess.CompletedProcess([], 0)] * 6 + [
+        results = [subprocess.CompletedProcess([], 0)] * 7 + [
             subprocess.CompletedProcess([], 1),
             subprocess.CompletedProcess([], 2),
         ]
         with patch("scripts.verify_harness.subprocess.run", side_effect=results) as run:
             self.assertEqual(verify(), ["policy-integrity", "tests"])
-        self.assertEqual(run.call_count, len(CHECKS) + 6)
+        self.assertEqual(run.call_count, len(CHECKS) + 7)
+        self.assertTrue(any("tools/harness-evidence/Cargo.toml" in call.args[0] for call in run.call_args_list))
 
     def test_timeout_is_explicit_and_later_checks_still_run(self) -> None:
-        results = [subprocess.CompletedProcess([], 0)] * 6 + [
+        results = [subprocess.CompletedProcess([], 0)] * 7 + [
             subprocess.TimeoutExpired([], 300),
             subprocess.CompletedProcess([], 0),
         ]
@@ -39,7 +40,7 @@ class HarnessVerificationTest(unittest.TestCase):
         ):
             self.assertEqual(verify(), ["policy-integrity"])
         self.assertIn("policy-integrity: failed", stderr.getvalue())
-        self.assertEqual(run.call_count, len(CHECKS) + 6)
+        self.assertEqual(run.call_count, len(CHECKS) + 7)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,12 @@ CPU/memory/disk/RPC costs, and migration/recovery consequences. Include index
 maintenance and cross-service communication, serialization, consistency,
 deployment, and failure costs. Label assumptions and estimates.
 
+For material trade-offs, name the objective, comparable workload, operating
+condition, measurement boundary, and hard invariants before choosing. Attribute
+moved work to the operation and owner that pay for it. Identify the measurement
+or condition that would reverse the recommendation. Keep the choice conditional
+if that evidence is missing, and name the smallest deciding check.
+
 Define the architecture falsifier, affected stop scope, and resume condition.
 Test the riskiest assumption with a bounded probe before dependent implementation.
 Distinguish repairable implementation errors from a defeated architecture.

@@ -1,4 +1,4 @@
-# Intended user-level release packages; other installed packages are preserved.
+# Portable core packages. Named sections are opt-in additions to the core.
 read
 clean
 map
@@ -12,13 +12,15 @@ latency-optimization
 current-history-delta
 github
 structural-factorization
-vector
 atomic-inversion-brutalism
-blueprint-methods
 deep-review
 scrutiny
 effective-writing
-experience-backward-product-design
 montecarlo
 solve-from-first-principles
 tiered-reasoning
+
+[project]
+vector
+blueprint-methods
+experience-backward-product-design

@@ -52,9 +52,12 @@ Use this skill to make performance and resource limits explicit before code or p
 Distinguish desired targets, hard caps, and agreed architecture stop conditions.
 Name growing dimensions and estimate time, space, I/O, and fanout bounds before
 scaling the workload. Count waiting, queueing, retries, and deferred work in the
-complete operation; stage timings are diagnostics, and summed stage quantiles
-are not measured end-to-end quantiles. A faster partial path cannot satisfy a
-budget that includes omitted work. Report target misses even after improvement;
+complete operation. When work shifts, report the cost for affected startup,
+first use, steady state, invalidation, or recovery, including who pays. Keep
+elapsed time to the user-visible result and total resource occupancy separate.
+Stage timings are diagnostics, and summed stage quantiles are not measured
+end-to-end quantiles. A faster partial path cannot satisfy a budget that includes
+omitted work. Report target misses even after improvement;
 when a stop condition is reached, hold the affected work without resetting its
 allowance or authorizing rollback.
 
@@ -80,6 +83,8 @@ the existing task or review. Do not create companion artifacts without need.
 3. Target and hard-limit budgets.
 4. Worst-case fanout analysis.
 5. Instrumentation and enforcement.
-6. Recommendation: proceed, narrow scope, simulate, or redesign.
+6. Recommendation: proceed, narrow scope, simulate, or redesign. For a material
+   choice, include the observed cost or scenario that would change it. State
+   unknown crossover conditions explicitly and identify the deciding check.
 
 If the budget cannot be measured yet, state what mock, dry run, or monitored experiment would make it measurable.
