@@ -53,7 +53,7 @@ rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
 /tmp/harness-release-guard activation "$PWD" "$INSTALLED_SKILLS_ROOT" project
 ```
 
-The default `core` profile covers 20 portable packages. Select `project` explicitly
+The default `core` profile covers 21 portable packages. Select `project` explicitly
 to include the three packages bound to external project code or libraries. The
 verifier checks source integrity for both profiles and compares complete packages
 for the selected installation, including metadata and references. It rejects
@@ -126,6 +126,7 @@ references supply conditional detail.
 | [clean](skills/clean/SKILL.md) | Clutter inventory, protected-state checks, and authorized retirement |
 | [architecture](skills/architecture/SKILL.md), [contract](skills/contract/SKILL.md) | Outcome-first design, service ownership and public interfaces |
 | [implementation-slice](skills/implementation-slice/SKILL.md) | Owner-level implementation, integration/invariant checks and delivery |
+| [dst](skills/dst/SKILL.md) | Deterministic simulation for stateful changes where failure ordering matters |
 | [budget](skills/budget/SKILL.md), [latency-optimization](skills/latency-optimization/SKILL.md), [me](skills/me/SKILL.md) | Resource budgets, question-driven profiling and authorized bounded observation |
 | [current-history-delta](skills/current-history-delta/SKILL.md) | Incremental current/history/tail transport and retention |
 | [github](skills/github/SKILL.md) | Repository identity, PR admission, release and worktree cleanup |
