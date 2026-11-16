@@ -131,6 +131,7 @@ references supply conditional detail.
 | [current-history-delta](skills/current-history-delta/SKILL.md) | Incremental current/history/tail transport and retention |
 | [github](skills/github/SKILL.md) | Repository identity, PR admission, release and worktree cleanup |
 | [structural-factorization](skills/structural-factorization/SKILL.md), [atomic-inversion-brutalism](skills/atomic-inversion-brutalism/SKILL.md), [solve-from-first-principles](skills/solve-from-first-principles/SKILL.md) | Structural alternatives, owning mechanisms and falsification |
+| [rubik](skills/rubik/SKILL.md) | Challenge assumptions and combine structural rotations to remove performance blockers |
 | [vector](skills/vector/SKILL.md), [anchor-rpc-witness](skills/anchor-rpc-witness/SKILL.md) | Protocol-local architecture and same-block independent witnesses |
 | [deep-review](skills/deep-review/SKILL.md) | Single-agent document coverage, challenge and global consistency |
 | [scrutiny](skills/scrutiny/SKILL.md) | Explicitly invoked audit with a required duration and objective |
