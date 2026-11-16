@@ -14,6 +14,7 @@ current-history-delta
 github
 structural-factorization
 atomic-inversion-brutalism
+rubik
 deep-review
 scrutiny
 effective-writing
