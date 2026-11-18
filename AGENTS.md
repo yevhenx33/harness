@@ -58,11 +58,17 @@ lean architecture that removes unnecessary work at its source. Optimize structur
 before operations: direct ownership, incremental updates, bounded state, explicit
 control flow, and reuse of authoritative results.
 
-Present the recommendation and deciding evidence before implementation. Compare
-it with the suggested approach: work, state, dependencies, and failure paths
-removed; producer-to-consumer path and contracts; resource/performance effects;
-and correctness, migration, recovery, and operational consequences. Follow the
-measurement and reporting rules below; do not claim optimality without proof.
+Before implementing a material design change, present the recommendation and
+the evidence that supports it. This applies when the change materially affects
+ownership, shared contracts, persistence, migration, recovery, or operating
+cost. Compare the recommendation with the suggested approach in terms of work,
+state, dependencies, and failure paths. Explain the effects on producers,
+consumers, correctness, and operations. Follow the measurement and reporting
+rules below and support any claim of optimality with evidence.
+
+For a bounded fix with a clear acceptance check and no material design choice,
+proceed within existing authority and verify the result. Resolve routine
+implementation decisions during the work.
 
 Continue under existing authority when the recommendation satisfies the contract.
 Obtain agreement before changing its outcome, user-selected architecture, service
