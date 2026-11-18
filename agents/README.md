@@ -9,7 +9,8 @@ not act as nested repository instructions.
 
 | Version | Status | Effective date | Original source | Change |
 |---|---|---|---|---|
-| [`v024`](versions/v024.md) | Current | 2026-11-02 | User-approved structural hygiene consolidation | Outcome-first design, incremental keyed processing, service isolation, one agent, completion passes and scoped profiling |
+| [`v025`](versions/v025.md) | Current | 2026-11-18 | User-approved design review refinement | Present evidence upfront for material design changes and proceed directly on bounded fixes with clear acceptance checks |
+| [`v024`](versions/v024.md) | Superseded | 2026-11-02 | User-approved structural hygiene consolidation | Outcome-first design, incremental keyed processing, service isolation, one agent, completion passes and scoped profiling |
 | [`v023`](versions/v023.md) | Superseded | 2026-11-01 | User-approved delegation default | Default to one executor and delegate for a specific justified purpose |
 | [`v022`](versions/v022.md) | Superseded | 2026-10-20 | User timezone preference | Use Kraków local time for all user-facing dates and times, including daylight-saving changes |
 | [`v021`](versions/v021.md) | Superseded | 2026-10-10 | Architecture blocker and agent workaround review | Preserve outcomes across attempts, stop at architecture blockers, and require module contracts and cumulative resource budgets |
@@ -67,6 +68,7 @@ v021 968657af34675cc08ccec70d539eb27920920a1a910a30ba7f7521523a8fd593
 v022 515fe22182cb3a57a81bb393bed6b90464fabdbfbc4b47f8378d69ee2da9d7f4
 v023 b3188011d7b997efcba098255d3c8d560a846ffb734504a9e334d29f046f214d
 v024 67f140a8f1bed6a06aa8af71b3deb14fd4b76e9d5e8200c19708d8b3926b62f3
+v025 6a652665b16c4c5297ca9a6e1262f6b0ac752ea1b92b77a5f6b600de218724be
 ```
 
 For every future root-policy change:
