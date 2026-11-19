@@ -53,7 +53,7 @@ rustc --edition=2021 scripts/verify_release.rs -o /tmp/harness-release-guard
 /tmp/harness-release-guard activation "$PWD" "$INSTALLED_SKILLS_ROOT" project
 ```
 
-The default `core` profile covers 21 portable packages. Select `project` explicitly
+The default `core` profile covers the portable packages. Select `project` explicitly
 to include the three packages bound to external project code or libraries. The
 verifier checks source integrity for both profiles and compares complete packages
 for the selected installation, including metadata and references. It rejects
@@ -122,6 +122,7 @@ references supply conditional detail.
 | Skill | Method |
 |---|---|
 | [read](skills/read/SKILL.md), [map](skills/map/SKILL.md) | Read-only investigation, owners, flows and evidence |
+| [backlog](skills/backlog/SKILL.md) | Read-only feature summary in three short lines |
 | [untangle](skills/untangle/SKILL.md) | Read-only investigation of coupling and change propagation |
 | [clean](skills/clean/SKILL.md) | Clutter inventory, protected-state checks, and authorized retirement |
 | [architecture](skills/architecture/SKILL.md), [contract](skills/contract/SKILL.md) | Outcome-first design, service ownership and public interfaces |
