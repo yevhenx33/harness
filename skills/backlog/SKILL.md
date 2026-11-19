@@ -7,10 +7,10 @@ description: Use when asked for a concise, read-only backlog summary of a specif
 
 Use the supplied context first and consult relevant sources read-only if needed. Return the summary in chat without creating or updating files, tickets, or other records.
 
-Return exactly three labeled lines, with at most one concise sentence per line:
+Start with a short feature title in plain text. Follow it with exactly three plain-text bullets, each a short phrase or at most one sentence:
 
-- **Problem** — State the specific gap and who or what it affects.
-- **Solution** — State the proposed change.
-- **Expected outcome** — State the observable result if the change is implemented.
+- Problem. The specific gap and its impact.
+- Solution. The proposed change.
+- Outcome. The observable result you expect.
 
 Keep uncertain details explicit and avoid inventing metrics or presenting expected results as achieved.
