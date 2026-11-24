@@ -1,6 +1,7 @@
 # Portable core packages. Named sections are opt-in additions to the core.
 read
 backlog
+board
 clean
 map
 untangle
