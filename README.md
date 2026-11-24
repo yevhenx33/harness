@@ -123,6 +123,7 @@ references supply conditional detail.
 |---|---|
 | [read](skills/read/SKILL.md), [map](skills/map/SKILL.md) | Read-only investigation, owners, flows and evidence |
 | [backlog](skills/backlog/SKILL.md) | Read-only feature summary with a title and three short bullets |
+| [board](skills/board/SKILL.md) | Owner-based tasks with scoped writes, acceptance checks, and dispatch order |
 | [untangle](skills/untangle/SKILL.md) | Read-only investigation of coupling and change propagation |
 | [clean](skills/clean/SKILL.md) | Clutter inventory, protected-state checks, and authorized retirement |
 | [architecture](skills/architecture/SKILL.md), [contract](skills/contract/SKILL.md) | Outcome-first design, service ownership and public interfaces |
